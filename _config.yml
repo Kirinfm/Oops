@@ -13,7 +13,7 @@ timezone: ''
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-url: http://cnkirin.cn/Oops
+url: http://www.cnkirin.cn/Oops
 root: /Oops
 permalink: :year/:month/:day/:title/
 permalink_defaults:
@@ -98,9 +98,17 @@ theme: landscape
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
-  type: sftp
-  host: 106.15.72.109
-  user: root
-  pass: FMneedzaq777
-  remotePath: /opt/nginx/html/Oops
-  port: 22
+  - type: sftp
+    host: 106.15.72.109
+    user: root
+    pass: FMneedzaq777
+    remotePath: /opt/nginx/html/Oops
+    port: 22
+  - type: baidu_url_submitter
+
+# 百度主动提交收录
+baidu_url_submit:
+  count: 1
+  host: www.cnkirin.cn
+  token: F5Eb3QsMvv96iMVv
+  path: baidu_urls.txt
