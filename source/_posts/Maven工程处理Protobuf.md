@@ -72,18 +72,18 @@ Java 开发中特别是进程间通讯，往往会用到google的protobuf作为�
 
 ### 1\. 命令： mvn protobuf:compile
 
-![](resources/9C3D86062D66843AC8E855BA82BBFA0F.jpg)
+![](../resources/9C3D86062D66843AC8E855BA82BBFA0F.jpg)
 
 ### 2\. IDEA开发工具
 
-![](resources/1892D16BB70CD80025A457511C0457A1.jpg)
+![](../resources/1892D16BB70CD80025A457511C0457A1.jpg)
 
 四、编译完成java文件位置
 --------------
 
 如下图
 
-![](resources/77B9EE5AAE5928EFA66C341712F0B009.jpg)
+![](../resources/77B9EE5AAE5928EFA66C341712F0B009.jpg)
 
 五、总结
 ----
