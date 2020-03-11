@@ -2,8 +2,9 @@
 title: Spring Web集成Docker
 date: 2019-12-19
 tags: 
-  - docker 
+  - Docker 
   - SpringBoot
+categories: JAVA
 ---
 * 根目录创建docker 文件夹
 

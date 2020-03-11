@@ -2,9 +2,10 @@
 title: 如何使用Redis原子性记录博客点击
 date: 2019-12-24
 tags: 
-  - redis 
-  - atomicity 
-  - spring boot
+  - Redis 
+  - Atomicity 
+  - SpringBoot
+categories: JAVA
 ---
 ### 前言
 

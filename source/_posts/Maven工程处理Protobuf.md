@@ -2,8 +2,9 @@
 title: Maven工程处理Protobuf
 date: 2019-09-15
 tags: 
-  - maven 
-  - protobuf
+  - Maven 
+  - Protobuf
+categories: JAVA
 ---
 一、引言
 ----

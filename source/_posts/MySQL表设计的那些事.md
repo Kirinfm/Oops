@@ -2,8 +2,9 @@
 title: MySQL表设计的那些事
 date: 2019-12-18
 tags: 
-  - mysql 
+  - MySQL 
   - SQL
+categories: MySQL
 ---
 表设计
 

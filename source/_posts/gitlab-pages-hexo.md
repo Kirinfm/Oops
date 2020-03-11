@@ -6,6 +6,7 @@ tags:
   - hexo 
   - sftp 
   - baidu
+categories: 环境搭建
 ---
 
 ## 安装Hexo

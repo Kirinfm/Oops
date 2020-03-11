@@ -1,4 +1,11 @@
-
+---
+title: Hystrix配置项
+date: 2020-03-11
+tags: 
+  - SpringCloud
+  - Hystrix
+categories: 微服务
+---
 HystrixCommand
 --------------------------------------------------------------------------------
 #### 配置方式

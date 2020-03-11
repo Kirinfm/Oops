@@ -1,3 +1,10 @@
+---
+title: JAVA Metrics
+date: 2020-03-11
+tags: 
+  - Metrics
+categories: JAVA
+---
 Metrics是一个给JAVA服务的各项指标提供度量工具的包，在JAVA代码中嵌入Metrics代码，可以方便的对业务代码的各个指标进行监控，同时，Metrics能够很好的跟Ganlia、Graphite结合，方便的提供图形化接口。基本使用方式直接将core包（目前稳定版本3.0.1）导入pom文件即可，配置如下：
 
 ```

@@ -2,8 +2,8 @@
 title: Zuul1 如何使用
 date: 2019-10-19
 tags: 
-  - zuul 
-  - config
+  - Zuul 
+categories: 微服务
 ---
 1\. 介绍
 ------

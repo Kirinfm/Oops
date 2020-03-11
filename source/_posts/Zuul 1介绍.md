@@ -1,7 +1,8 @@
 ---
 title: Zuul1介绍
 date: 2019-10-19
-tags: zuul
+tags: Zuul
+categories: 微服务
 ---
 1\. 简介
 ------
