@@ -4,6 +4,7 @@
       paginator({
         prev_text: '<i class="fa fa-angle-left"></i>',
         next_text: '<i class="fa fa-angle-right"></i>',
+        escape: false,
         mid_size: 1
       })
     }}
