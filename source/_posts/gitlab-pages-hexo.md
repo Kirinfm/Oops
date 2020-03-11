@@ -1,7 +1,11 @@
 ---
 title: gitlab 搭建博客部署至远程
-date: 2020-03-10
-tags: gitlab-pages hexo sftp baidu
+date: 2020-03-11
+tags: 
+  - gitlab-pages 
+  - hexo 
+  - sftp 
+  - baidu
 ---
 
 ## 安装Hexo
