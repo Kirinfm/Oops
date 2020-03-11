@@ -7,9 +7,9 @@ pages:
 
   script:
   - npm install --registry=https://registry.npm.taobao.org
-  - hexo clean --config source/_data/next.yml
-  - hexo generate --config source/_data/next.yml
-  - hexo deploy
+  - npm run clean
+  - npm run build
+  - npm run deploy
   artifacts:
     paths:
     - public
