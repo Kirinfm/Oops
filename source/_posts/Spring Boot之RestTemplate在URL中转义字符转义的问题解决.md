@@ -84,27 +84,26 @@ public class RestTemplateConfig {
  2. 修改入参编码格式` URLEncoder.encode(user_sign, "UTF-8")`，然后在构建RestTemplate时，
 
 ```java
-Map<String, Object> param = new HashMap<String, Object>();
-        StringBuilder paramStr = new StringBuilder("?");
-            param.put("version","2.0.0");
-            //转换字符集
-            String userSing  = sign(param);
+            Map<String, Object> param = new HashMap<String, Object>();
+            StringBuilder paramStr = new StringBuilder();
+            param.put("version","xxxxx");
+            param.put("time","xxxxx");
+            // 转化成md5生产密钥
+            String userSing  = md5(param);
+            // 将字符串转成UTF-8
             String userSign = URLEncoder.encode(userSing, "UTF-8");
+            // 将密钥加入
             param.put("user_sign", userSign);
+            // 拼接url串
             for(Map.Entry<String, Object> entry : param.entrySet()){
                 paramStr.append(entry.getKey()).append("=")
                         .append(entry.getValue() == null ? "" : String.valueOf(entry.getValue()))
                         .append("&");
             }
             paramStr.deleteCharAt(paramStr.length() - 1);
-            CloseableHttpClient httpClient = HttpClientUtils.acceptsUntrustedCertsHttpClient();
-            HttpComponentsClientHttpRequestFactory clientHttpRequestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
-            RestTemplate restTemplate = new RestTemplate(clientHttpRequestFactory);
-            DefaultUriBuilderFactory uriFactory = new DefaultUriBuilderFactory();
-            uriFactory.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.VALUES_ONLY);
-            restTemplate.setUriTemplateHandler(uriFactory);
+            // 发送请求
             String smsJsonStr = restTemplate.getForObject(SMSURL + paramStr.toString(), String.class);
-            Map<String, Object> map = GsonUtil.gsonToMap(smsJsonStr);
+            
 ```
 #### 小结
 注意**SpringBoot2.0版本**的url参数编码，默认只会针对 **= 和 &** 进行处理；为了兼容我们一般的后端的url编解码处理在需要编码参数时，个人建议尽量不要使用Spring默认的方式，不然接收到数据会和预期的不一致。
