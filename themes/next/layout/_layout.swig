@@ -42,7 +42,7 @@
     </main>
 
     <footer id="footer" class="footer">
-      <div class="footer-inner">
+      <div class="footer-inner" style="text-align:center;">
         {% include '_partials/footer.swig' %}
         {% include '_third-party/analytics/analytics-with-widget.swig' %}
         {% block footer %}{% endblock %}
