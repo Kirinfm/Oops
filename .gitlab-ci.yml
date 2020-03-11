@@ -7,9 +7,9 @@ pages:
 
   script:
   - npm install --registry=https://registry.npm.taobao.org
-  - npm clean
-  - npm build
-  - npm deploy
+  - npm run clean
+  - npm run build
+  - npm run deploy
   artifacts:
     paths:
     - public
