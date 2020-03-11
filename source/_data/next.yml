@@ -111,7 +111,7 @@ menu_icons:
 # ---------------------------------------------------------------
 
 # Schemes
-scheme: Muse
+scheme: Mist
   #scheme: Mist
   #scheme: Pisces
   #scheme: Gemini
@@ -235,11 +235,11 @@ post_wordcount:
   totalcount: false
   separated_meta: true
 
-  # Wechat Subscriber
-  #wechat_subscriber:
-  #enabled: true
-  #qcode: /path/to/your/wechatqcode ex. /uploads/wechat-qcode.jpg
-  #description: ex. subscribe to my blog by scanning my public wechat account
+# Wechat Subscriber
+wechat_subscriber:
+  enabled: true
+  qcode: /Oops/uploads/wechat-qcode.jpg
+  description: 欢迎您扫一扫上面的微信二维码，订阅我的公众号
 
 # Reward
 #reward_comment: Donate comment here
@@ -277,7 +277,7 @@ custom_logo:
 # Available value:
 #    normal | night | night eighties | night blue | night bright
 # https://github.com/chriskempson/tomorrow-theme
-highlight_theme: normal
+highlight_theme: night
 
 
 # ---------------------------------------------------------------
@@ -549,19 +549,19 @@ firestore:
 # Get more information on http://ibruce.info/2015/04/04/busuanzi/
 busuanzi_count:
   # count values only if the other configs are false
-  enable: false
+  enable: true
   # custom uv span for the whole site
   site_uv: true
-  site_uv_header: <i class="fa fa-user"></i>
-  site_uv_footer:
+  site_uv_header: 本站访客数
+  site_uv_footer: 人次
   # custom pv span for the whole site
   site_pv: true
-  site_pv_header: <i class="fa fa-eye"></i>
-  site_pv_footer:
+  site_pv_header: 本站总访问量
+  site_pv_footer: 次
   # custom pv span for one page only
   page_pv: true
-  page_pv_header: <i class="fa fa-file-o"></i>
-  page_pv_footer:
+  page_pv_header: 本文总阅读量
+  page_pv_footer: 次
 
 
 # Tencent analytics ID
@@ -817,10 +817,10 @@ version: 5.1.4
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: OOPS
+title: Oops
 subtitle: ''
 description: ''
-author: 中寰战略一部架构组
+author: 架构组
 language: zh-Hans
 timezone: ''
 
