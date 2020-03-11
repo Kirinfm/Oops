@@ -36,6 +36,6 @@ $ git push -u origin master
 ## 创建gitlab runner
 > 进入 Setting > CI/CD Pipelines
 
-![](../resources/gitlabSetting.png)
+![](resources/gitlabSetting.png)
 
 
