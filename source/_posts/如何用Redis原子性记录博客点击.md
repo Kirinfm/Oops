@@ -1,3 +1,8 @@
+---
+title: 如何使用Redis原子性记录博客点击
+date: 2019-12-24
+tags: redis atomicity spring boot
+---
 ### 前言
 
 **原子性（atomicity）:** 一个事务是一个不可分割的最小工作单位,要么都成功要么都失败。
