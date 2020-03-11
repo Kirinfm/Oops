@@ -1,7 +1,9 @@
 ---
 title: MySQL表设计的那些事
 date: 2019-12-18
-tags: mysql SQL
+tags: 
+  - mysql 
+  - SQL
 ---
 表设计
 
