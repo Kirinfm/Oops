@@ -10,22 +10,23 @@ categories: JAVA
 > **相同代码在不同SpringBoot版本中使用RestTemplate请求时遇到的问题：**
 
 ```java
-        Map<String, Object> param = new HashMap<String, Object>();
-            param.put("version","2.0.0");
-            String userSing = sign(param);
-            param.put("user_sign", userSing);
-            logger.info("签名:" + userSing);
-            StringBuilder paramStr = new StringBuilder("?");
+            Map<String, Object> param = new HashMap<String, Object>();
+            StringBuilder paramStr = new StringBuilder();
+            param.put("version","xxxxx");
+            param.put("time","xxxxx");
+            // 转化成md5生产密钥
+            String userSign  = md5(param);
+            // 将密钥加入
+            param.put("user_sign", userSign);
+            // 拼接url串
             for(Map.Entry<String, Object> entry : param.entrySet()){
                 paramStr.append(entry.getKey()).append("=")
                         .append(entry.getValue() == null ? "" : String.valueOf(entry.getValue()))
                         .append("&");
             }
             paramStr.deleteCharAt(paramStr.length() - 1);
-            logger.info("入参:" + paramStr.toString());
-            RestTemplate restTemplate = new RestTemplate();
-            String jsonStr = restTemplate.getForObject(sendMessagesUrl + paramStr.toString(), String.class);
-            logger.info("响应值：" + jsonStr);
+            // 发送请求
+            String smsJsonStr = restTemplate.getForObject(SMSURL + paramStr.toString(), String.class);
 ```
 
 > 下面截图为**springboot1.5.3 RestTemplate request log**
