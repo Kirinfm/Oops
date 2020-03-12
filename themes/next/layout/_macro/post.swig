@@ -62,6 +62,13 @@
 
         <div class="post-meta">
           <span class="post-time">
+            {% if theme.post_meta.author_test and post.author %}
+              <span class="post-meta-item-icon">
+                <i class="fa fa-user"></i>
+              </span>
+              <span class="post-meta-item-text">{{ post.author }}</span>
+              <span class="post-meta-divider">|</span>
+            {% endif %}
             {% if theme.post_meta.created_at %}
               <span class="post-meta-item-icon">
                 <i class="fa fa-calendar-o"></i>

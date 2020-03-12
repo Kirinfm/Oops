@@ -225,6 +225,7 @@ post_meta:
   created_at: true
   updated_at: false
   categories: true
+  author_test: true
 
 # Post wordcount display settings
 # Dependencies: https://github.com/willin/hexo-wordcount
@@ -238,7 +239,7 @@ post_wordcount:
 # Wechat Subscriber
 wechat_subscriber:
   enabled: true
-  qcode: /Oops/uploads/wechat-qcode.jpg
+  qcode: /uploads/wechat-qcode.jpg
   description: 欢迎您扫一扫上面的微信二维码，订阅我的公众号
 
 # Reward
@@ -572,7 +573,7 @@ busuanzi_count:
 
 
 # Enable baidu push so that the blog will push the url to baidu automatically which is very helpful for SEO
-baidu_push: false
+baidu_push: true
 
 # Google Calendar
 # Share your recent schedule to others via calendar page
