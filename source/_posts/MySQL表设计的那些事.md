@@ -5,6 +5,7 @@ tags:
   - MySQL 
   - SQL
 categories: MySQL
+author: 葱
 ---
 表设计
 

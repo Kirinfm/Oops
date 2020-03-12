@@ -1,6 +1,7 @@
 ---
 title: Hystrix配置项
 date: 2020-03-11
+author: 葱
 tags: 
   - SpringCloud
   - Hystrix

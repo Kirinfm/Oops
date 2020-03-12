@@ -1,6 +1,7 @@
 ---
 title: 如何使用Redis原子性记录博客点击
 date: 2019-12-24
+author: FM
 tags: 
   - Redis 
   - Atomicity 

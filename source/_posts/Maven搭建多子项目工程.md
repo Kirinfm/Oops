@@ -2,6 +2,7 @@
 title: Maven搭建多子项目工程
 date: 2015-12-23
 tags: Maven
+author: ,YaNll
 categories: JAVA
 ---
 ### 1.创建main工程

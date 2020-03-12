@@ -1,6 +1,7 @@
 ---
 title: Jmeter报告可视化
 date: 2020-03-12 09:34:00
+author: 刁民
 tags: 
   - Jmeter
 categories: 测试

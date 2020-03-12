@@ -1,7 +1,7 @@
 ---
 title: gitlab 搭建博客部署至远程
 date: 2020-03-11
-author: 方明
+author: FM
 tags: 
   - gitlab-pages 
   - hexo 
