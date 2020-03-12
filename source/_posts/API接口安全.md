@@ -2,7 +2,7 @@
 title: API接口安全
 date: 2020-03-12 16:51:00
 tags: security 
-author: ,YaNll
+author: 葱
 categories: JAVA
 ---
 ![API接口安全性.jpg](resources/365EBCF5E570C55D48250BCD539C1996.jpg)
