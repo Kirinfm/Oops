@@ -40,7 +40,7 @@
 
   
   
-  <link href="/oops/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+  <link href="/Oops/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
 
 
 
@@ -48,21 +48,21 @@
 
 
 
-<link href="/oops/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+<link href="/Oops/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
 
-<link href="/oops/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
-
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/oops/images/apple-touch-icon-next.png?v=5.1.4">
+<link href="/Oops/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
 
 
-  <link rel="icon" type="image/png" sizes="32x32" href="/oops/images/favicon-32x32-next.png?v=5.1.4">
+  <link rel="apple-touch-icon" sizes="180x180" href="/Oops/images/apple-touch-icon-next.png?v=5.1.4">
 
 
-  <link rel="icon" type="image/png" sizes="16x16" href="/oops/images/favicon-16x16-next.png?v=5.1.4">
+  <link rel="icon" type="image/png" sizes="32x32" href="/Oops/images/favicon-32x32-next.png?v=5.1.4">
 
 
-  <link rel="mask-icon" href="/oops/images/logo.svg?v=5.1.4" color="#222">
+  <link rel="icon" type="image/png" sizes="16x16" href="/Oops/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/Oops/images/logo.svg?v=5.1.4" color="#222">
 
 
 
@@ -82,20 +82,20 @@
 <meta name="description" content="继续回答星球水友提问： 沈老师，MyISAM只支持表锁，但网上文章却说，在并发插入量比较大的时候，比较适合使用MyISAM，这矛盾吗？ 这个问题，涉及MySQL表锁的一些细节，借着这个问题，系统性说下表锁的“所以然”。 画外音：网上不少文章只说结论，不说为什么，容易让人蒙圈。 MySQL表锁知识系统性梳理。 哪些存储引擎使用表锁？ MySQL，除InnoDB支持行锁外，MySQL的其他存储引擎均只">
 <meta property="og:type" content="article">
 <meta property="og:title" content="频繁插入(insert)的业务，用什么存储引擎更合适？   数据库系列">
-<meta property="og:url" content="https://smartlink-tech.gitee.cn/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E9%A2%91%E7%B9%81%E6%8F%92%E5%85%A5(insert)%E7%9A%84%E4%B8%9A%E5%8A%A1%EF%BC%8C%E7%94%A8%E4%BB%80%E4%B9%88%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E6%9B%B4%E5%90%88%E9%80%82%EF%BC%9F%20%20%20%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B3%BB%E5%88%97/index.html">
+<meta property="og:url" content="https://dzyzhong.github.io/Oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E9%A2%91%E7%B9%81%E6%8F%92%E5%85%A5(insert)%E7%9A%84%E4%B8%9A%E5%8A%A1%EF%BC%8C%E7%94%A8%E4%BB%80%E4%B9%88%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E6%9B%B4%E5%90%88%E9%80%82%EF%BC%9F%20%20%20%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B3%BB%E5%88%97/index.html">
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="继续回答星球水友提问： 沈老师，MyISAM只支持表锁，但网上文章却说，在并发插入量比较大的时候，比较适合使用MyISAM，这矛盾吗？ 这个问题，涉及MySQL表锁的一些细节，借着这个问题，系统性说下表锁的“所以然”。 画外音：网上不少文章只说结论，不说为什么，容易让人蒙圈。 MySQL表锁知识系统性梳理。 哪些存储引擎使用表锁？ MySQL，除InnoDB支持行锁外，MySQL的其他存储引擎均只">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/9567404E0B37903B9A836CBD893004A4.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/4EE233DE97C091D9C9EDA225F43CABFD.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/6669D8E1D6D483EE8E033424ACC31A96.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/2C61918839A1E223440AA0941F9CF4EA.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/7375BA98EBB5F4B4F9D9A5EAFBDC992D.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/9567404E0B37903B9A836CBD893004A4.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/4EE233DE97C091D9C9EDA225F43CABFD.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/6669D8E1D6D483EE8E033424ACC31A96.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/2C61918839A1E223440AA0941F9CF4EA.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/7375BA98EBB5F4B4F9D9A5EAFBDC992D.png">
 <meta property="article:published_time" content="2020-04-30T03:23:00.000Z">
 <meta property="article:modified_time" content="2020-04-30T08:17:04.068Z">
 <meta property="article:author" content="John Doe">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://smartlink-tech.gitee.cn/Oops/resources/9567404E0B37903B9A836CBD893004A4.png">
+<meta name="twitter:image" content="https://dzyzhong.github.io/Oops/resources/9567404E0B37903B9A836CBD893004A4.png">
 
 
 
@@ -125,7 +125,7 @@
 
 
 
-  <link rel="canonical" href="https://smartlink-tech.gitee.cn/oops/2020/04/30/推荐阅读/频繁插入(insert)的业务，用什么存储引擎更合适？   数据库系列/"/>
+  <link rel="canonical" href="https://DZYzhong.github.io/Oops/2020/04/30/推荐阅读/频繁插入(insert)的业务，用什么存储引擎更合适？   数据库系列/"/>
 
 
 
@@ -159,7 +159,7 @@
     
 
     <div class="custom-logo-site-title">
-      <a href="/oops/"  class="brand" rel="start">
+      <a href="/Oops/"  class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
         <span class="site-title">Hexo</span>
         <span class="logo-line-after"><i></i></span>
@@ -187,7 +187,7 @@
       
         
         <li class="menu-item menu-item-home">
-          <a href="/oops/" rel="section">
+          <a href="/Oops/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
@@ -197,7 +197,7 @@
       
         
         <li class="menu-item menu-item-archives">
-          <a href="/oops/archives/" rel="section">
+          <a href="/Oops/archives/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
@@ -207,7 +207,7 @@
       
         
         <li class="menu-item menu-item-tags">
-          <a href="/oops/tags/" rel="section">
+          <a href="/Oops/tags/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
             
@@ -217,7 +217,7 @@
       
         
         <li class="menu-item menu-item-categories">
-          <a href="/oops/categories/" rel="section">
+          <a href="/Oops/categories/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
             
@@ -258,12 +258,12 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://smartlink-tech.gitee.cn/oops/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E9%A2%91%E7%B9%81%E6%8F%92%E5%85%A5(insert)%E7%9A%84%E4%B8%9A%E5%8A%A1%EF%BC%8C%E7%94%A8%E4%BB%80%E4%B9%88%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E6%9B%B4%E5%90%88%E9%80%82%EF%BC%9F%20%20%20%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B3%BB%E5%88%97/">
+    <link itemprop="mainEntityOfPage" href="https://DZYzhong.github.io/Oops/Oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E9%A2%91%E7%B9%81%E6%8F%92%E5%85%A5(insert)%E7%9A%84%E4%B8%9A%E5%8A%A1%EF%BC%8C%E7%94%A8%E4%BB%80%E4%B9%88%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E6%9B%B4%E5%90%88%E9%80%82%EF%BC%9F%20%20%20%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B3%BB%E5%88%97/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="架构组">
       <meta itemprop="description" content="">
-      <meta itemprop="image" content="/oops/images/avatar.gif">
+      <meta itemprop="image" content="/Oops/images/avatar.gif">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -311,7 +311,7 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/oops/categories/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/" itemprop="url" rel="index">
+                  <a href="/Oops/categories/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/" itemprop="url" rel="index">
                     <span itemprop="name">推荐阅读</span>
                   </a>
                 </span>
@@ -424,7 +424,7 @@
     
       <div>
         <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
-    <img id="wechat_subscriber_qcode" src="/oops/uploads/wechat-qcode.jpg" alt="架构组 wechat" style="width: 200px; max-width: 100%;"/>
+    <img id="wechat_subscriber_qcode" src="/Oops/uploads/wechat-qcode.jpg" alt="架构组 wechat" style="width: 200px; max-width: 100%;"/>
     <div>欢迎您扫一扫上面的微信二维码，订阅我的公众号</div>
 </div>
 
@@ -446,7 +446,7 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E9%9D%A2%E8%AF%95%E8%A2%AB%E9%97%AE%EF%BC%9ARedis%20%E5%86%85%E5%AD%98%E6%BB%A1%E4%BA%86%E6%80%8E%E4%B9%88%E5%8A%9E%EF%BC%9F/" rel="next" title="面试被问：Redis 内存满了怎么办？">
+              <a href="/Oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E9%9D%A2%E8%AF%95%E8%A2%AB%E9%97%AE%EF%BC%9ARedis%20%E5%86%85%E5%AD%98%E6%BB%A1%E4%BA%86%E6%80%8E%E4%B9%88%E5%8A%9E%EF%BC%9F/" rel="next" title="面试被问：Redis 内存满了怎么办？">
                 <i class="fa fa-chevron-left"></i> 面试被问：Redis 内存满了怎么办？
               </a>
             
@@ -456,7 +456,7 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E9%9D%A2%E8%AF%95%E5%AE%98%EF%BC%9A%E4%B8%BA%E4%BB%80%E4%B9%88%20SpringBoot%20%E7%9A%84%20jar%20%E5%8F%AF%E4%BB%A5%E7%9B%B4%E6%8E%A5%E8%BF%90%E8%A1%8C%EF%BC%9F/" rel="prev" title="面试官：为什么 SpringBoot 的 jar 可以直接运行？">
+              <a href="/Oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E9%9D%A2%E8%AF%95%E5%AE%98%EF%BC%9A%E4%B8%BA%E4%BB%80%E4%B9%88%20SpringBoot%20%E7%9A%84%20jar%20%E5%8F%AF%E4%BB%A5%E7%9B%B4%E6%8E%A5%E8%BF%90%E8%A1%8C%EF%BC%9F/" rel="prev" title="面试官：为什么 SpringBoot 的 jar 可以直接运行？">
                 面试官：为什么 SpringBoot 的 jar 可以直接运行？ <i class="fa fa-chevron-right"></i>
               </a>
             
@@ -589,57 +589,57 @@
 
   
   
-    <script type="text/javascript" src="/oops/lib/jquery/index.js?v=2.1.3"></script>
+    <script type="text/javascript" src="/Oops/lib/jquery/index.js?v=2.1.3"></script>
   
 
   
   
-    <script type="text/javascript" src="/oops/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+    <script type="text/javascript" src="/Oops/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
   
 
   
   
-    <script type="text/javascript" src="/oops/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+    <script type="text/javascript" src="/Oops/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
   
 
   
   
-    <script type="text/javascript" src="/oops/lib/velocity/velocity.min.js?v=1.2.1"></script>
+    <script type="text/javascript" src="/Oops/lib/velocity/velocity.min.js?v=1.2.1"></script>
   
 
   
   
-    <script type="text/javascript" src="/oops/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+    <script type="text/javascript" src="/Oops/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
   
 
   
   
-    <script type="text/javascript" src="/oops/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+    <script type="text/javascript" src="/Oops/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
   
-
-
-  
-
-
-  <script type="text/javascript" src="/oops/js/src/utils.js?v=5.1.4"></script>
-
-  <script type="text/javascript" src="/oops/js/src/motion.js?v=5.1.4"></script>
-
-
-
-  
-  
-
-  
-  <script type="text/javascript" src="/oops/js/src/scrollspy.js?v=5.1.4"></script>
-<script type="text/javascript" src="/oops/js/src/post-details.js?v=5.1.4"></script>
-
 
 
   
 
 
-  <script type="text/javascript" src="/oops/js/src/bootstrap.js?v=5.1.4"></script>
+  <script type="text/javascript" src="/Oops/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/Oops/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/Oops/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/Oops/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/Oops/js/src/bootstrap.js?v=5.1.4"></script>
 
 
 

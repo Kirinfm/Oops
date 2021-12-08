@@ -40,7 +40,7 @@
 
   
   
-  <link href="/oops/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+  <link href="/Oops/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
 
 
 
@@ -48,21 +48,21 @@
 
 
 
-<link href="/oops/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+<link href="/Oops/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
 
-<link href="/oops/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
-
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/oops/images/apple-touch-icon-next.png?v=5.1.4">
+<link href="/Oops/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
 
 
-  <link rel="icon" type="image/png" sizes="32x32" href="/oops/images/favicon-32x32-next.png?v=5.1.4">
+  <link rel="apple-touch-icon" sizes="180x180" href="/Oops/images/apple-touch-icon-next.png?v=5.1.4">
 
 
-  <link rel="icon" type="image/png" sizes="16x16" href="/oops/images/favicon-16x16-next.png?v=5.1.4">
+  <link rel="icon" type="image/png" sizes="32x32" href="/Oops/images/favicon-32x32-next.png?v=5.1.4">
 
 
-  <link rel="mask-icon" href="/oops/images/logo.svg?v=5.1.4" color="#222">
+  <link rel="icon" type="image/png" sizes="16x16" href="/Oops/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/Oops/images/logo.svg?v=5.1.4" color="#222">
 
 
 
@@ -82,27 +82,27 @@
 <meta name="description" content="一、数据库瓶颈  不管是IO瓶颈，还是CPU瓶颈，最终都会导致数据库的活跃连接数增加，进而逼近甚至达到数据库可承载活跃连接数的阈值。在业务Service来看就是，可用数据库连接少甚至无连接可用。接下来就可以想象了吧（并发量、吞吐量、崩溃）。 1、IO瓶颈第一种：磁盘读IO瓶颈，热点数据太多，数据库缓存放不下，每次查询时会产生大量的IO，降低查询速度 -&gt; 分库和垂直分表。 第二种：网络IO瓶">
 <meta property="og:type" content="article">
 <meta property="og:title" content="MySQL：互联网公司常用分库分表方案汇总！">
-<meta property="og:url" content="https://smartlink-tech.gitee.cn/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/MySQL%EF%BC%9A%E4%BA%92%E8%81%94%E7%BD%91%E5%85%AC%E5%8F%B8%E5%B8%B8%E7%94%A8%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E6%96%B9%E6%A1%88%E6%B1%87%E6%80%BB%EF%BC%81/index.html">
+<meta property="og:url" content="https://dzyzhong.github.io/Oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/MySQL%EF%BC%9A%E4%BA%92%E8%81%94%E7%BD%91%E5%85%AC%E5%8F%B8%E5%B8%B8%E7%94%A8%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E6%96%B9%E6%A1%88%E6%B1%87%E6%80%BB%EF%BC%81/index.html">
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="一、数据库瓶颈  不管是IO瓶颈，还是CPU瓶颈，最终都会导致数据库的活跃连接数增加，进而逼近甚至达到数据库可承载活跃连接数的阈值。在业务Service来看就是，可用数据库连接少甚至无连接可用。接下来就可以想象了吧（并发量、吞吐量、崩溃）。 1、IO瓶颈第一种：磁盘读IO瓶颈，热点数据太多，数据库缓存放不下，每次查询时会产生大量的IO，降低查询速度 -&gt; 分库和垂直分表。 第二种：网络IO瓶">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/FFFC302A6668615EF26115D2D334CBAE.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/2F848BB0CE5C5C93C8ED8645417BAF8F.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/1006DF00058AB2BAC31CB56AA4430C0D.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/7907058AAABD6815D68B5C007A3A75E7.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/BFF3D88DA688C9BBAE5B7C16F07F6D97.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/40E6F06EAD02077D719F01F2BCC74740.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/BD8710101F327C8A6798215A7E1D74ED.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/BA0ED37154F7770DB7AF94BAC858FCEB.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/F0FC71223C3C4008DB73823B079B1324.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/15DFFB42803DE0679F7AE8ED152B08C9.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/2AE26877A69AB98DC0B80EB5F5F87871.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/ED58C5D47905AC47F44EDED4998FE23C.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/FFFC302A6668615EF26115D2D334CBAE.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/2F848BB0CE5C5C93C8ED8645417BAF8F.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/1006DF00058AB2BAC31CB56AA4430C0D.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/7907058AAABD6815D68B5C007A3A75E7.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/BFF3D88DA688C9BBAE5B7C16F07F6D97.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/40E6F06EAD02077D719F01F2BCC74740.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/BD8710101F327C8A6798215A7E1D74ED.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/BA0ED37154F7770DB7AF94BAC858FCEB.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/F0FC71223C3C4008DB73823B079B1324.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/15DFFB42803DE0679F7AE8ED152B08C9.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/2AE26877A69AB98DC0B80EB5F5F87871.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/ED58C5D47905AC47F44EDED4998FE23C.png">
 <meta property="article:published_time" content="2020-04-30T03:23:00.000Z">
 <meta property="article:modified_time" content="2020-04-30T08:17:04.062Z">
 <meta property="article:author" content="John Doe">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://smartlink-tech.gitee.cn/Oops/resources/FFFC302A6668615EF26115D2D334CBAE.png">
+<meta name="twitter:image" content="https://dzyzhong.github.io/Oops/resources/FFFC302A6668615EF26115D2D334CBAE.png">
 
 
 
@@ -132,7 +132,7 @@
 
 
 
-  <link rel="canonical" href="https://smartlink-tech.gitee.cn/oops/2020/04/30/推荐阅读/MySQL：互联网公司常用分库分表方案汇总！/"/>
+  <link rel="canonical" href="https://DZYzhong.github.io/Oops/2020/04/30/推荐阅读/MySQL：互联网公司常用分库分表方案汇总！/"/>
 
 
 
@@ -166,7 +166,7 @@
     
 
     <div class="custom-logo-site-title">
-      <a href="/oops/"  class="brand" rel="start">
+      <a href="/Oops/"  class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
         <span class="site-title">Hexo</span>
         <span class="logo-line-after"><i></i></span>
@@ -194,7 +194,7 @@
       
         
         <li class="menu-item menu-item-home">
-          <a href="/oops/" rel="section">
+          <a href="/Oops/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
@@ -204,7 +204,7 @@
       
         
         <li class="menu-item menu-item-archives">
-          <a href="/oops/archives/" rel="section">
+          <a href="/Oops/archives/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
@@ -214,7 +214,7 @@
       
         
         <li class="menu-item menu-item-tags">
-          <a href="/oops/tags/" rel="section">
+          <a href="/Oops/tags/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
             
@@ -224,7 +224,7 @@
       
         
         <li class="menu-item menu-item-categories">
-          <a href="/oops/categories/" rel="section">
+          <a href="/Oops/categories/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
             
@@ -265,12 +265,12 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://smartlink-tech.gitee.cn/oops/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/MySQL%EF%BC%9A%E4%BA%92%E8%81%94%E7%BD%91%E5%85%AC%E5%8F%B8%E5%B8%B8%E7%94%A8%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E6%96%B9%E6%A1%88%E6%B1%87%E6%80%BB%EF%BC%81/">
+    <link itemprop="mainEntityOfPage" href="https://DZYzhong.github.io/Oops/Oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/MySQL%EF%BC%9A%E4%BA%92%E8%81%94%E7%BD%91%E5%85%AC%E5%8F%B8%E5%B8%B8%E7%94%A8%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E6%96%B9%E6%A1%88%E6%B1%87%E6%80%BB%EF%BC%81/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="架构组">
       <meta itemprop="description" content="">
-      <meta itemprop="image" content="/oops/images/avatar.gif">
+      <meta itemprop="image" content="/Oops/images/avatar.gif">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -318,7 +318,7 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/oops/categories/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/" itemprop="url" rel="index">
+                  <a href="/Oops/categories/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/" itemprop="url" rel="index">
                     <span itemprop="name">推荐阅读</span>
                   </a>
                 </span>
@@ -481,7 +481,7 @@
     
       <div>
         <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
-    <img id="wechat_subscriber_qcode" src="/oops/uploads/wechat-qcode.jpg" alt="架构组 wechat" style="width: 200px; max-width: 100%;"/>
+    <img id="wechat_subscriber_qcode" src="/Oops/uploads/wechat-qcode.jpg" alt="架构组 wechat" style="width: 200px; max-width: 100%;"/>
     <div>欢迎您扫一扫上面的微信二维码，订阅我的公众号</div>
 </div>
 
@@ -503,7 +503,7 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/Redis%20%E5%88%B0%E5%BA%95%E6%98%AF%E6%80%8E%E4%B9%88%E5%AE%9E%E7%8E%B0%E2%80%9C%E9%99%84%E8%BF%91%E7%9A%84%E4%BA%BA%E2%80%9D%E8%BF%99%E4%B8%AA%E5%8A%9F%E8%83%BD%E7%9A%84%EF%BC%9F/" rel="next" title="Redis 到底是怎么实现“附近的人”这个功能的？">
+              <a href="/Oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/Redis%20%E5%88%B0%E5%BA%95%E6%98%AF%E6%80%8E%E4%B9%88%E5%AE%9E%E7%8E%B0%E2%80%9C%E9%99%84%E8%BF%91%E7%9A%84%E4%BA%BA%E2%80%9D%E8%BF%99%E4%B8%AA%E5%8A%9F%E8%83%BD%E7%9A%84%EF%BC%9F/" rel="next" title="Redis 到底是怎么实现“附近的人”这个功能的？">
                 <i class="fa fa-chevron-left"></i> Redis 到底是怎么实现“附近的人”这个功能的？
               </a>
             
@@ -513,7 +513,7 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/MySQL%20%E6%AD%BB%E9%94%81%E7%B3%BB%E5%88%97-%20%E9%94%81%E7%9A%84%E7%B1%BB%E5%9E%8B%E4%BB%A5%E5%8F%8A%E5%8A%A0%E9%94%81%E5%8E%9F%E7%90%86%EF%BC%81/" rel="prev" title="MySQL 死锁系列- 锁的类型以及加锁原理！">
+              <a href="/Oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/MySQL%20%E6%AD%BB%E9%94%81%E7%B3%BB%E5%88%97-%20%E9%94%81%E7%9A%84%E7%B1%BB%E5%9E%8B%E4%BB%A5%E5%8F%8A%E5%8A%A0%E9%94%81%E5%8E%9F%E7%90%86%EF%BC%81/" rel="prev" title="MySQL 死锁系列- 锁的类型以及加锁原理！">
                 MySQL 死锁系列- 锁的类型以及加锁原理！ <i class="fa fa-chevron-right"></i>
               </a>
             
@@ -646,57 +646,57 @@
 
   
   
-    <script type="text/javascript" src="/oops/lib/jquery/index.js?v=2.1.3"></script>
+    <script type="text/javascript" src="/Oops/lib/jquery/index.js?v=2.1.3"></script>
   
 
   
   
-    <script type="text/javascript" src="/oops/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+    <script type="text/javascript" src="/Oops/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
   
 
   
   
-    <script type="text/javascript" src="/oops/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+    <script type="text/javascript" src="/Oops/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
   
 
   
   
-    <script type="text/javascript" src="/oops/lib/velocity/velocity.min.js?v=1.2.1"></script>
+    <script type="text/javascript" src="/Oops/lib/velocity/velocity.min.js?v=1.2.1"></script>
   
 
   
   
-    <script type="text/javascript" src="/oops/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+    <script type="text/javascript" src="/Oops/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
   
 
   
   
-    <script type="text/javascript" src="/oops/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+    <script type="text/javascript" src="/Oops/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
   
-
-
-  
-
-
-  <script type="text/javascript" src="/oops/js/src/utils.js?v=5.1.4"></script>
-
-  <script type="text/javascript" src="/oops/js/src/motion.js?v=5.1.4"></script>
-
-
-
-  
-  
-
-  
-  <script type="text/javascript" src="/oops/js/src/scrollspy.js?v=5.1.4"></script>
-<script type="text/javascript" src="/oops/js/src/post-details.js?v=5.1.4"></script>
-
 
 
   
 
 
-  <script type="text/javascript" src="/oops/js/src/bootstrap.js?v=5.1.4"></script>
+  <script type="text/javascript" src="/Oops/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/Oops/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/Oops/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/Oops/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/Oops/js/src/bootstrap.js?v=5.1.4"></script>
 
 
 

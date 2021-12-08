@@ -40,7 +40,7 @@
 
   
   
-  <link href="/oops/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+  <link href="/Oops/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
 
 
 
@@ -48,21 +48,21 @@
 
 
 
-<link href="/oops/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+<link href="/Oops/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
 
-<link href="/oops/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
-
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/oops/images/apple-touch-icon-next.png?v=5.1.4">
+<link href="/Oops/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
 
 
-  <link rel="icon" type="image/png" sizes="32x32" href="/oops/images/favicon-32x32-next.png?v=5.1.4">
+  <link rel="apple-touch-icon" sizes="180x180" href="/Oops/images/apple-touch-icon-next.png?v=5.1.4">
 
 
-  <link rel="icon" type="image/png" sizes="16x16" href="/oops/images/favicon-16x16-next.png?v=5.1.4">
+  <link rel="icon" type="image/png" sizes="32x32" href="/Oops/images/favicon-32x32-next.png?v=5.1.4">
 
 
-  <link rel="mask-icon" href="/oops/images/logo.svg?v=5.1.4" color="#222">
+  <link rel="icon" type="image/png" sizes="16x16" href="/Oops/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/Oops/images/logo.svg?v=5.1.4" color="#222">
 
 
 
@@ -82,28 +82,28 @@
 <meta name="description" content="颜博 马蜂窝数仓研发总监  现任马蜂窝数据仓库团队负责人，曾供职于京东、IBM、亚信等公司。 数据行业老兵一名，历经传统数据仓库、大数据平台到数据中台的发展。  大家好，今天分享的议题主要包括几大内容：  带大家回顾一下大数据在国内的发展，从传统数仓到当前数据中台的演进过程； 我个人认为数据中台的核心组成，以及一些技术选型参考； 数据研发是数据中台很重要的一环，会分享一些我们在数据研发方面的实践">
 <meta property="og:type" content="article">
 <meta property="og:title" content="从数仓到数据中台，谈技术选型最优解">
-<meta property="og:url" content="https://smartlink-tech.gitee.cn/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E4%BB%8E%E6%95%B0%E4%BB%93%E5%88%B0%E6%95%B0%E6%8D%AE%E4%B8%AD%E5%8F%B0%EF%BC%8C%E8%B0%88%E6%8A%80%E6%9C%AF%E9%80%89%E5%9E%8B%E6%9C%80%E4%BC%98%E8%A7%A3/index.html">
+<meta property="og:url" content="https://dzyzhong.github.io/Oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E4%BB%8E%E6%95%B0%E4%BB%93%E5%88%B0%E6%95%B0%E6%8D%AE%E4%B8%AD%E5%8F%B0%EF%BC%8C%E8%B0%88%E6%8A%80%E6%9C%AF%E9%80%89%E5%9E%8B%E6%9C%80%E4%BC%98%E8%A7%A3/index.html">
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="颜博 马蜂窝数仓研发总监  现任马蜂窝数据仓库团队负责人，曾供职于京东、IBM、亚信等公司。 数据行业老兵一名，历经传统数据仓库、大数据平台到数据中台的发展。  大家好，今天分享的议题主要包括几大内容：  带大家回顾一下大数据在国内的发展，从传统数仓到当前数据中台的演进过程； 我个人认为数据中台的核心组成，以及一些技术选型参考； 数据研发是数据中台很重要的一环，会分享一些我们在数据研发方面的实践">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/C49BEAC0350BA419D408B0A99CC31490.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/22D75441A1707CF8298E5CD7A252A6AD.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/06171C9C6B74221F4DB0551AD9B3150A.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/98C53DF08BDE316C1495265AF88C7139.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/539B3424890957396D03EB871D00196D.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/7838258A9C6A3814DAB89E883B129727.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/98BD4C83C66C44C837A8A6F8D7089193.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/40D35D52309DA66CC045D37C3E4942F2.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/26320EB9CF260D8062EFB2EC9BAACF1C.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/BB7BAB08B5477ED445B8EB2DF02A674B.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/B136C35703A74608FACA3CCBD4557479.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/A4038BC1A9A60E37FCC4FEFB0712AF32.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/1E009D74B29A0949743C9B1881E09B51.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/C49BEAC0350BA419D408B0A99CC31490.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/22D75441A1707CF8298E5CD7A252A6AD.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/06171C9C6B74221F4DB0551AD9B3150A.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/98C53DF08BDE316C1495265AF88C7139.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/539B3424890957396D03EB871D00196D.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/7838258A9C6A3814DAB89E883B129727.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/98BD4C83C66C44C837A8A6F8D7089193.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/40D35D52309DA66CC045D37C3E4942F2.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/26320EB9CF260D8062EFB2EC9BAACF1C.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/BB7BAB08B5477ED445B8EB2DF02A674B.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/B136C35703A74608FACA3CCBD4557479.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/A4038BC1A9A60E37FCC4FEFB0712AF32.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/1E009D74B29A0949743C9B1881E09B51.png">
 <meta property="article:published_time" content="2020-04-30T03:23:00.000Z">
 <meta property="article:modified_time" content="2020-04-30T08:17:04.064Z">
 <meta property="article:author" content="John Doe">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://smartlink-tech.gitee.cn/Oops/resources/C49BEAC0350BA419D408B0A99CC31490.png">
+<meta name="twitter:image" content="https://dzyzhong.github.io/Oops/resources/C49BEAC0350BA419D408B0A99CC31490.png">
 
 
 
@@ -133,7 +133,7 @@
 
 
 
-  <link rel="canonical" href="https://smartlink-tech.gitee.cn/oops/2020/04/30/推荐阅读/从数仓到数据中台，谈技术选型最优解/"/>
+  <link rel="canonical" href="https://DZYzhong.github.io/Oops/2020/04/30/推荐阅读/从数仓到数据中台，谈技术选型最优解/"/>
 
 
 
@@ -167,7 +167,7 @@
     
 
     <div class="custom-logo-site-title">
-      <a href="/oops/"  class="brand" rel="start">
+      <a href="/Oops/"  class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
         <span class="site-title">Hexo</span>
         <span class="logo-line-after"><i></i></span>
@@ -195,7 +195,7 @@
       
         
         <li class="menu-item menu-item-home">
-          <a href="/oops/" rel="section">
+          <a href="/Oops/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
@@ -205,7 +205,7 @@
       
         
         <li class="menu-item menu-item-archives">
-          <a href="/oops/archives/" rel="section">
+          <a href="/Oops/archives/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
@@ -215,7 +215,7 @@
       
         
         <li class="menu-item menu-item-tags">
-          <a href="/oops/tags/" rel="section">
+          <a href="/Oops/tags/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
             
@@ -225,7 +225,7 @@
       
         
         <li class="menu-item menu-item-categories">
-          <a href="/oops/categories/" rel="section">
+          <a href="/Oops/categories/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
             
@@ -266,12 +266,12 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://smartlink-tech.gitee.cn/oops/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E4%BB%8E%E6%95%B0%E4%BB%93%E5%88%B0%E6%95%B0%E6%8D%AE%E4%B8%AD%E5%8F%B0%EF%BC%8C%E8%B0%88%E6%8A%80%E6%9C%AF%E9%80%89%E5%9E%8B%E6%9C%80%E4%BC%98%E8%A7%A3/">
+    <link itemprop="mainEntityOfPage" href="https://DZYzhong.github.io/Oops/Oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E4%BB%8E%E6%95%B0%E4%BB%93%E5%88%B0%E6%95%B0%E6%8D%AE%E4%B8%AD%E5%8F%B0%EF%BC%8C%E8%B0%88%E6%8A%80%E6%9C%AF%E9%80%89%E5%9E%8B%E6%9C%80%E4%BC%98%E8%A7%A3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="架构组">
       <meta itemprop="description" content="">
-      <meta itemprop="image" content="/oops/images/avatar.gif">
+      <meta itemprop="image" content="/Oops/images/avatar.gif">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -319,7 +319,7 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/oops/categories/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/" itemprop="url" rel="index">
+                  <a href="/Oops/categories/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/" itemprop="url" rel="index">
                     <span itemprop="name">推荐阅读</span>
                   </a>
                 </span>
@@ -596,7 +596,7 @@
     
       <div>
         <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
-    <img id="wechat_subscriber_qcode" src="/oops/uploads/wechat-qcode.jpg" alt="架构组 wechat" style="width: 200px; max-width: 100%;"/>
+    <img id="wechat_subscriber_qcode" src="/Oops/uploads/wechat-qcode.jpg" alt="架构组 wechat" style="width: 200px; max-width: 100%;"/>
     <div>欢迎您扫一扫上面的微信二维码，订阅我的公众号</div>
 </div>
 
@@ -618,7 +618,7 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E5%88%86%E5%B8%83%E5%BC%8F%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6%E7%B3%BB%E7%BB%9F%E6%8A%80%E6%9C%AF%E9%80%89%E5%9E%8B/" rel="next" title="分布式定时任务调度系统技术选型">
+              <a href="/Oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E5%88%86%E5%B8%83%E5%BC%8F%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6%E7%B3%BB%E7%BB%9F%E6%8A%80%E6%9C%AF%E9%80%89%E5%9E%8B/" rel="next" title="分布式定时任务调度系统技术选型">
                 <i class="fa fa-chevron-left"></i> 分布式定时任务调度系统技术选型
               </a>
             
@@ -628,7 +628,7 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E4%BA%8B%E5%8A%A1%E5%B7%B2%E6%8F%90%E4%BA%A4%EF%BC%8C%E6%95%B0%E6%8D%AE%E5%8D%B4%E4%B8%A2%E4%BA%86%EF%BC%8C%E8%B5%B6%E7%B4%A7%E6%A3%80%E6%9F%A5%E4%B8%8B%E8%BF%99%E4%B8%AA%E9%85%8D%E7%BD%AE%EF%BC%81%EF%BC%81%EF%BC%81%20%20%20%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B3%BB%E5%88%97/" rel="prev" title="事务已提交，数据却丢了，赶紧检查下这个配置！！！   数据库系列">
+              <a href="/Oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E4%BA%8B%E5%8A%A1%E5%B7%B2%E6%8F%90%E4%BA%A4%EF%BC%8C%E6%95%B0%E6%8D%AE%E5%8D%B4%E4%B8%A2%E4%BA%86%EF%BC%8C%E8%B5%B6%E7%B4%A7%E6%A3%80%E6%9F%A5%E4%B8%8B%E8%BF%99%E4%B8%AA%E9%85%8D%E7%BD%AE%EF%BC%81%EF%BC%81%EF%BC%81%20%20%20%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B3%BB%E5%88%97/" rel="prev" title="事务已提交，数据却丢了，赶紧检查下这个配置！！！   数据库系列">
                 事务已提交，数据却丢了，赶紧检查下这个配置！！！   数据库系列 <i class="fa fa-chevron-right"></i>
               </a>
             
@@ -761,57 +761,57 @@
 
   
   
-    <script type="text/javascript" src="/oops/lib/jquery/index.js?v=2.1.3"></script>
+    <script type="text/javascript" src="/Oops/lib/jquery/index.js?v=2.1.3"></script>
   
 
   
   
-    <script type="text/javascript" src="/oops/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+    <script type="text/javascript" src="/Oops/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
   
 
   
   
-    <script type="text/javascript" src="/oops/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+    <script type="text/javascript" src="/Oops/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
   
 
   
   
-    <script type="text/javascript" src="/oops/lib/velocity/velocity.min.js?v=1.2.1"></script>
+    <script type="text/javascript" src="/Oops/lib/velocity/velocity.min.js?v=1.2.1"></script>
   
 
   
   
-    <script type="text/javascript" src="/oops/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+    <script type="text/javascript" src="/Oops/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
   
 
   
   
-    <script type="text/javascript" src="/oops/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+    <script type="text/javascript" src="/Oops/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
   
-
-
-  
-
-
-  <script type="text/javascript" src="/oops/js/src/utils.js?v=5.1.4"></script>
-
-  <script type="text/javascript" src="/oops/js/src/motion.js?v=5.1.4"></script>
-
-
-
-  
-  
-
-  
-  <script type="text/javascript" src="/oops/js/src/scrollspy.js?v=5.1.4"></script>
-<script type="text/javascript" src="/oops/js/src/post-details.js?v=5.1.4"></script>
-
 
 
   
 
 
-  <script type="text/javascript" src="/oops/js/src/bootstrap.js?v=5.1.4"></script>
+  <script type="text/javascript" src="/Oops/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/Oops/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/Oops/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/Oops/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/Oops/js/src/bootstrap.js?v=5.1.4"></script>
 
 
 

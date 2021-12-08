@@ -40,7 +40,7 @@
 
   
   
-  <link href="/oops/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+  <link href="/Oops/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
 
 
 
@@ -48,21 +48,21 @@
 
 
 
-<link href="/oops/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+<link href="/Oops/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
 
-<link href="/oops/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
-
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/oops/images/apple-touch-icon-next.png?v=5.1.4">
+<link href="/Oops/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
 
 
-  <link rel="icon" type="image/png" sizes="32x32" href="/oops/images/favicon-32x32-next.png?v=5.1.4">
+  <link rel="apple-touch-icon" sizes="180x180" href="/Oops/images/apple-touch-icon-next.png?v=5.1.4">
 
 
-  <link rel="icon" type="image/png" sizes="16x16" href="/oops/images/favicon-16x16-next.png?v=5.1.4">
+  <link rel="icon" type="image/png" sizes="32x32" href="/Oops/images/favicon-32x32-next.png?v=5.1.4">
 
 
-  <link rel="mask-icon" href="/oops/images/logo.svg?v=5.1.4" color="#222">
+  <link rel="icon" type="image/png" sizes="16x16" href="/Oops/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/Oops/images/logo.svg?v=5.1.4" color="#222">
 
 
 
@@ -82,41 +82,41 @@
 <meta name="description" content="目录 . 一、基本概念 . 1、背景 . 2、简介 . 3、特点 . 4、基础模型 . 5、Apollo 的四个维度 . 6、本地缓存 . 7、客户端设计 . 8、总体设计 . 9、可用性考虑 . 二、Apollo 配置中心创建项目与配置 . 1、登录 Apollo . 2、修改与增加部门数据 . 3、创建一个项目 . 4、创建一个配置参数 . 三、创建 Apollo 客户端测试项目 . 1、Ma">
 <meta property="og:type" content="article">
 <meta property="og:title" content="一文搞定：SpringBoot 集成 Apollo 配置中心">
-<meta property="og:url" content="https://smartlink-tech.gitee.cn/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E4%B8%80%E6%96%87%E6%90%9E%E5%AE%9A%EF%BC%9ASpringBoot%20%E9%9B%86%E6%88%90%20Apollo%20%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83/index.html">
+<meta property="og:url" content="https://dzyzhong.github.io/Oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E4%B8%80%E6%96%87%E6%90%9E%E5%AE%9A%EF%BC%9ASpringBoot%20%E9%9B%86%E6%88%90%20Apollo%20%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83/index.html">
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="目录 . 一、基本概念 . 1、背景 . 2、简介 . 3、特点 . 4、基础模型 . 5、Apollo 的四个维度 . 6、本地缓存 . 7、客户端设计 . 8、总体设计 . 9、可用性考虑 . 二、Apollo 配置中心创建项目与配置 . 1、登录 Apollo . 2、修改与增加部门数据 . 3、创建一个项目 . 4、创建一个配置参数 . 三、创建 Apollo 客户端测试项目 . 1、Ma">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/1EA9DCC0B1B543E6316BF609E384B141.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/BAB0B9E8D637F4751B675505CA52ECE8.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/E6891ABAFE32B02641160B6C1AB60703.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/9D72E73BADE7D310763A221E362062BF.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/580CFB4BFB8A1755BF693791DFE1AB21.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/2CA109197FAB8B99D84DC70BA819ACEB.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/53EE26285DC1563F702569C7707317A6.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/4E7F44CA5E7C031D8E4CF36DCD7041B1.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/4838BCD39800FF470C3C2F2FAD1C57F5.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/25D4596A82C684EBA1D90077AFFC0749.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/EF1A7C4806B9A5D2DEBE706D155E79AA.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/32ADB600700CC6BE035A7C0357B094F0.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/797ED783AC53E5CA9A7652841A581590.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/2F9C5B49ADE086EE2CF7BEC18F9AF747.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/0986C0D0A1B7ECBC17AB0446F3C9E143.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/2BCC8B2CC9EAB2C964AB553A4708A224.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/1C30260FB7C58E20CC5513C095DB458C.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/FA0058FDFA4601187FA861B3BC7181DA.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/5FE606BB5729E1BDCAE38D086E639593.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/B1718E001A3107236A66A63BAAA2387E.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/9AC476DDDFDE3B07233BEDE10E4B619D.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/CA262B113878D4D596007DAE516AEB3D.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/48E638D1997A65BE40380914C5C81B41.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/48E638D1997A65BE40380914C5C81B41.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/D751348E642A378A47B5FE7FF50E7213.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/147B393063E3F0248F64777FC8F7EFFE.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/1EA9DCC0B1B543E6316BF609E384B141.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/BAB0B9E8D637F4751B675505CA52ECE8.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/E6891ABAFE32B02641160B6C1AB60703.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/9D72E73BADE7D310763A221E362062BF.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/580CFB4BFB8A1755BF693791DFE1AB21.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/2CA109197FAB8B99D84DC70BA819ACEB.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/53EE26285DC1563F702569C7707317A6.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/4E7F44CA5E7C031D8E4CF36DCD7041B1.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/4838BCD39800FF470C3C2F2FAD1C57F5.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/25D4596A82C684EBA1D90077AFFC0749.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/EF1A7C4806B9A5D2DEBE706D155E79AA.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/32ADB600700CC6BE035A7C0357B094F0.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/797ED783AC53E5CA9A7652841A581590.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/2F9C5B49ADE086EE2CF7BEC18F9AF747.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/0986C0D0A1B7ECBC17AB0446F3C9E143.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/2BCC8B2CC9EAB2C964AB553A4708A224.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/1C30260FB7C58E20CC5513C095DB458C.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/FA0058FDFA4601187FA861B3BC7181DA.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/5FE606BB5729E1BDCAE38D086E639593.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/B1718E001A3107236A66A63BAAA2387E.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/9AC476DDDFDE3B07233BEDE10E4B619D.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/CA262B113878D4D596007DAE516AEB3D.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/48E638D1997A65BE40380914C5C81B41.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/48E638D1997A65BE40380914C5C81B41.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/D751348E642A378A47B5FE7FF50E7213.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/147B393063E3F0248F64777FC8F7EFFE.jpg">
 <meta property="article:published_time" content="2020-04-30T03:23:00.000Z">
 <meta property="article:modified_time" content="2020-04-30T08:17:04.064Z">
 <meta property="article:author" content="John Doe">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://smartlink-tech.gitee.cn/Oops/resources/1EA9DCC0B1B543E6316BF609E384B141.jpg">
+<meta name="twitter:image" content="https://dzyzhong.github.io/Oops/resources/1EA9DCC0B1B543E6316BF609E384B141.jpg">
 
 
 
@@ -146,7 +146,7 @@
 
 
 
-  <link rel="canonical" href="https://smartlink-tech.gitee.cn/oops/2020/04/30/推荐阅读/一文搞定：SpringBoot 集成 Apollo 配置中心/"/>
+  <link rel="canonical" href="https://DZYzhong.github.io/Oops/2020/04/30/推荐阅读/一文搞定：SpringBoot 集成 Apollo 配置中心/"/>
 
 
 
@@ -180,7 +180,7 @@
     
 
     <div class="custom-logo-site-title">
-      <a href="/oops/"  class="brand" rel="start">
+      <a href="/Oops/"  class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
         <span class="site-title">Hexo</span>
         <span class="logo-line-after"><i></i></span>
@@ -208,7 +208,7 @@
       
         
         <li class="menu-item menu-item-home">
-          <a href="/oops/" rel="section">
+          <a href="/Oops/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
@@ -218,7 +218,7 @@
       
         
         <li class="menu-item menu-item-archives">
-          <a href="/oops/archives/" rel="section">
+          <a href="/Oops/archives/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
@@ -228,7 +228,7 @@
       
         
         <li class="menu-item menu-item-tags">
-          <a href="/oops/tags/" rel="section">
+          <a href="/Oops/tags/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
             
@@ -238,7 +238,7 @@
       
         
         <li class="menu-item menu-item-categories">
-          <a href="/oops/categories/" rel="section">
+          <a href="/Oops/categories/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
             
@@ -279,12 +279,12 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://smartlink-tech.gitee.cn/oops/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E4%B8%80%E6%96%87%E6%90%9E%E5%AE%9A%EF%BC%9ASpringBoot%20%E9%9B%86%E6%88%90%20Apollo%20%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83/">
+    <link itemprop="mainEntityOfPage" href="https://DZYzhong.github.io/Oops/Oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E4%B8%80%E6%96%87%E6%90%9E%E5%AE%9A%EF%BC%9ASpringBoot%20%E9%9B%86%E6%88%90%20Apollo%20%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="架构组">
       <meta itemprop="description" content="">
-      <meta itemprop="image" content="/oops/images/avatar.gif">
+      <meta itemprop="image" content="/Oops/images/avatar.gif">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -332,7 +332,7 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/oops/categories/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/" itemprop="url" rel="index">
+                  <a href="/Oops/categories/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/" itemprop="url" rel="index">
                     <span itemprop="name">推荐阅读</span>
                   </a>
                 </span>
@@ -731,7 +731,7 @@
     
       <div>
         <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
-    <img id="wechat_subscriber_qcode" src="/oops/uploads/wechat-qcode.jpg" alt="架构组 wechat" style="width: 200px; max-width: 100%;"/>
+    <img id="wechat_subscriber_qcode" src="/Oops/uploads/wechat-qcode.jpg" alt="架构组 wechat" style="width: 200px; max-width: 100%;"/>
     <div>欢迎您扫一扫上面的微信二维码，订阅我的公众号</div>
 </div>
 
@@ -753,7 +753,7 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E4%B8%8D%E7%94%A8%E6%89%BE%E4%BA%86%EF%BC%8C%E5%A4%A7%E5%8E%82%E5%9C%A8%E7%94%A8%E7%9A%84%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E6%96%B9%E6%A1%88%EF%BC%8C%E9%83%BD%E5%9C%A8%E8%BF%99%E9%87%8C%EF%BC%81/" rel="next" title="不用找了，大厂在用的分库分表方案，都在这里！">
+              <a href="/Oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E4%B8%8D%E7%94%A8%E6%89%BE%E4%BA%86%EF%BC%8C%E5%A4%A7%E5%8E%82%E5%9C%A8%E7%94%A8%E7%9A%84%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E6%96%B9%E6%A1%88%EF%BC%8C%E9%83%BD%E5%9C%A8%E8%BF%99%E9%87%8C%EF%BC%81/" rel="next" title="不用找了，大厂在用的分库分表方案，都在这里！">
                 <i class="fa fa-chevron-left"></i> 不用找了，大厂在用的分库分表方案，都在这里！
               </a>
             
@@ -763,7 +763,7 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E4%B8%80%E5%8F%A3%E6%B0%94%E8%AF%B4%E5%87%BA%206%E7%A7%8D%20@Transactional%20%E6%B3%A8%E8%A7%A3%E5%A4%B1%E6%95%88%E5%9C%BA%E6%99%AF/" rel="prev" title="一口气说出 6种 @Transactional 注解失效场景">
+              <a href="/Oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E4%B8%80%E5%8F%A3%E6%B0%94%E8%AF%B4%E5%87%BA%206%E7%A7%8D%20@Transactional%20%E6%B3%A8%E8%A7%A3%E5%A4%B1%E6%95%88%E5%9C%BA%E6%99%AF/" rel="prev" title="一口气说出 6种 @Transactional 注解失效场景">
                 一口气说出 6种 @Transactional 注解失效场景 <i class="fa fa-chevron-right"></i>
               </a>
             
@@ -896,57 +896,57 @@
 
   
   
-    <script type="text/javascript" src="/oops/lib/jquery/index.js?v=2.1.3"></script>
+    <script type="text/javascript" src="/Oops/lib/jquery/index.js?v=2.1.3"></script>
   
 
   
   
-    <script type="text/javascript" src="/oops/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+    <script type="text/javascript" src="/Oops/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
   
 
   
   
-    <script type="text/javascript" src="/oops/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+    <script type="text/javascript" src="/Oops/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
   
 
   
   
-    <script type="text/javascript" src="/oops/lib/velocity/velocity.min.js?v=1.2.1"></script>
+    <script type="text/javascript" src="/Oops/lib/velocity/velocity.min.js?v=1.2.1"></script>
   
 
   
   
-    <script type="text/javascript" src="/oops/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+    <script type="text/javascript" src="/Oops/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
   
 
   
   
-    <script type="text/javascript" src="/oops/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+    <script type="text/javascript" src="/Oops/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
   
-
-
-  
-
-
-  <script type="text/javascript" src="/oops/js/src/utils.js?v=5.1.4"></script>
-
-  <script type="text/javascript" src="/oops/js/src/motion.js?v=5.1.4"></script>
-
-
-
-  
-  
-
-  
-  <script type="text/javascript" src="/oops/js/src/scrollspy.js?v=5.1.4"></script>
-<script type="text/javascript" src="/oops/js/src/post-details.js?v=5.1.4"></script>
-
 
 
   
 
 
-  <script type="text/javascript" src="/oops/js/src/bootstrap.js?v=5.1.4"></script>
+  <script type="text/javascript" src="/Oops/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/Oops/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/Oops/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/Oops/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/Oops/js/src/bootstrap.js?v=5.1.4"></script>
 
 
 

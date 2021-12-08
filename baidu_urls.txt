@@ -1,1 +1,1 @@
-https://smartlink-tech.gitee.cn/oops/2020/07/23/Apache-Camel%20And%20SpringBoot/
+https://dzyzhong.github.io/Oops/2020/07/23/Apache-Camel%20And%20SpringBoot/

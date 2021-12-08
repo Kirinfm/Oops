@@ -40,7 +40,7 @@
 
   
   
-  <link href="/oops/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+  <link href="/Oops/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
 
 
 
@@ -48,21 +48,21 @@
 
 
 
-<link href="/oops/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+<link href="/Oops/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
 
-<link href="/oops/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
-
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/oops/images/apple-touch-icon-next.png?v=5.1.4">
+<link href="/Oops/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
 
 
-  <link rel="icon" type="image/png" sizes="32x32" href="/oops/images/favicon-32x32-next.png?v=5.1.4">
+  <link rel="apple-touch-icon" sizes="180x180" href="/Oops/images/apple-touch-icon-next.png?v=5.1.4">
 
 
-  <link rel="icon" type="image/png" sizes="16x16" href="/oops/images/favicon-16x16-next.png?v=5.1.4">
+  <link rel="icon" type="image/png" sizes="32x32" href="/Oops/images/favicon-32x32-next.png?v=5.1.4">
 
 
-  <link rel="mask-icon" href="/oops/images/logo.svg?v=5.1.4" color="#222">
+  <link rel="icon" type="image/png" sizes="16x16" href="/Oops/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/Oops/images/logo.svg?v=5.1.4" color="#222">
 
 
 
@@ -82,29 +82,29 @@
 <meta name="description" content="分布式事务 高可用是指系统无中断的执行功能的能力，代表了系统的可用程度，是进行系统设计时必须要遵守的准则之一。 而高可用的实现方案，无外乎就是冗余，就存储的高可用而言，问题不在于如何进行数据备份，而在于如何规避数据不一致对业务造成的影响。 对于分布式系统而言，要保证分布式系统中的数据一致性就需要一种方案，可以保证数据在子系统中始终保持一致，避免业务出现问题。 这种实现方案就叫做分布式事务，要么一起">
 <meta property="og:type" content="article">
 <meta property="og:title" content="终于有人把“分布式事务”说清楚了！">
-<meta property="og:url" content="https://smartlink-tech.gitee.cn/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E7%BB%88%E4%BA%8E%E6%9C%89%E4%BA%BA%E6%8A%8A%E2%80%9C%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1%E2%80%9D%E8%AF%B4%E6%B8%85%E6%A5%9A%E4%BA%86%EF%BC%81/index.html">
+<meta property="og:url" content="https://dzyzhong.github.io/Oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E7%BB%88%E4%BA%8E%E6%9C%89%E4%BA%BA%E6%8A%8A%E2%80%9C%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1%E2%80%9D%E8%AF%B4%E6%B8%85%E6%A5%9A%E4%BA%86%EF%BC%81/index.html">
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="分布式事务 高可用是指系统无中断的执行功能的能力，代表了系统的可用程度，是进行系统设计时必须要遵守的准则之一。 而高可用的实现方案，无外乎就是冗余，就存储的高可用而言，问题不在于如何进行数据备份，而在于如何规避数据不一致对业务造成的影响。 对于分布式系统而言，要保证分布式系统中的数据一致性就需要一种方案，可以保证数据在子系统中始终保持一致，避免业务出现问题。 这种实现方案就叫做分布式事务，要么一起">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/57AE9F3221DD4FAC4F47547739E7C654.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/86906F3020A33203DE5853AAF0CF777A.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/76A82EED257E3C2BDFF4941E512E77B0.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/11ADB323E4AAFA525EDBF4BAEA0EA0BF.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/F9F9BED531327BC0E73BB3F60C642188.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/3CC32A3716E540CC577D33824E79EBCF.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/06AA31B1647266715D691FAFA1837980.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/B1BC12BD6E4E04F34C20FB1BCEA338A7.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/0337E640B483B7C998AC1D37197C29ED.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/A12DD85ECA36E2010DBCBBE5731211E1.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/BFD8F52F5597FB3ECD586678E7E91A16.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/360CDC48F24FC26D068E4713E2AA709E.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/8C7854D2B1C2FFDF6AB5A2A687871236.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/366AFDDE2EC066A6B9E7B12B33320DD0.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/57AE9F3221DD4FAC4F47547739E7C654.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/86906F3020A33203DE5853AAF0CF777A.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/76A82EED257E3C2BDFF4941E512E77B0.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/11ADB323E4AAFA525EDBF4BAEA0EA0BF.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/F9F9BED531327BC0E73BB3F60C642188.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/3CC32A3716E540CC577D33824E79EBCF.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/06AA31B1647266715D691FAFA1837980.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/B1BC12BD6E4E04F34C20FB1BCEA338A7.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/0337E640B483B7C998AC1D37197C29ED.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/A12DD85ECA36E2010DBCBBE5731211E1.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/BFD8F52F5597FB3ECD586678E7E91A16.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/360CDC48F24FC26D068E4713E2AA709E.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/8C7854D2B1C2FFDF6AB5A2A687871236.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/366AFDDE2EC066A6B9E7B12B33320DD0.png">
 <meta property="article:published_time" content="2020-04-30T03:23:00.000Z">
 <meta property="article:modified_time" content="2020-04-30T08:17:04.067Z">
 <meta property="article:author" content="John Doe">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://smartlink-tech.gitee.cn/Oops/resources/57AE9F3221DD4FAC4F47547739E7C654.png">
+<meta name="twitter:image" content="https://dzyzhong.github.io/Oops/resources/57AE9F3221DD4FAC4F47547739E7C654.png">
 
 
 
@@ -134,7 +134,7 @@
 
 
 
-  <link rel="canonical" href="https://smartlink-tech.gitee.cn/oops/2020/04/30/推荐阅读/终于有人把“分布式事务”说清楚了！/"/>
+  <link rel="canonical" href="https://DZYzhong.github.io/Oops/2020/04/30/推荐阅读/终于有人把“分布式事务”说清楚了！/"/>
 
 
 
@@ -168,7 +168,7 @@
     
 
     <div class="custom-logo-site-title">
-      <a href="/oops/"  class="brand" rel="start">
+      <a href="/Oops/"  class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
         <span class="site-title">Hexo</span>
         <span class="logo-line-after"><i></i></span>
@@ -196,7 +196,7 @@
       
         
         <li class="menu-item menu-item-home">
-          <a href="/oops/" rel="section">
+          <a href="/Oops/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
@@ -206,7 +206,7 @@
       
         
         <li class="menu-item menu-item-archives">
-          <a href="/oops/archives/" rel="section">
+          <a href="/Oops/archives/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
@@ -216,7 +216,7 @@
       
         
         <li class="menu-item menu-item-tags">
-          <a href="/oops/tags/" rel="section">
+          <a href="/Oops/tags/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
             
@@ -226,7 +226,7 @@
       
         
         <li class="menu-item menu-item-categories">
-          <a href="/oops/categories/" rel="section">
+          <a href="/Oops/categories/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
             
@@ -267,12 +267,12 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://smartlink-tech.gitee.cn/oops/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E7%BB%88%E4%BA%8E%E6%9C%89%E4%BA%BA%E6%8A%8A%E2%80%9C%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1%E2%80%9D%E8%AF%B4%E6%B8%85%E6%A5%9A%E4%BA%86%EF%BC%81/">
+    <link itemprop="mainEntityOfPage" href="https://DZYzhong.github.io/Oops/Oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E7%BB%88%E4%BA%8E%E6%9C%89%E4%BA%BA%E6%8A%8A%E2%80%9C%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1%E2%80%9D%E8%AF%B4%E6%B8%85%E6%A5%9A%E4%BA%86%EF%BC%81/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="架构组">
       <meta itemprop="description" content="">
-      <meta itemprop="image" content="/oops/images/avatar.gif">
+      <meta itemprop="image" content="/Oops/images/avatar.gif">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -320,7 +320,7 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/oops/categories/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/" itemprop="url" rel="index">
+                  <a href="/Oops/categories/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/" itemprop="url" rel="index">
                     <span itemprop="name">推荐阅读</span>
                   </a>
                 </span>
@@ -606,7 +606,7 @@
     
       <div>
         <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
-    <img id="wechat_subscriber_qcode" src="/oops/uploads/wechat-qcode.jpg" alt="架构组 wechat" style="width: 200px; max-width: 100%;"/>
+    <img id="wechat_subscriber_qcode" src="/Oops/uploads/wechat-qcode.jpg" alt="架构组 wechat" style="width: 200px; max-width: 100%;"/>
     <div>欢迎您扫一扫上面的微信二维码，订阅我的公众号</div>
 </div>
 
@@ -628,7 +628,7 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E7%BB%8F%E9%AA%8C%EF%BC%9A%E4%B8%80%E4%B8%AA%E7%A7%92%E6%9D%80%E7%B3%BB%E7%BB%9F%E7%9A%84%E8%AE%BE%E8%AE%A1%E6%80%9D%E8%80%83%EF%BC%81/" rel="next" title="经验：一个秒杀系统的设计思考！">
+              <a href="/Oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E7%BB%8F%E9%AA%8C%EF%BC%9A%E4%B8%80%E4%B8%AA%E7%A7%92%E6%9D%80%E7%B3%BB%E7%BB%9F%E7%9A%84%E8%AE%BE%E8%AE%A1%E6%80%9D%E8%80%83%EF%BC%81/" rel="next" title="经验：一个秒杀系统的设计思考！">
                 <i class="fa fa-chevron-left"></i> 经验：一个秒杀系统的设计思考！
               </a>
             
@@ -638,7 +638,7 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E7%BB%86%E6%95%B0%20MySQL%20%E5%8D%83%E4%B8%87%E7%BA%A7%E5%A4%A7%E8%A1%A8%E7%9A%84%E4%BC%98%E5%8C%96%E7%AD%96%E7%95%A5%EF%BC%81/" rel="prev" title="细数 MySQL 千万级大表的优化策略！">
+              <a href="/Oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E7%BB%86%E6%95%B0%20MySQL%20%E5%8D%83%E4%B8%87%E7%BA%A7%E5%A4%A7%E8%A1%A8%E7%9A%84%E4%BC%98%E5%8C%96%E7%AD%96%E7%95%A5%EF%BC%81/" rel="prev" title="细数 MySQL 千万级大表的优化策略！">
                 细数 MySQL 千万级大表的优化策略！ <i class="fa fa-chevron-right"></i>
               </a>
             
@@ -771,57 +771,57 @@
 
   
   
-    <script type="text/javascript" src="/oops/lib/jquery/index.js?v=2.1.3"></script>
+    <script type="text/javascript" src="/Oops/lib/jquery/index.js?v=2.1.3"></script>
   
 
   
   
-    <script type="text/javascript" src="/oops/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+    <script type="text/javascript" src="/Oops/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
   
 
   
   
-    <script type="text/javascript" src="/oops/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+    <script type="text/javascript" src="/Oops/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
   
 
   
   
-    <script type="text/javascript" src="/oops/lib/velocity/velocity.min.js?v=1.2.1"></script>
+    <script type="text/javascript" src="/Oops/lib/velocity/velocity.min.js?v=1.2.1"></script>
   
 
   
   
-    <script type="text/javascript" src="/oops/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+    <script type="text/javascript" src="/Oops/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
   
 
   
   
-    <script type="text/javascript" src="/oops/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+    <script type="text/javascript" src="/Oops/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
   
-
-
-  
-
-
-  <script type="text/javascript" src="/oops/js/src/utils.js?v=5.1.4"></script>
-
-  <script type="text/javascript" src="/oops/js/src/motion.js?v=5.1.4"></script>
-
-
-
-  
-  
-
-  
-  <script type="text/javascript" src="/oops/js/src/scrollspy.js?v=5.1.4"></script>
-<script type="text/javascript" src="/oops/js/src/post-details.js?v=5.1.4"></script>
-
 
 
   
 
 
-  <script type="text/javascript" src="/oops/js/src/bootstrap.js?v=5.1.4"></script>
+  <script type="text/javascript" src="/Oops/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/Oops/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/Oops/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/Oops/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/Oops/js/src/bootstrap.js?v=5.1.4"></script>
 
 
 

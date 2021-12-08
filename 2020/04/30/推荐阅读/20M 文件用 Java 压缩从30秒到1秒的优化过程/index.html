@@ -40,7 +40,7 @@
 
   
   
-  <link href="/oops/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+  <link href="/Oops/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
 
 
 
@@ -48,21 +48,21 @@
 
 
 
-<link href="/oops/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+<link href="/Oops/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
 
-<link href="/oops/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
-
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/oops/images/apple-touch-icon-next.png?v=5.1.4">
+<link href="/Oops/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
 
 
-  <link rel="icon" type="image/png" sizes="32x32" href="/oops/images/favicon-32x32-next.png?v=5.1.4">
+  <link rel="apple-touch-icon" sizes="180x180" href="/Oops/images/apple-touch-icon-next.png?v=5.1.4">
 
 
-  <link rel="icon" type="image/png" sizes="16x16" href="/oops/images/favicon-16x16-next.png?v=5.1.4">
+  <link rel="icon" type="image/png" sizes="32x32" href="/Oops/images/favicon-32x32-next.png?v=5.1.4">
 
 
-  <link rel="mask-icon" href="/oops/images/logo.svg?v=5.1.4" color="#222">
+  <link rel="icon" type="image/png" sizes="16x16" href="/Oops/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/Oops/images/logo.svg?v=5.1.4" color="#222">
 
 
 
@@ -82,19 +82,19 @@
 <meta name="description" content="有一个需求需要将前端传过来的10张照片，然后后端进行处理以后压缩成一个压缩包通过网络流传输出去。之前没有接触过用Java压缩文件的，所以就直接上网找了一个例子改了一下用了，改完以后也能使用，但是随着前端所传图片的大小越来越大的时候，耗费的时间也在急剧增加，最后测了一下压缩20M的文件竟然需要30秒的时间。压缩文件的代码如下。 *  *  *  *  *  *  *  *  *  *  *  *">
 <meta property="og:type" content="article">
 <meta property="og:title" content="20M 文件用 Java 压缩从30秒到1秒的优化过程">
-<meta property="og:url" content="https://smartlink-tech.gitee.cn/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/20M%20%E6%96%87%E4%BB%B6%E7%94%A8%20Java%20%E5%8E%8B%E7%BC%A9%E4%BB%8E30%E7%A7%92%E5%88%B01%E7%A7%92%E7%9A%84%E4%BC%98%E5%8C%96%E8%BF%87%E7%A8%8B/index.html">
+<meta property="og:url" content="https://dzyzhong.github.io/Oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/20M%20%E6%96%87%E4%BB%B6%E7%94%A8%20Java%20%E5%8E%8B%E7%BC%A9%E4%BB%8E30%E7%A7%92%E5%88%B01%E7%A7%92%E7%9A%84%E4%BC%98%E5%8C%96%E8%BF%87%E7%A8%8B/index.html">
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="有一个需求需要将前端传过来的10张照片，然后后端进行处理以后压缩成一个压缩包通过网络流传输出去。之前没有接触过用Java压缩文件的，所以就直接上网找了一个例子改了一下用了，改完以后也能使用，但是随着前端所传图片的大小越来越大的时候，耗费的时间也在急剧增加，最后测了一下压缩20M的文件竟然需要30秒的时间。压缩文件的代码如下。 *  *  *  *  *  *  *  *  *  *  *  *">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/726E90A6D040FEC1313A5370B390361F.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/1AD18B7EB4AD74874689B626AA6EAEF1.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/2303E2720518DD2287CA4190328A6319.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/19C460E9AEF54BCD97DB678EA88A446E.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/726E90A6D040FEC1313A5370B390361F.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/1AD18B7EB4AD74874689B626AA6EAEF1.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/2303E2720518DD2287CA4190328A6319.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/19C460E9AEF54BCD97DB678EA88A446E.jpg">
 <meta property="article:published_time" content="2020-04-30T03:23:00.000Z">
 <meta property="article:modified_time" content="2020-04-30T08:17:04.061Z">
 <meta property="article:author" content="John Doe">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://smartlink-tech.gitee.cn/Oops/resources/726E90A6D040FEC1313A5370B390361F.jpg">
+<meta name="twitter:image" content="https://dzyzhong.github.io/Oops/resources/726E90A6D040FEC1313A5370B390361F.jpg">
 
 
 
@@ -124,7 +124,7 @@
 
 
 
-  <link rel="canonical" href="https://smartlink-tech.gitee.cn/oops/2020/04/30/推荐阅读/20M 文件用 Java 压缩从30秒到1秒的优化过程/"/>
+  <link rel="canonical" href="https://DZYzhong.github.io/Oops/2020/04/30/推荐阅读/20M 文件用 Java 压缩从30秒到1秒的优化过程/"/>
 
 
 
@@ -158,7 +158,7 @@
     
 
     <div class="custom-logo-site-title">
-      <a href="/oops/"  class="brand" rel="start">
+      <a href="/Oops/"  class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
         <span class="site-title">Hexo</span>
         <span class="logo-line-after"><i></i></span>
@@ -186,7 +186,7 @@
       
         
         <li class="menu-item menu-item-home">
-          <a href="/oops/" rel="section">
+          <a href="/Oops/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
@@ -196,7 +196,7 @@
       
         
         <li class="menu-item menu-item-archives">
-          <a href="/oops/archives/" rel="section">
+          <a href="/Oops/archives/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
@@ -206,7 +206,7 @@
       
         
         <li class="menu-item menu-item-tags">
-          <a href="/oops/tags/" rel="section">
+          <a href="/Oops/tags/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
             
@@ -216,7 +216,7 @@
       
         
         <li class="menu-item menu-item-categories">
-          <a href="/oops/categories/" rel="section">
+          <a href="/Oops/categories/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
             
@@ -257,12 +257,12 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://smartlink-tech.gitee.cn/oops/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/20M%20%E6%96%87%E4%BB%B6%E7%94%A8%20Java%20%E5%8E%8B%E7%BC%A9%E4%BB%8E30%E7%A7%92%E5%88%B01%E7%A7%92%E7%9A%84%E4%BC%98%E5%8C%96%E8%BF%87%E7%A8%8B/">
+    <link itemprop="mainEntityOfPage" href="https://DZYzhong.github.io/Oops/Oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/20M%20%E6%96%87%E4%BB%B6%E7%94%A8%20Java%20%E5%8E%8B%E7%BC%A9%E4%BB%8E30%E7%A7%92%E5%88%B01%E7%A7%92%E7%9A%84%E4%BC%98%E5%8C%96%E8%BF%87%E7%A8%8B/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="架构组">
       <meta itemprop="description" content="">
-      <meta itemprop="image" content="/oops/images/avatar.gif">
+      <meta itemprop="image" content="/Oops/images/avatar.gif">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -310,7 +310,7 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/oops/categories/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/" itemprop="url" rel="index">
+                  <a href="/Oops/categories/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/" itemprop="url" rel="index">
                     <span itemprop="name">推荐阅读</span>
                   </a>
                 </span>
@@ -539,7 +539,7 @@
     
       <div>
         <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
-    <img id="wechat_subscriber_qcode" src="/oops/uploads/wechat-qcode.jpg" alt="架构组 wechat" style="width: 200px; max-width: 100%;"/>
+    <img id="wechat_subscriber_qcode" src="/Oops/uploads/wechat-qcode.jpg" alt="架构组 wechat" style="width: 200px; max-width: 100%;"/>
     <div>欢迎您扫一扫上面的微信二维码，订阅我的公众号</div>
 </div>
 
@@ -561,7 +561,7 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/18%20%E4%B8%AA%20Java8%20%E6%97%A5%E6%9C%9F%E5%A4%84%E7%90%86%E7%9A%84%E5%AE%9E%E8%B7%B5%EF%BC%8C%E5%A4%AA%E6%9C%89%E7%94%A8%E4%BA%86%EF%BC%81/" rel="next" title="18 个 Java8 日期处理的实践，太有用了！">
+              <a href="/Oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/18%20%E4%B8%AA%20Java8%20%E6%97%A5%E6%9C%9F%E5%A4%84%E7%90%86%E7%9A%84%E5%AE%9E%E8%B7%B5%EF%BC%8C%E5%A4%AA%E6%9C%89%E7%94%A8%E4%BA%86%EF%BC%81/" rel="next" title="18 个 Java8 日期处理的实践，太有用了！">
                 <i class="fa fa-chevron-left"></i> 18 个 Java8 日期处理的实践，太有用了！
               </a>
             
@@ -571,7 +571,7 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/Elasticsearch%20%E5%9C%A8%E5%90%84%E5%A4%A7%E4%BA%92%E8%81%94%E7%BD%91%E5%85%AC%E5%8F%B8%E5%A4%A7%E9%87%8F%E7%9C%9F%E5%AE%9E%E7%9A%84%E5%BA%94%E7%94%A8%E6%A1%88%E4%BE%8B%EF%BC%81/" rel="prev" title="Elasticsearch 在各大互联网公司大量真实的应用案例！">
+              <a href="/Oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/Elasticsearch%20%E5%9C%A8%E5%90%84%E5%A4%A7%E4%BA%92%E8%81%94%E7%BD%91%E5%85%AC%E5%8F%B8%E5%A4%A7%E9%87%8F%E7%9C%9F%E5%AE%9E%E7%9A%84%E5%BA%94%E7%94%A8%E6%A1%88%E4%BE%8B%EF%BC%81/" rel="prev" title="Elasticsearch 在各大互联网公司大量真实的应用案例！">
                 Elasticsearch 在各大互联网公司大量真实的应用案例！ <i class="fa fa-chevron-right"></i>
               </a>
             
@@ -704,57 +704,57 @@
 
   
   
-    <script type="text/javascript" src="/oops/lib/jquery/index.js?v=2.1.3"></script>
+    <script type="text/javascript" src="/Oops/lib/jquery/index.js?v=2.1.3"></script>
   
 
   
   
-    <script type="text/javascript" src="/oops/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+    <script type="text/javascript" src="/Oops/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
   
 
   
   
-    <script type="text/javascript" src="/oops/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+    <script type="text/javascript" src="/Oops/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
   
 
   
   
-    <script type="text/javascript" src="/oops/lib/velocity/velocity.min.js?v=1.2.1"></script>
+    <script type="text/javascript" src="/Oops/lib/velocity/velocity.min.js?v=1.2.1"></script>
   
 
   
   
-    <script type="text/javascript" src="/oops/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+    <script type="text/javascript" src="/Oops/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
   
 
   
   
-    <script type="text/javascript" src="/oops/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+    <script type="text/javascript" src="/Oops/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
   
-
-
-  
-
-
-  <script type="text/javascript" src="/oops/js/src/utils.js?v=5.1.4"></script>
-
-  <script type="text/javascript" src="/oops/js/src/motion.js?v=5.1.4"></script>
-
-
-
-  
-  
-
-  
-  <script type="text/javascript" src="/oops/js/src/scrollspy.js?v=5.1.4"></script>
-<script type="text/javascript" src="/oops/js/src/post-details.js?v=5.1.4"></script>
-
 
 
   
 
 
-  <script type="text/javascript" src="/oops/js/src/bootstrap.js?v=5.1.4"></script>
+  <script type="text/javascript" src="/Oops/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/Oops/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/Oops/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/Oops/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/Oops/js/src/bootstrap.js?v=5.1.4"></script>
 
 
 

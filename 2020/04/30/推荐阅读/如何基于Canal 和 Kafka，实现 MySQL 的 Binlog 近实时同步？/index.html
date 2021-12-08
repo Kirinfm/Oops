@@ -40,7 +40,7 @@
 
   
   
-  <link href="/oops/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+  <link href="/Oops/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
 
 
 
@@ -48,21 +48,21 @@
 
 
 
-<link href="/oops/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+<link href="/Oops/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
 
-<link href="/oops/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
-
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/oops/images/apple-touch-icon-next.png?v=5.1.4">
+<link href="/Oops/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
 
 
-  <link rel="icon" type="image/png" sizes="32x32" href="/oops/images/favicon-32x32-next.png?v=5.1.4">
+  <link rel="apple-touch-icon" sizes="180x180" href="/Oops/images/apple-touch-icon-next.png?v=5.1.4">
 
 
-  <link rel="icon" type="image/png" sizes="16x16" href="/oops/images/favicon-16x16-next.png?v=5.1.4">
+  <link rel="icon" type="image/png" sizes="32x32" href="/Oops/images/favicon-32x32-next.png?v=5.1.4">
 
 
-  <link rel="mask-icon" href="/oops/images/logo.svg?v=5.1.4" color="#222">
+  <link rel="icon" type="image/png" sizes="16x16" href="/Oops/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/Oops/images/logo.svg?v=5.1.4" color="#222">
 
 
 
@@ -82,26 +82,26 @@
 <meta name="description" content="近段时间，业务系统架构基本完备，数据层面的建设比较薄弱，因为笔者目前工作重心在于搭建一个小型的数据平台。优先级比较高的一个任务就是需要近实时同步业务系统的数据（包括保存、更新或者软删除）到一个另一个数据源，持久化之前需要清洗数据并且构建一个相对合理的便于后续业务数据统计、标签系统构建等扩展功能的数据模型。基于当前团队的资源和能力，优先调研了Alibaba开源中间件Canal的使用。  这篇文章简单">
 <meta property="og:type" content="article">
 <meta property="og:title" content="如何基于Canal 和 Kafka，实现 MySQL 的 Binlog 近实时同步？">
-<meta property="og:url" content="https://smartlink-tech.gitee.cn/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E5%A6%82%E4%BD%95%E5%9F%BA%E4%BA%8ECanal%20%E5%92%8C%20Kafka%EF%BC%8C%E5%AE%9E%E7%8E%B0%20MySQL%20%E7%9A%84%20Binlog%20%E8%BF%91%E5%AE%9E%E6%97%B6%E5%90%8C%E6%AD%A5%EF%BC%9F/index.html">
+<meta property="og:url" content="https://dzyzhong.github.io/Oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E5%A6%82%E4%BD%95%E5%9F%BA%E4%BA%8ECanal%20%E5%92%8C%20Kafka%EF%BC%8C%E5%AE%9E%E7%8E%B0%20MySQL%20%E7%9A%84%20Binlog%20%E8%BF%91%E5%AE%9E%E6%97%B6%E5%90%8C%E6%AD%A5%EF%BC%9F/index.html">
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="近段时间，业务系统架构基本完备，数据层面的建设比较薄弱，因为笔者目前工作重心在于搭建一个小型的数据平台。优先级比较高的一个任务就是需要近实时同步业务系统的数据（包括保存、更新或者软删除）到一个另一个数据源，持久化之前需要清洗数据并且构建一个相对合理的便于后续业务数据统计、标签系统构建等扩展功能的数据模型。基于当前团队的资源和能力，优先调研了Alibaba开源中间件Canal的使用。  这篇文章简单">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/E818183B1B58588B9CEE8619D83AD25C.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/60B54DDCD46B6F73DB259AF86CD045D7.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/91BF2748561CBBCCDEAD530470F07FF3.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/CE3EE922EC35508ADAAB53C4A3888BD9.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/B7BFD50F0AB99E57A9A28D8C4F87C363.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/8F869AEDA90802F3C5BB0C2BDD55A29D.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/073DD7CE764BAA52C85F77D74809469B.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/3D4D4879A3C69499F1E5B9CD4C06DFCB.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/6AB389A9EBABC837945C5F22481EE1ED.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/62D83295E3E512BF316CABB246E3023F.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/CAEDD28CF8D9041494E028F3C1DB1869.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/E818183B1B58588B9CEE8619D83AD25C.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/60B54DDCD46B6F73DB259AF86CD045D7.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/91BF2748561CBBCCDEAD530470F07FF3.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/CE3EE922EC35508ADAAB53C4A3888BD9.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/B7BFD50F0AB99E57A9A28D8C4F87C363.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/8F869AEDA90802F3C5BB0C2BDD55A29D.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/073DD7CE764BAA52C85F77D74809469B.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/3D4D4879A3C69499F1E5B9CD4C06DFCB.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/6AB389A9EBABC837945C5F22481EE1ED.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/62D83295E3E512BF316CABB246E3023F.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/CAEDD28CF8D9041494E028F3C1DB1869.png">
 <meta property="article:published_time" content="2020-04-30T03:23:00.000Z">
 <meta property="article:modified_time" content="2020-04-30T08:17:04.065Z">
 <meta property="article:author" content="John Doe">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://smartlink-tech.gitee.cn/Oops/resources/E818183B1B58588B9CEE8619D83AD25C.png">
+<meta name="twitter:image" content="https://dzyzhong.github.io/Oops/resources/E818183B1B58588B9CEE8619D83AD25C.png">
 
 
 
@@ -131,7 +131,7 @@
 
 
 
-  <link rel="canonical" href="https://smartlink-tech.gitee.cn/oops/2020/04/30/推荐阅读/如何基于Canal 和 Kafka，实现 MySQL 的 Binlog 近实时同步？/"/>
+  <link rel="canonical" href="https://DZYzhong.github.io/Oops/2020/04/30/推荐阅读/如何基于Canal 和 Kafka，实现 MySQL 的 Binlog 近实时同步？/"/>
 
 
 
@@ -165,7 +165,7 @@
     
 
     <div class="custom-logo-site-title">
-      <a href="/oops/"  class="brand" rel="start">
+      <a href="/Oops/"  class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
         <span class="site-title">Hexo</span>
         <span class="logo-line-after"><i></i></span>
@@ -193,7 +193,7 @@
       
         
         <li class="menu-item menu-item-home">
-          <a href="/oops/" rel="section">
+          <a href="/Oops/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
@@ -203,7 +203,7 @@
       
         
         <li class="menu-item menu-item-archives">
-          <a href="/oops/archives/" rel="section">
+          <a href="/Oops/archives/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
@@ -213,7 +213,7 @@
       
         
         <li class="menu-item menu-item-tags">
-          <a href="/oops/tags/" rel="section">
+          <a href="/Oops/tags/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
             
@@ -223,7 +223,7 @@
       
         
         <li class="menu-item menu-item-categories">
-          <a href="/oops/categories/" rel="section">
+          <a href="/Oops/categories/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
             
@@ -264,12 +264,12 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://smartlink-tech.gitee.cn/oops/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E5%A6%82%E4%BD%95%E5%9F%BA%E4%BA%8ECanal%20%E5%92%8C%20Kafka%EF%BC%8C%E5%AE%9E%E7%8E%B0%20MySQL%20%E7%9A%84%20Binlog%20%E8%BF%91%E5%AE%9E%E6%97%B6%E5%90%8C%E6%AD%A5%EF%BC%9F/">
+    <link itemprop="mainEntityOfPage" href="https://DZYzhong.github.io/Oops/Oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E5%A6%82%E4%BD%95%E5%9F%BA%E4%BA%8ECanal%20%E5%92%8C%20Kafka%EF%BC%8C%E5%AE%9E%E7%8E%B0%20MySQL%20%E7%9A%84%20Binlog%20%E8%BF%91%E5%AE%9E%E6%97%B6%E5%90%8C%E6%AD%A5%EF%BC%9F/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="架构组">
       <meta itemprop="description" content="">
-      <meta itemprop="image" content="/oops/images/avatar.gif">
+      <meta itemprop="image" content="/Oops/images/avatar.gif">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -317,7 +317,7 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/oops/categories/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/" itemprop="url" rel="index">
+                  <a href="/Oops/categories/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/" itemprop="url" rel="index">
                     <span itemprop="name">推荐阅读</span>
                   </a>
                 </span>
@@ -558,7 +558,7 @@ DELETE FROM `order` WHERE order\_id = &apos;10086&apos;;</code></pre><p>这个�
     
       <div>
         <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
-    <img id="wechat_subscriber_qcode" src="/oops/uploads/wechat-qcode.jpg" alt="架构组 wechat" style="width: 200px; max-width: 100%;"/>
+    <img id="wechat_subscriber_qcode" src="/Oops/uploads/wechat-qcode.jpg" alt="架构组 wechat" style="width: 200px; max-width: 100%;"/>
     <div>欢迎您扫一扫上面的微信二维码，订阅我的公众号</div>
 </div>
 
@@ -580,7 +580,7 @@ DELETE FROM `order` WHERE order\_id = &apos;10086&apos;;</code></pre><p>这个�
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E5%A6%82%E4%BD%95%E5%BF%AB%E9%80%9F%E5%AE%9A%E4%BD%8D%20Redis%20%E7%83%AD%20key/" rel="next" title="如何快速定位 Redis 热 key">
+              <a href="/Oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E5%A6%82%E4%BD%95%E5%BF%AB%E9%80%9F%E5%AE%9A%E4%BD%8D%20Redis%20%E7%83%AD%20key/" rel="next" title="如何快速定位 Redis 热 key">
                 <i class="fa fa-chevron-left"></i> 如何快速定位 Redis 热 key
               </a>
             
@@ -590,7 +590,7 @@ DELETE FROM `order` WHERE order\_id = &apos;10086&apos;;</code></pre><p>这个�
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8%20SpringBoot%20+%20Redis%20%E4%BC%98%E9%9B%85%E7%9A%84%E8%A7%A3%E5%86%B3%E6%8E%A5%E5%8F%A3%E5%B9%82%E7%AD%89%E6%80%A7%E9%97%AE%E9%A2%98/" rel="prev" title="如何使用 SpringBoot + Redis 优雅的解决接口幂等性问题">
+              <a href="/Oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8%20SpringBoot%20+%20Redis%20%E4%BC%98%E9%9B%85%E7%9A%84%E8%A7%A3%E5%86%B3%E6%8E%A5%E5%8F%A3%E5%B9%82%E7%AD%89%E6%80%A7%E9%97%AE%E9%A2%98/" rel="prev" title="如何使用 SpringBoot + Redis 优雅的解决接口幂等性问题">
                 如何使用 SpringBoot + Redis 优雅的解决接口幂等性问题 <i class="fa fa-chevron-right"></i>
               </a>
             
@@ -723,57 +723,57 @@ DELETE FROM `order` WHERE order\_id = &apos;10086&apos;;</code></pre><p>这个�
 
   
   
-    <script type="text/javascript" src="/oops/lib/jquery/index.js?v=2.1.3"></script>
+    <script type="text/javascript" src="/Oops/lib/jquery/index.js?v=2.1.3"></script>
   
 
   
   
-    <script type="text/javascript" src="/oops/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+    <script type="text/javascript" src="/Oops/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
   
 
   
   
-    <script type="text/javascript" src="/oops/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+    <script type="text/javascript" src="/Oops/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
   
 
   
   
-    <script type="text/javascript" src="/oops/lib/velocity/velocity.min.js?v=1.2.1"></script>
+    <script type="text/javascript" src="/Oops/lib/velocity/velocity.min.js?v=1.2.1"></script>
   
 
   
   
-    <script type="text/javascript" src="/oops/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+    <script type="text/javascript" src="/Oops/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
   
 
   
   
-    <script type="text/javascript" src="/oops/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+    <script type="text/javascript" src="/Oops/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
   
-
-
-  
-
-
-  <script type="text/javascript" src="/oops/js/src/utils.js?v=5.1.4"></script>
-
-  <script type="text/javascript" src="/oops/js/src/motion.js?v=5.1.4"></script>
-
-
-
-  
-  
-
-  
-  <script type="text/javascript" src="/oops/js/src/scrollspy.js?v=5.1.4"></script>
-<script type="text/javascript" src="/oops/js/src/post-details.js?v=5.1.4"></script>
-
 
 
   
 
 
-  <script type="text/javascript" src="/oops/js/src/bootstrap.js?v=5.1.4"></script>
+  <script type="text/javascript" src="/Oops/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/Oops/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/Oops/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/Oops/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/Oops/js/src/bootstrap.js?v=5.1.4"></script>
 
 
 

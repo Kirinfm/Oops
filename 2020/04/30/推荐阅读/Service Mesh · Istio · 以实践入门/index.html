@@ -40,7 +40,7 @@
 
   
   
-  <link href="/oops/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+  <link href="/Oops/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
 
 
 
@@ -48,21 +48,21 @@
 
 
 
-<link href="/oops/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+<link href="/Oops/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
 
-<link href="/oops/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
-
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/oops/images/apple-touch-icon-next.png?v=5.1.4">
+<link href="/Oops/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
 
 
-  <link rel="icon" type="image/png" sizes="32x32" href="/oops/images/favicon-32x32-next.png?v=5.1.4">
+  <link rel="apple-touch-icon" sizes="180x180" href="/Oops/images/apple-touch-icon-next.png?v=5.1.4">
 
 
-  <link rel="icon" type="image/png" sizes="16x16" href="/oops/images/favicon-16x16-next.png?v=5.1.4">
+  <link rel="icon" type="image/png" sizes="32x32" href="/Oops/images/favicon-32x32-next.png?v=5.1.4">
 
 
-  <link rel="mask-icon" href="/oops/images/logo.svg?v=5.1.4" color="#222">
+  <link rel="icon" type="image/png" sizes="16x16" href="/Oops/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/Oops/images/logo.svg?v=5.1.4" color="#222">
 
 
 
@@ -82,43 +82,43 @@
 <meta name="description" content="前言  本文是笔者在学习官方文档、相关博客文章和实践过程中，整理了一些知识概念和自己的思考，主要在探索 lstio 的实际应用场景， Sidecar 原理， Service Mesh 为什么出现、要解决什么问题等，帮助我们思考微服务技术架构的升级和落地的可行性。  本文不是 Istio 的全部，但是希望入门仅此一篇就够。  概念  围绕云原生(CN)的概念，给人一种知识大爆炸的感觉，但假如你深入了">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Service Mesh · Istio · 以实践入门">
-<meta property="og:url" content="https://smartlink-tech.gitee.cn/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/Service%20Mesh%20%C2%B7%20Istio%20%C2%B7%20%E4%BB%A5%E5%AE%9E%E8%B7%B5%E5%85%A5%E9%97%A8/index.html">
+<meta property="og:url" content="https://dzyzhong.github.io/Oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/Service%20Mesh%20%C2%B7%20Istio%20%C2%B7%20%E4%BB%A5%E5%AE%9E%E8%B7%B5%E5%85%A5%E9%97%A8/index.html">
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="前言  本文是笔者在学习官方文档、相关博客文章和实践过程中，整理了一些知识概念和自己的思考，主要在探索 lstio 的实际应用场景， Sidecar 原理， Service Mesh 为什么出现、要解决什么问题等，帮助我们思考微服务技术架构的升级和落地的可行性。  本文不是 Istio 的全部，但是希望入门仅此一篇就够。  概念  围绕云原生(CN)的概念，给人一种知识大爆炸的感觉，但假如你深入了">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/A830DB126F59C944F8DB58775EB7B3E4.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/70EDAE63311124D2F4B27584BC50FBFB.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/D824FBD0C2ADB74DC1CC2094E4A72889.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/F0B056A873DBC3E972213802FB263B9E.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/02308540F382D5E37899CEA5F90AFA9D.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/96717BDED45FA756578D73AEA25F53ED.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/05964E46C939AA3E1E4EBEDD900A0EDA.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/7F4EF001853CC096095C3021639E5949.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/2D02E5342EBF8D45F0766AF8CA24FB9C.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/CAC319D0091E2216D2B8C59E04B6617C.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/2C3BDED2612F72F56820EEED53FB44F2.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/E6DBEBB1012DE2E5C1E85AA503F858B4.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/E88C269A63C24000FC21B81CEE431221.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/F2F6B8F4F4696785106A35C9016353D2.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/ADBC282B29BF27738CF2AA9EC4C4BDBB.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/8D514AA16B49CA291567B7286861C3A3.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/7C7AD90DA8838055DC70CE830020041A.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/18908DCD6EDE985566F90F587783CF22.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/580FB19154A3E7FB58A0C59017C1B14B.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/B638F1EB9DD0FB12C3581EC86378EABE.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/41E9BAA968A55D7946EEC27F959CE63B.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/71C4EB342683B2FD90112FA9D975A3EF.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/61F9F91C434DDE7EF218B7389A08DBF9.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/A48C2CC5A035E276367D4170B4C18159.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/566F1FFE97E99BD43F57341B0100A06C.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/FC9BF685026EED632BBE6321B14B223B.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/AEF3EF20186901030AD43E68A44F79A0.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/18D1C120A1B6E62E56374E383EF1BACE.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/A830DB126F59C944F8DB58775EB7B3E4.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/70EDAE63311124D2F4B27584BC50FBFB.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/D824FBD0C2ADB74DC1CC2094E4A72889.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/F0B056A873DBC3E972213802FB263B9E.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/02308540F382D5E37899CEA5F90AFA9D.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/96717BDED45FA756578D73AEA25F53ED.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/05964E46C939AA3E1E4EBEDD900A0EDA.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/7F4EF001853CC096095C3021639E5949.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/2D02E5342EBF8D45F0766AF8CA24FB9C.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/CAC319D0091E2216D2B8C59E04B6617C.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/2C3BDED2612F72F56820EEED53FB44F2.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/E6DBEBB1012DE2E5C1E85AA503F858B4.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/E88C269A63C24000FC21B81CEE431221.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/F2F6B8F4F4696785106A35C9016353D2.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/ADBC282B29BF27738CF2AA9EC4C4BDBB.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/8D514AA16B49CA291567B7286861C3A3.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/7C7AD90DA8838055DC70CE830020041A.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/18908DCD6EDE985566F90F587783CF22.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/580FB19154A3E7FB58A0C59017C1B14B.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/B638F1EB9DD0FB12C3581EC86378EABE.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/41E9BAA968A55D7946EEC27F959CE63B.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/71C4EB342683B2FD90112FA9D975A3EF.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/61F9F91C434DDE7EF218B7389A08DBF9.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/A48C2CC5A035E276367D4170B4C18159.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/566F1FFE97E99BD43F57341B0100A06C.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/FC9BF685026EED632BBE6321B14B223B.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/AEF3EF20186901030AD43E68A44F79A0.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/18D1C120A1B6E62E56374E383EF1BACE.jpg">
 <meta property="article:published_time" content="2020-04-30T03:23:00.000Z">
 <meta property="article:modified_time" content="2020-04-30T08:17:04.063Z">
 <meta property="article:author" content="John Doe">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://smartlink-tech.gitee.cn/Oops/resources/A830DB126F59C944F8DB58775EB7B3E4.jpg">
+<meta name="twitter:image" content="https://dzyzhong.github.io/Oops/resources/A830DB126F59C944F8DB58775EB7B3E4.jpg">
 
 
 
@@ -148,7 +148,7 @@
 
 
 
-  <link rel="canonical" href="https://smartlink-tech.gitee.cn/oops/2020/04/30/推荐阅读/Service Mesh · Istio · 以实践入门/"/>
+  <link rel="canonical" href="https://DZYzhong.github.io/Oops/2020/04/30/推荐阅读/Service Mesh · Istio · 以实践入门/"/>
 
 
 
@@ -182,7 +182,7 @@
     
 
     <div class="custom-logo-site-title">
-      <a href="/oops/"  class="brand" rel="start">
+      <a href="/Oops/"  class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
         <span class="site-title">Hexo</span>
         <span class="logo-line-after"><i></i></span>
@@ -210,7 +210,7 @@
       
         
         <li class="menu-item menu-item-home">
-          <a href="/oops/" rel="section">
+          <a href="/Oops/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
@@ -220,7 +220,7 @@
       
         
         <li class="menu-item menu-item-archives">
-          <a href="/oops/archives/" rel="section">
+          <a href="/Oops/archives/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
@@ -230,7 +230,7 @@
       
         
         <li class="menu-item menu-item-tags">
-          <a href="/oops/tags/" rel="section">
+          <a href="/Oops/tags/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
             
@@ -240,7 +240,7 @@
       
         
         <li class="menu-item menu-item-categories">
-          <a href="/oops/categories/" rel="section">
+          <a href="/Oops/categories/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
             
@@ -281,12 +281,12 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://smartlink-tech.gitee.cn/oops/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/Service%20Mesh%20%C2%B7%20Istio%20%C2%B7%20%E4%BB%A5%E5%AE%9E%E8%B7%B5%E5%85%A5%E9%97%A8/">
+    <link itemprop="mainEntityOfPage" href="https://DZYzhong.github.io/Oops/Oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/Service%20Mesh%20%C2%B7%20Istio%20%C2%B7%20%E4%BB%A5%E5%AE%9E%E8%B7%B5%E5%85%A5%E9%97%A8/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="架构组">
       <meta itemprop="description" content="">
-      <meta itemprop="image" content="/oops/images/avatar.gif">
+      <meta itemprop="image" content="/Oops/images/avatar.gif">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -334,7 +334,7 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/oops/categories/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/" itemprop="url" rel="index">
+                  <a href="/Oops/categories/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/" itemprop="url" rel="index">
                     <span itemprop="name">推荐阅读</span>
                   </a>
                 </span>
@@ -1412,7 +1412,7 @@
     
       <div>
         <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
-    <img id="wechat_subscriber_qcode" src="/oops/uploads/wechat-qcode.jpg" alt="架构组 wechat" style="width: 200px; max-width: 100%;"/>
+    <img id="wechat_subscriber_qcode" src="/Oops/uploads/wechat-qcode.jpg" alt="架构组 wechat" style="width: 200px; max-width: 100%;"/>
     <div>欢迎您扫一扫上面的微信二维码，订阅我的公众号</div>
 </div>
 
@@ -1434,7 +1434,7 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E4%B8%80%E5%8F%A3%E6%B0%94%E8%AF%B4%E5%87%BA%206%E7%A7%8D%20@Transactional%20%E6%B3%A8%E8%A7%A3%E5%A4%B1%E6%95%88%E5%9C%BA%E6%99%AF/" rel="next" title="一口气说出 6种 @Transactional 注解失效场景">
+              <a href="/Oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E4%B8%80%E5%8F%A3%E6%B0%94%E8%AF%B4%E5%87%BA%206%E7%A7%8D%20@Transactional%20%E6%B3%A8%E8%A7%A3%E5%A4%B1%E6%95%88%E5%9C%BA%E6%99%AF/" rel="next" title="一口气说出 6种 @Transactional 注解失效场景">
                 <i class="fa fa-chevron-left"></i> 一口气说出 6种 @Transactional 注解失效场景
               </a>
             
@@ -1444,7 +1444,7 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/SpringBoot%20%E6%B7%B1%E5%BA%A6%E8%B0%83%E4%BC%98%EF%BC%8C%E8%AE%A9%E4%BD%A0%E7%9A%84%E9%A1%B9%E7%9B%AE%E9%A3%9E%E8%B5%B7%E6%9D%A5%EF%BC%81/" rel="prev" title="SpringBoot 深度调优，让你的项目飞起来！">
+              <a href="/Oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/SpringBoot%20%E6%B7%B1%E5%BA%A6%E8%B0%83%E4%BC%98%EF%BC%8C%E8%AE%A9%E4%BD%A0%E7%9A%84%E9%A1%B9%E7%9B%AE%E9%A3%9E%E8%B5%B7%E6%9D%A5%EF%BC%81/" rel="prev" title="SpringBoot 深度调优，让你的项目飞起来！">
                 SpringBoot 深度调优，让你的项目飞起来！ <i class="fa fa-chevron-right"></i>
               </a>
             
@@ -1577,57 +1577,57 @@
 
   
   
-    <script type="text/javascript" src="/oops/lib/jquery/index.js?v=2.1.3"></script>
+    <script type="text/javascript" src="/Oops/lib/jquery/index.js?v=2.1.3"></script>
   
 
   
   
-    <script type="text/javascript" src="/oops/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+    <script type="text/javascript" src="/Oops/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
   
 
   
   
-    <script type="text/javascript" src="/oops/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+    <script type="text/javascript" src="/Oops/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
   
 
   
   
-    <script type="text/javascript" src="/oops/lib/velocity/velocity.min.js?v=1.2.1"></script>
+    <script type="text/javascript" src="/Oops/lib/velocity/velocity.min.js?v=1.2.1"></script>
   
 
   
   
-    <script type="text/javascript" src="/oops/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+    <script type="text/javascript" src="/Oops/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
   
 
   
   
-    <script type="text/javascript" src="/oops/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+    <script type="text/javascript" src="/Oops/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
   
-
-
-  
-
-
-  <script type="text/javascript" src="/oops/js/src/utils.js?v=5.1.4"></script>
-
-  <script type="text/javascript" src="/oops/js/src/motion.js?v=5.1.4"></script>
-
-
-
-  
-  
-
-  
-  <script type="text/javascript" src="/oops/js/src/scrollspy.js?v=5.1.4"></script>
-<script type="text/javascript" src="/oops/js/src/post-details.js?v=5.1.4"></script>
-
 
 
   
 
 
-  <script type="text/javascript" src="/oops/js/src/bootstrap.js?v=5.1.4"></script>
+  <script type="text/javascript" src="/Oops/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/Oops/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/Oops/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/Oops/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/Oops/js/src/bootstrap.js?v=5.1.4"></script>
 
 
 

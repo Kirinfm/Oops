@@ -40,7 +40,7 @@
 
   
   
-  <link href="/oops/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+  <link href="/Oops/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
 
 
 
@@ -48,21 +48,21 @@
 
 
 
-<link href="/oops/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+<link href="/Oops/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
 
-<link href="/oops/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
-
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/oops/images/apple-touch-icon-next.png?v=5.1.4">
+<link href="/Oops/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
 
 
-  <link rel="icon" type="image/png" sizes="32x32" href="/oops/images/favicon-32x32-next.png?v=5.1.4">
+  <link rel="apple-touch-icon" sizes="180x180" href="/Oops/images/apple-touch-icon-next.png?v=5.1.4">
 
 
-  <link rel="icon" type="image/png" sizes="16x16" href="/oops/images/favicon-16x16-next.png?v=5.1.4">
+  <link rel="icon" type="image/png" sizes="32x32" href="/Oops/images/favicon-32x32-next.png?v=5.1.4">
 
 
-  <link rel="mask-icon" href="/oops/images/logo.svg?v=5.1.4" color="#222">
+  <link rel="icon" type="image/png" sizes="16x16" href="/Oops/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/Oops/images/logo.svg?v=5.1.4" color="#222">
 
 
 
@@ -82,21 +82,21 @@
 <meta name="description" content="大家都知道Kafka是一个高吞吐的消息队列，是大数据场景首选的消息队列，这种场景就意味着发送单位时间消息的量会特别的大，那么Kafka如何做到能支持能同时发送大量消息的呢？ 答案是Kafka通过批量压缩和发送做到的。 我们知道消息肯定是放在内存中的，大数据场景消息的不断发送，内存中不断存在大量的消息，很容易引起GC 频繁的GC特别是full gc是会造成“stop the world”，也就是其他">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Kafka如何通过经典的内存缓冲池设计来优化JVM GC问题？">
-<meta property="og:url" content="https://smartlink-tech.gitee.cn/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/Kafka%E5%A6%82%E4%BD%95%E9%80%9A%E8%BF%87%E7%BB%8F%E5%85%B8%E7%9A%84%E5%86%85%E5%AD%98%E7%BC%93%E5%86%B2%E6%B1%A0%E8%AE%BE%E8%AE%A1%E6%9D%A5%E4%BC%98%E5%8C%96JVM%20GC%E9%97%AE%E9%A2%98%EF%BC%9F/index.html">
+<meta property="og:url" content="https://dzyzhong.github.io/Oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/Kafka%E5%A6%82%E4%BD%95%E9%80%9A%E8%BF%87%E7%BB%8F%E5%85%B8%E7%9A%84%E5%86%85%E5%AD%98%E7%BC%93%E5%86%B2%E6%B1%A0%E8%AE%BE%E8%AE%A1%E6%9D%A5%E4%BC%98%E5%8C%96JVM%20GC%E9%97%AE%E9%A2%98%EF%BC%9F/index.html">
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="大家都知道Kafka是一个高吞吐的消息队列，是大数据场景首选的消息队列，这种场景就意味着发送单位时间消息的量会特别的大，那么Kafka如何做到能支持能同时发送大量消息的呢？ 答案是Kafka通过批量压缩和发送做到的。 我们知道消息肯定是放在内存中的，大数据场景消息的不断发送，内存中不断存在大量的消息，很容易引起GC 频繁的GC特别是full gc是会造成“stop the world”，也就是其他">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/663B9064B726EEAED4DCA3BE44C4C606.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/C0D2C76B4715FBBDD155DB05AD5AED1E.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/317F2EF0A4D6093491F09BBD03F68D74.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/097CEE100F716DC0D266F8D993B2789C.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/55480197D771FCD00B838578909196F5.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/995F10DF482B0E29F0A3EF4A6DFE022C.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/663B9064B726EEAED4DCA3BE44C4C606.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/C0D2C76B4715FBBDD155DB05AD5AED1E.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/317F2EF0A4D6093491F09BBD03F68D74.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/097CEE100F716DC0D266F8D993B2789C.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/55480197D771FCD00B838578909196F5.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/995F10DF482B0E29F0A3EF4A6DFE022C.jpg">
 <meta property="article:published_time" content="2020-04-30T03:23:00.000Z">
 <meta property="article:modified_time" content="2020-04-30T08:17:04.062Z">
 <meta property="article:author" content="John Doe">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://smartlink-tech.gitee.cn/Oops/resources/663B9064B726EEAED4DCA3BE44C4C606.jpg">
+<meta name="twitter:image" content="https://dzyzhong.github.io/Oops/resources/663B9064B726EEAED4DCA3BE44C4C606.jpg">
 
 
 
@@ -126,7 +126,7 @@
 
 
 
-  <link rel="canonical" href="https://smartlink-tech.gitee.cn/oops/2020/04/30/推荐阅读/Kafka如何通过经典的内存缓冲池设计来优化JVM GC问题？/"/>
+  <link rel="canonical" href="https://DZYzhong.github.io/Oops/2020/04/30/推荐阅读/Kafka如何通过经典的内存缓冲池设计来优化JVM GC问题？/"/>
 
 
 
@@ -160,7 +160,7 @@
     
 
     <div class="custom-logo-site-title">
-      <a href="/oops/"  class="brand" rel="start">
+      <a href="/Oops/"  class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
         <span class="site-title">Hexo</span>
         <span class="logo-line-after"><i></i></span>
@@ -188,7 +188,7 @@
       
         
         <li class="menu-item menu-item-home">
-          <a href="/oops/" rel="section">
+          <a href="/Oops/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
@@ -198,7 +198,7 @@
       
         
         <li class="menu-item menu-item-archives">
-          <a href="/oops/archives/" rel="section">
+          <a href="/Oops/archives/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
@@ -208,7 +208,7 @@
       
         
         <li class="menu-item menu-item-tags">
-          <a href="/oops/tags/" rel="section">
+          <a href="/Oops/tags/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
             
@@ -218,7 +218,7 @@
       
         
         <li class="menu-item menu-item-categories">
-          <a href="/oops/categories/" rel="section">
+          <a href="/Oops/categories/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
             
@@ -259,12 +259,12 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://smartlink-tech.gitee.cn/oops/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/Kafka%E5%A6%82%E4%BD%95%E9%80%9A%E8%BF%87%E7%BB%8F%E5%85%B8%E7%9A%84%E5%86%85%E5%AD%98%E7%BC%93%E5%86%B2%E6%B1%A0%E8%AE%BE%E8%AE%A1%E6%9D%A5%E4%BC%98%E5%8C%96JVM%20GC%E9%97%AE%E9%A2%98%EF%BC%9F/">
+    <link itemprop="mainEntityOfPage" href="https://DZYzhong.github.io/Oops/Oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/Kafka%E5%A6%82%E4%BD%95%E9%80%9A%E8%BF%87%E7%BB%8F%E5%85%B8%E7%9A%84%E5%86%85%E5%AD%98%E7%BC%93%E5%86%B2%E6%B1%A0%E8%AE%BE%E8%AE%A1%E6%9D%A5%E4%BC%98%E5%8C%96JVM%20GC%E9%97%AE%E9%A2%98%EF%BC%9F/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="架构组">
       <meta itemprop="description" content="">
-      <meta itemprop="image" content="/oops/images/avatar.gif">
+      <meta itemprop="image" content="/Oops/images/avatar.gif">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -312,7 +312,7 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/oops/categories/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/" itemprop="url" rel="index">
+                  <a href="/Oops/categories/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/" itemprop="url" rel="index">
                     <span itemprop="name">推荐阅读</span>
                   </a>
                 </span>
@@ -424,7 +424,7 @@ ByteBuffer buffer = free.allocate(size, maxTimeToBlock);</code></pre><p>再来�
     
       <div>
         <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
-    <img id="wechat_subscriber_qcode" src="/oops/uploads/wechat-qcode.jpg" alt="架构组 wechat" style="width: 200px; max-width: 100%;"/>
+    <img id="wechat_subscriber_qcode" src="/Oops/uploads/wechat-qcode.jpg" alt="架构组 wechat" style="width: 200px; max-width: 100%;"/>
     <div>欢迎您扫一扫上面的微信二维码，订阅我的公众号</div>
 </div>
 
@@ -446,7 +446,7 @@ ByteBuffer buffer = free.allocate(size, maxTimeToBlock);</code></pre><p>再来�
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/MySQL%20%E6%AD%BB%E9%94%81%E7%B3%BB%E5%88%97-%20%E9%94%81%E7%9A%84%E7%B1%BB%E5%9E%8B%E4%BB%A5%E5%8F%8A%E5%8A%A0%E9%94%81%E5%8E%9F%E7%90%86%EF%BC%81/" rel="next" title="MySQL 死锁系列- 锁的类型以及加锁原理！">
+              <a href="/Oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/MySQL%20%E6%AD%BB%E9%94%81%E7%B3%BB%E5%88%97-%20%E9%94%81%E7%9A%84%E7%B1%BB%E5%9E%8B%E4%BB%A5%E5%8F%8A%E5%8A%A0%E9%94%81%E5%8E%9F%E7%90%86%EF%BC%81/" rel="next" title="MySQL 死锁系列- 锁的类型以及加锁原理！">
                 <i class="fa fa-chevron-left"></i> MySQL 死锁系列- 锁的类型以及加锁原理！
               </a>
             
@@ -456,7 +456,7 @@ ByteBuffer buffer = free.allocate(size, maxTimeToBlock);</code></pre><p>再来�
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/Java%E6%9C%8D%E5%8A%A1%EF%BC%8C%E5%86%85%E5%AD%98OOM%E9%97%AE%E9%A2%98%E5%A6%82%E4%BD%95%E5%BF%AB%E9%80%9F%E5%AE%9A%E4%BD%8D%EF%BC%9F/" rel="prev" title="Java服务，内存OOM问题如何快速定位？">
+              <a href="/Oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/Java%E6%9C%8D%E5%8A%A1%EF%BC%8C%E5%86%85%E5%AD%98OOM%E9%97%AE%E9%A2%98%E5%A6%82%E4%BD%95%E5%BF%AB%E9%80%9F%E5%AE%9A%E4%BD%8D%EF%BC%9F/" rel="prev" title="Java服务，内存OOM问题如何快速定位？">
                 Java服务，内存OOM问题如何快速定位？ <i class="fa fa-chevron-right"></i>
               </a>
             
@@ -589,57 +589,57 @@ ByteBuffer buffer = free.allocate(size, maxTimeToBlock);</code></pre><p>再来�
 
   
   
-    <script type="text/javascript" src="/oops/lib/jquery/index.js?v=2.1.3"></script>
+    <script type="text/javascript" src="/Oops/lib/jquery/index.js?v=2.1.3"></script>
   
 
   
   
-    <script type="text/javascript" src="/oops/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+    <script type="text/javascript" src="/Oops/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
   
 
   
   
-    <script type="text/javascript" src="/oops/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+    <script type="text/javascript" src="/Oops/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
   
 
   
   
-    <script type="text/javascript" src="/oops/lib/velocity/velocity.min.js?v=1.2.1"></script>
+    <script type="text/javascript" src="/Oops/lib/velocity/velocity.min.js?v=1.2.1"></script>
   
 
   
   
-    <script type="text/javascript" src="/oops/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+    <script type="text/javascript" src="/Oops/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
   
 
   
   
-    <script type="text/javascript" src="/oops/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+    <script type="text/javascript" src="/Oops/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
   
-
-
-  
-
-
-  <script type="text/javascript" src="/oops/js/src/utils.js?v=5.1.4"></script>
-
-  <script type="text/javascript" src="/oops/js/src/motion.js?v=5.1.4"></script>
-
-
-
-  
-  
-
-  
-  <script type="text/javascript" src="/oops/js/src/scrollspy.js?v=5.1.4"></script>
-<script type="text/javascript" src="/oops/js/src/post-details.js?v=5.1.4"></script>
-
 
 
   
 
 
-  <script type="text/javascript" src="/oops/js/src/bootstrap.js?v=5.1.4"></script>
+  <script type="text/javascript" src="/Oops/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/Oops/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/Oops/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/Oops/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/Oops/js/src/bootstrap.js?v=5.1.4"></script>
 
 
 

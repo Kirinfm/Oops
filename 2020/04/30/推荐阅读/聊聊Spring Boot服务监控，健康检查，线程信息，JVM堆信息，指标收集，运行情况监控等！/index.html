@@ -40,7 +40,7 @@
 
   
   
-  <link href="/oops/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+  <link href="/Oops/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
 
 
 
@@ -48,21 +48,21 @@
 
 
 
-<link href="/oops/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+<link href="/Oops/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
 
-<link href="/oops/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
-
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/oops/images/apple-touch-icon-next.png?v=5.1.4">
+<link href="/Oops/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
 
 
-  <link rel="icon" type="image/png" sizes="32x32" href="/oops/images/favicon-32x32-next.png?v=5.1.4">
+  <link rel="apple-touch-icon" sizes="180x180" href="/Oops/images/apple-touch-icon-next.png?v=5.1.4">
 
 
-  <link rel="icon" type="image/png" sizes="16x16" href="/oops/images/favicon-16x16-next.png?v=5.1.4">
+  <link rel="icon" type="image/png" sizes="32x32" href="/Oops/images/favicon-32x32-next.png?v=5.1.4">
 
 
-  <link rel="mask-icon" href="/oops/images/logo.svg?v=5.1.4" color="#222">
+  <link rel="icon" type="image/png" sizes="16x16" href="/Oops/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/Oops/images/logo.svg?v=5.1.4" color="#222">
 
 
 
@@ -82,28 +82,28 @@
 <meta name="description" content="前言去年我们项目做了微服务1.0的架构转型，但是服务监控这块却没有跟上。这不，最近我就被分配了要将我们核心的微服务应用全部监控起来的任务。我们的微服务应用都是SpringBoot 应用，因此就自然而然的想到了借助Spring Boot 的Actuator 模块。 本篇是我在完成这个工单之后，对Spring Boot Actuator模块 学习应用的总结。在本篇文章中，你可以学习到： 1、Sprin">
 <meta property="og:type" content="article">
 <meta property="og:title" content="聊聊Spring Boot服务监控，健康检查，线程信息，JVM堆信息，指标收集，运行情况监控等！">
-<meta property="og:url" content="https://smartlink-tech.gitee.cn/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E8%81%8A%E8%81%8ASpring%20Boot%E6%9C%8D%E5%8A%A1%E7%9B%91%E6%8E%A7%EF%BC%8C%E5%81%A5%E5%BA%B7%E6%A3%80%E6%9F%A5%EF%BC%8C%E7%BA%BF%E7%A8%8B%E4%BF%A1%E6%81%AF%EF%BC%8CJVM%E5%A0%86%E4%BF%A1%E6%81%AF%EF%BC%8C%E6%8C%87%E6%A0%87%E6%94%B6%E9%9B%86%EF%BC%8C%E8%BF%90%E8%A1%8C%E6%83%85%E5%86%B5%E7%9B%91%E6%8E%A7%E7%AD%89%EF%BC%81/index.html">
+<meta property="og:url" content="https://dzyzhong.github.io/Oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E8%81%8A%E8%81%8ASpring%20Boot%E6%9C%8D%E5%8A%A1%E7%9B%91%E6%8E%A7%EF%BC%8C%E5%81%A5%E5%BA%B7%E6%A3%80%E6%9F%A5%EF%BC%8C%E7%BA%BF%E7%A8%8B%E4%BF%A1%E6%81%AF%EF%BC%8CJVM%E5%A0%86%E4%BF%A1%E6%81%AF%EF%BC%8C%E6%8C%87%E6%A0%87%E6%94%B6%E9%9B%86%EF%BC%8C%E8%BF%90%E8%A1%8C%E6%83%85%E5%86%B5%E7%9B%91%E6%8E%A7%E7%AD%89%EF%BC%81/index.html">
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="前言去年我们项目做了微服务1.0的架构转型，但是服务监控这块却没有跟上。这不，最近我就被分配了要将我们核心的微服务应用全部监控起来的任务。我们的微服务应用都是SpringBoot 应用，因此就自然而然的想到了借助Spring Boot 的Actuator 模块。 本篇是我在完成这个工单之后，对Spring Boot Actuator模块 学习应用的总结。在本篇文章中，你可以学习到： 1、Sprin">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/DF0988B96B4034A84ACA3A9393618B7C.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/C4ED5B7EBA1973CF807D41B458344C61.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/B3AA4A776B06371CB7DA21DBFB80254C.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/E48199A3FB003D5112F7BA3B7FCB08E5.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/44C3DE496F547DE9826EB15C741BBFEB.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/F3D7CA788CBF80A98CC05564B2AD853E.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/8CEA56263C6D3C80A1D7E2E1DE1BC359.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/F3D7CA788CBF80A98CC05564B2AD853E.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/E9FAAC5FE71C6C049EF92B48162B4E30.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/84E2FDAC5988001144F145DD32E1C131.png">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/45A26F70209077D4D9E543AA2802AE1E.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/D40B4C581B441820DB2F4780C3510CBF.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/678A6E656EF68221B7EEAF8A937E238F.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/DF0988B96B4034A84ACA3A9393618B7C.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/C4ED5B7EBA1973CF807D41B458344C61.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/B3AA4A776B06371CB7DA21DBFB80254C.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/E48199A3FB003D5112F7BA3B7FCB08E5.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/44C3DE496F547DE9826EB15C741BBFEB.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/F3D7CA788CBF80A98CC05564B2AD853E.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/8CEA56263C6D3C80A1D7E2E1DE1BC359.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/F3D7CA788CBF80A98CC05564B2AD853E.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/E9FAAC5FE71C6C049EF92B48162B4E30.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/84E2FDAC5988001144F145DD32E1C131.png">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/45A26F70209077D4D9E543AA2802AE1E.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/D40B4C581B441820DB2F4780C3510CBF.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/678A6E656EF68221B7EEAF8A937E238F.jpg">
 <meta property="article:published_time" content="2020-04-30T03:23:00.000Z">
 <meta property="article:modified_time" content="2020-04-30T08:17:04.067Z">
 <meta property="article:author" content="John Doe">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://smartlink-tech.gitee.cn/Oops/resources/DF0988B96B4034A84ACA3A9393618B7C.jpg">
+<meta name="twitter:image" content="https://dzyzhong.github.io/Oops/resources/DF0988B96B4034A84ACA3A9393618B7C.jpg">
 
 
 
@@ -133,7 +133,7 @@
 
 
 
-  <link rel="canonical" href="https://smartlink-tech.gitee.cn/oops/2020/04/30/推荐阅读/聊聊Spring Boot服务监控，健康检查，线程信息，JVM堆信息，指标收集，运行情况监控等！/"/>
+  <link rel="canonical" href="https://DZYzhong.github.io/Oops/2020/04/30/推荐阅读/聊聊Spring Boot服务监控，健康检查，线程信息，JVM堆信息，指标收集，运行情况监控等！/"/>
 
 
 
@@ -167,7 +167,7 @@
     
 
     <div class="custom-logo-site-title">
-      <a href="/oops/"  class="brand" rel="start">
+      <a href="/Oops/"  class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
         <span class="site-title">Hexo</span>
         <span class="logo-line-after"><i></i></span>
@@ -195,7 +195,7 @@
       
         
         <li class="menu-item menu-item-home">
-          <a href="/oops/" rel="section">
+          <a href="/Oops/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
@@ -205,7 +205,7 @@
       
         
         <li class="menu-item menu-item-archives">
-          <a href="/oops/archives/" rel="section">
+          <a href="/Oops/archives/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
@@ -215,7 +215,7 @@
       
         
         <li class="menu-item menu-item-tags">
-          <a href="/oops/tags/" rel="section">
+          <a href="/Oops/tags/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
             
@@ -225,7 +225,7 @@
       
         
         <li class="menu-item menu-item-categories">
-          <a href="/oops/categories/" rel="section">
+          <a href="/Oops/categories/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
             
@@ -266,12 +266,12 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://smartlink-tech.gitee.cn/oops/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E8%81%8A%E8%81%8ASpring%20Boot%E6%9C%8D%E5%8A%A1%E7%9B%91%E6%8E%A7%EF%BC%8C%E5%81%A5%E5%BA%B7%E6%A3%80%E6%9F%A5%EF%BC%8C%E7%BA%BF%E7%A8%8B%E4%BF%A1%E6%81%AF%EF%BC%8CJVM%E5%A0%86%E4%BF%A1%E6%81%AF%EF%BC%8C%E6%8C%87%E6%A0%87%E6%94%B6%E9%9B%86%EF%BC%8C%E8%BF%90%E8%A1%8C%E6%83%85%E5%86%B5%E7%9B%91%E6%8E%A7%E7%AD%89%EF%BC%81/">
+    <link itemprop="mainEntityOfPage" href="https://DZYzhong.github.io/Oops/Oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E8%81%8A%E8%81%8ASpring%20Boot%E6%9C%8D%E5%8A%A1%E7%9B%91%E6%8E%A7%EF%BC%8C%E5%81%A5%E5%BA%B7%E6%A3%80%E6%9F%A5%EF%BC%8C%E7%BA%BF%E7%A8%8B%E4%BF%A1%E6%81%AF%EF%BC%8CJVM%E5%A0%86%E4%BF%A1%E6%81%AF%EF%BC%8C%E6%8C%87%E6%A0%87%E6%94%B6%E9%9B%86%EF%BC%8C%E8%BF%90%E8%A1%8C%E6%83%85%E5%86%B5%E7%9B%91%E6%8E%A7%E7%AD%89%EF%BC%81/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="架构组">
       <meta itemprop="description" content="">
-      <meta itemprop="image" content="/oops/images/avatar.gif">
+      <meta itemprop="image" content="/Oops/images/avatar.gif">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -319,7 +319,7 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/oops/categories/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/" itemprop="url" rel="index">
+                  <a href="/Oops/categories/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/" itemprop="url" rel="index">
                     <span itemprop="name">推荐阅读</span>
                   </a>
                 </span>
@@ -601,7 +601,7 @@
     
       <div>
         <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
-    <img id="wechat_subscriber_qcode" src="/oops/uploads/wechat-qcode.jpg" alt="架构组 wechat" style="width: 200px; max-width: 100%;"/>
+    <img id="wechat_subscriber_qcode" src="/Oops/uploads/wechat-qcode.jpg" alt="架构组 wechat" style="width: 200px; max-width: 100%;"/>
     <div>欢迎您扫一扫上面的微信二维码，订阅我的公众号</div>
 </div>
 
@@ -623,7 +623,7 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E8%AF%A6%E8%A7%A3%E8%BE%B9%E7%BC%98%E8%AE%A1%E7%AE%97%E5%92%8C%E8%BE%B9%E4%BA%91%E5%8D%8F%E5%90%8C%E6%8A%80%E6%9C%AF/" rel="next" title="详解边缘计算和边云协同技术">
+              <a href="/Oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E8%AF%A6%E8%A7%A3%E8%BE%B9%E7%BC%98%E8%AE%A1%E7%AE%97%E5%92%8C%E8%BE%B9%E4%BA%91%E5%8D%8F%E5%90%8C%E6%8A%80%E6%9C%AF/" rel="next" title="详解边缘计算和边云协同技术">
                 <i class="fa fa-chevron-left"></i> 详解边缘计算和边云协同技术
               </a>
             
@@ -633,7 +633,7 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E8%AE%BE%E8%AE%A1%E4%B8%80%E4%B8%AA%E7%99%BE%E4%B8%87%E7%BA%A7%E7%9A%84%E6%B6%88%E6%81%AF%E6%8E%A8%E9%80%81%E7%B3%BB%E7%BB%9F%EF%BC%81/" rel="prev" title="设计一个百万级的消息推送系统！">
+              <a href="/Oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E8%AE%BE%E8%AE%A1%E4%B8%80%E4%B8%AA%E7%99%BE%E4%B8%87%E7%BA%A7%E7%9A%84%E6%B6%88%E6%81%AF%E6%8E%A8%E9%80%81%E7%B3%BB%E7%BB%9F%EF%BC%81/" rel="prev" title="设计一个百万级的消息推送系统！">
                 设计一个百万级的消息推送系统！ <i class="fa fa-chevron-right"></i>
               </a>
             
@@ -766,57 +766,57 @@
 
   
   
-    <script type="text/javascript" src="/oops/lib/jquery/index.js?v=2.1.3"></script>
+    <script type="text/javascript" src="/Oops/lib/jquery/index.js?v=2.1.3"></script>
   
 
   
   
-    <script type="text/javascript" src="/oops/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+    <script type="text/javascript" src="/Oops/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
   
 
   
   
-    <script type="text/javascript" src="/oops/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+    <script type="text/javascript" src="/Oops/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
   
 
   
   
-    <script type="text/javascript" src="/oops/lib/velocity/velocity.min.js?v=1.2.1"></script>
+    <script type="text/javascript" src="/Oops/lib/velocity/velocity.min.js?v=1.2.1"></script>
   
 
   
   
-    <script type="text/javascript" src="/oops/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+    <script type="text/javascript" src="/Oops/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
   
 
   
   
-    <script type="text/javascript" src="/oops/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+    <script type="text/javascript" src="/Oops/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
   
-
-
-  
-
-
-  <script type="text/javascript" src="/oops/js/src/utils.js?v=5.1.4"></script>
-
-  <script type="text/javascript" src="/oops/js/src/motion.js?v=5.1.4"></script>
-
-
-
-  
-  
-
-  
-  <script type="text/javascript" src="/oops/js/src/scrollspy.js?v=5.1.4"></script>
-<script type="text/javascript" src="/oops/js/src/post-details.js?v=5.1.4"></script>
-
 
 
   
 
 
-  <script type="text/javascript" src="/oops/js/src/bootstrap.js?v=5.1.4"></script>
+  <script type="text/javascript" src="/Oops/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/Oops/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/Oops/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/Oops/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/Oops/js/src/bootstrap.js?v=5.1.4"></script>
 
 
 

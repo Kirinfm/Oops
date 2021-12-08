@@ -40,7 +40,7 @@
 
   
   
-  <link href="/oops/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+  <link href="/Oops/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
 
 
 
@@ -48,21 +48,21 @@
 
 
 
-<link href="/oops/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+<link href="/Oops/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
 
-<link href="/oops/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
-
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/oops/images/apple-touch-icon-next.png?v=5.1.4">
+<link href="/Oops/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
 
 
-  <link rel="icon" type="image/png" sizes="32x32" href="/oops/images/favicon-32x32-next.png?v=5.1.4">
+  <link rel="apple-touch-icon" sizes="180x180" href="/Oops/images/apple-touch-icon-next.png?v=5.1.4">
 
 
-  <link rel="icon" type="image/png" sizes="16x16" href="/oops/images/favicon-16x16-next.png?v=5.1.4">
+  <link rel="icon" type="image/png" sizes="32x32" href="/Oops/images/favicon-32x32-next.png?v=5.1.4">
 
 
-  <link rel="mask-icon" href="/oops/images/logo.svg?v=5.1.4" color="#222">
+  <link rel="icon" type="image/png" sizes="16x16" href="/Oops/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/Oops/images/logo.svg?v=5.1.4" color="#222">
 
 
 
@@ -82,28 +82,28 @@
 <meta name="description" content="内容分为以下四部分：  一、业务场景与现状分析 二、Flink-to-Hive 小时级场景 三、Flink-to-ClickHouse 秒级场景 四、未来发展与思考  一、业务场景与现状分析趣头条查询的页面分为离线查询页面和实时查询页面。趣头条今年所实现的改造是在实时查询中接入了 ClickHouse 计算引擎。根据不同的业务场景，实时数据报表中会展现数据指标曲线图和详细的数据指标表。目前数据指标">
 <meta property="og:type" content="article">
 <meta property="og:title" content="趣头条基于 Flink+ClickHouse 构建实时数据分析平台">
-<meta property="og:url" content="https://smartlink-tech.gitee.cn/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E8%B6%A3%E5%A4%B4%E6%9D%A1%E5%9F%BA%E4%BA%8E%20Flink+ClickHouse%20%E6%9E%84%E5%BB%BA%E5%AE%9E%E6%97%B6%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E5%B9%B3%E5%8F%B0/index.html">
+<meta property="og:url" content="https://dzyzhong.github.io/Oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E8%B6%A3%E5%A4%B4%E6%9D%A1%E5%9F%BA%E4%BA%8E%20Flink+ClickHouse%20%E6%9E%84%E5%BB%BA%E5%AE%9E%E6%97%B6%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E5%B9%B3%E5%8F%B0/index.html">
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="内容分为以下四部分：  一、业务场景与现状分析 二、Flink-to-Hive 小时级场景 三、Flink-to-ClickHouse 秒级场景 四、未来发展与思考  一、业务场景与现状分析趣头条查询的页面分为离线查询页面和实时查询页面。趣头条今年所实现的改造是在实时查询中接入了 ClickHouse 计算引擎。根据不同的业务场景，实时数据报表中会展现数据指标曲线图和详细的数据指标表。目前数据指标">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/9F2D6E0B27DDCE4111CF7F3FE4287E3E.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/7D832D7E312780238AA218C0A93C1E38.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/670E4B76E3DABEAC48B6FE2C44B88AA1.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/60FA5A89A97FE1DAD8570F82C20AF0C8.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/165FDCE3FCE66B2AA2D97F25EEBC81D1.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/15D8AAF2BB81D3B64109CB6283E69E9E.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/0F5509FDFD067760D47E88577A6561D0.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/56F0FC05C5F0F5DBAF80188B0E4218C6.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/930D59C5D706AB26B82AB9A1F569BDA4.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/1041740E90B9F19F79ACD0BF862021B0.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/0A083D072127AC5FBD3118E34285F3A4.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/DE05C443D4A4173625103B4B55BC5ADC.jpg">
-<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/6F3B2A4ED186521889B82D4B6E55B7CD.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/9F2D6E0B27DDCE4111CF7F3FE4287E3E.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/7D832D7E312780238AA218C0A93C1E38.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/670E4B76E3DABEAC48B6FE2C44B88AA1.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/60FA5A89A97FE1DAD8570F82C20AF0C8.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/165FDCE3FCE66B2AA2D97F25EEBC81D1.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/15D8AAF2BB81D3B64109CB6283E69E9E.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/0F5509FDFD067760D47E88577A6561D0.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/56F0FC05C5F0F5DBAF80188B0E4218C6.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/930D59C5D706AB26B82AB9A1F569BDA4.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/1041740E90B9F19F79ACD0BF862021B0.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/0A083D072127AC5FBD3118E34285F3A4.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/DE05C443D4A4173625103B4B55BC5ADC.jpg">
+<meta property="og:image" content="https://dzyzhong.github.io/Oops/resources/6F3B2A4ED186521889B82D4B6E55B7CD.jpg">
 <meta property="article:published_time" content="2020-04-30T03:23:00.000Z">
 <meta property="article:modified_time" content="2020-04-30T08:17:04.067Z">
 <meta property="article:author" content="John Doe">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://smartlink-tech.gitee.cn/Oops/resources/9F2D6E0B27DDCE4111CF7F3FE4287E3E.jpg">
+<meta name="twitter:image" content="https://dzyzhong.github.io/Oops/resources/9F2D6E0B27DDCE4111CF7F3FE4287E3E.jpg">
 
 
 
@@ -133,7 +133,7 @@
 
 
 
-  <link rel="canonical" href="https://smartlink-tech.gitee.cn/oops/2020/04/30/推荐阅读/趣头条基于 Flink+ClickHouse 构建实时数据分析平台/"/>
+  <link rel="canonical" href="https://DZYzhong.github.io/Oops/2020/04/30/推荐阅读/趣头条基于 Flink+ClickHouse 构建实时数据分析平台/"/>
 
 
 
@@ -167,7 +167,7 @@
     
 
     <div class="custom-logo-site-title">
-      <a href="/oops/"  class="brand" rel="start">
+      <a href="/Oops/"  class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
         <span class="site-title">Hexo</span>
         <span class="logo-line-after"><i></i></span>
@@ -195,7 +195,7 @@
       
         
         <li class="menu-item menu-item-home">
-          <a href="/oops/" rel="section">
+          <a href="/Oops/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
@@ -205,7 +205,7 @@
       
         
         <li class="menu-item menu-item-archives">
-          <a href="/oops/archives/" rel="section">
+          <a href="/Oops/archives/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
@@ -215,7 +215,7 @@
       
         
         <li class="menu-item menu-item-tags">
-          <a href="/oops/tags/" rel="section">
+          <a href="/Oops/tags/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
             
@@ -225,7 +225,7 @@
       
         
         <li class="menu-item menu-item-categories">
-          <a href="/oops/categories/" rel="section">
+          <a href="/Oops/categories/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
             
@@ -266,12 +266,12 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://smartlink-tech.gitee.cn/oops/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E8%B6%A3%E5%A4%B4%E6%9D%A1%E5%9F%BA%E4%BA%8E%20Flink+ClickHouse%20%E6%9E%84%E5%BB%BA%E5%AE%9E%E6%97%B6%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E5%B9%B3%E5%8F%B0/">
+    <link itemprop="mainEntityOfPage" href="https://DZYzhong.github.io/Oops/Oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E8%B6%A3%E5%A4%B4%E6%9D%A1%E5%9F%BA%E4%BA%8E%20Flink+ClickHouse%20%E6%9E%84%E5%BB%BA%E5%AE%9E%E6%97%B6%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E5%B9%B3%E5%8F%B0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="架构组">
       <meta itemprop="description" content="">
-      <meta itemprop="image" content="/oops/images/avatar.gif">
+      <meta itemprop="image" content="/Oops/images/avatar.gif">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -319,7 +319,7 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/oops/categories/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/" itemprop="url" rel="index">
+                  <a href="/Oops/categories/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/" itemprop="url" rel="index">
                     <span itemprop="name">推荐阅读</span>
                   </a>
                 </span>
@@ -458,7 +458,7 @@
     
       <div>
         <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
-    <img id="wechat_subscriber_qcode" src="/oops/uploads/wechat-qcode.jpg" alt="架构组 wechat" style="width: 200px; max-width: 100%;"/>
+    <img id="wechat_subscriber_qcode" src="/Oops/uploads/wechat-qcode.jpg" alt="架构组 wechat" style="width: 200px; max-width: 100%;"/>
     <div>欢迎您扫一扫上面的微信二维码，订阅我的公众号</div>
 </div>
 
@@ -480,7 +480,7 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E9%9D%A2%E8%AF%95%E5%AE%98%E6%8C%96%E5%9D%91%EF%BC%9A%E5%8D%95%E5%8F%B0%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%B9%B6%E5%8F%91%20TCP%20%E8%BF%9E%E6%8E%A5%E6%95%B0%E5%88%B0%E5%BA%95%E5%8F%AF%E4%BB%A5%E6%9C%89%E5%A4%9A%E5%B0%91%20%EF%BC%9F/" rel="next" title="面试官挖坑：单台服务器并发 TCP 连接数到底可以有多少 ？">
+              <a href="/Oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E9%9D%A2%E8%AF%95%E5%AE%98%E6%8C%96%E5%9D%91%EF%BC%9A%E5%8D%95%E5%8F%B0%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%B9%B6%E5%8F%91%20TCP%20%E8%BF%9E%E6%8E%A5%E6%95%B0%E5%88%B0%E5%BA%95%E5%8F%AF%E4%BB%A5%E6%9C%89%E5%A4%9A%E5%B0%91%20%EF%BC%9F/" rel="next" title="面试官挖坑：单台服务器并发 TCP 连接数到底可以有多少 ？">
                 <i class="fa fa-chevron-left"></i> 面试官挖坑：单台服务器并发 TCP 连接数到底可以有多少 ？
               </a>
             
@@ -490,7 +490,7 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E8%AF%A6%E8%A7%A3%E8%BE%B9%E7%BC%98%E8%AE%A1%E7%AE%97%E5%92%8C%E8%BE%B9%E4%BA%91%E5%8D%8F%E5%90%8C%E6%8A%80%E6%9C%AF/" rel="prev" title="详解边缘计算和边云协同技术">
+              <a href="/Oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E8%AF%A6%E8%A7%A3%E8%BE%B9%E7%BC%98%E8%AE%A1%E7%AE%97%E5%92%8C%E8%BE%B9%E4%BA%91%E5%8D%8F%E5%90%8C%E6%8A%80%E6%9C%AF/" rel="prev" title="详解边缘计算和边云协同技术">
                 详解边缘计算和边云协同技术 <i class="fa fa-chevron-right"></i>
               </a>
             
@@ -623,57 +623,57 @@
 
   
   
-    <script type="text/javascript" src="/oops/lib/jquery/index.js?v=2.1.3"></script>
+    <script type="text/javascript" src="/Oops/lib/jquery/index.js?v=2.1.3"></script>
   
 
   
   
-    <script type="text/javascript" src="/oops/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+    <script type="text/javascript" src="/Oops/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
   
 
   
   
-    <script type="text/javascript" src="/oops/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+    <script type="text/javascript" src="/Oops/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
   
 
   
   
-    <script type="text/javascript" src="/oops/lib/velocity/velocity.min.js?v=1.2.1"></script>
+    <script type="text/javascript" src="/Oops/lib/velocity/velocity.min.js?v=1.2.1"></script>
   
 
   
   
-    <script type="text/javascript" src="/oops/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+    <script type="text/javascript" src="/Oops/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
   
 
   
   
-    <script type="text/javascript" src="/oops/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+    <script type="text/javascript" src="/Oops/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
   
-
-
-  
-
-
-  <script type="text/javascript" src="/oops/js/src/utils.js?v=5.1.4"></script>
-
-  <script type="text/javascript" src="/oops/js/src/motion.js?v=5.1.4"></script>
-
-
-
-  
-  
-
-  
-  <script type="text/javascript" src="/oops/js/src/scrollspy.js?v=5.1.4"></script>
-<script type="text/javascript" src="/oops/js/src/post-details.js?v=5.1.4"></script>
-
 
 
   
 
 
-  <script type="text/javascript" src="/oops/js/src/bootstrap.js?v=5.1.4"></script>
+  <script type="text/javascript" src="/Oops/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/Oops/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/Oops/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/Oops/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/Oops/js/src/bootstrap.js?v=5.1.4"></script>
 
 
 
