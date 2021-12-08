@@ -13,7 +13,7 @@ timezone: ''
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-url: http://www.cnkirin.cn/Oops
+url: https://DZYzhong.github.io/Oops/
 root: /Oops
 permalink: :year/:month/:day/:title/
 permalink_defaults:
@@ -98,13 +98,17 @@ theme: next
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
-  - type: sftp
-    host: 106.15.72.109
-    user: root
-    pass: FMneedzaq777
-    remotePath: /opt/nginx/html/Oops
-    port: 22
-  - type: baidu_url_submitter
+#  - type: sftp
+#    host: 106.15.72.109
+#    user: root
+#    pass: FMneedzaq777
+#    remotePath: /opt/nginx/html/Oops
+#    port: 22
+#  - type: baidu_url_submitter
+  - type: git
+    repo:
+      github: https://github.com/Kirinfm/Oops.git
+    branch: gh_pages
 
 # 百度主动提交收录
 baidu_url_submit:
