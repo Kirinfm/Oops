@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/oops/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/oops/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/oops/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/oops/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/oops/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/oops/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/oops/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="有一个需求需要将前端传过来的10张照片，然后后端进行处理以后压缩成一个压缩包通过网络流传输出去。之前没有接触过用Java压缩文件的，所以就直接上网找了一个例子改了一下用了，改完以后也能使用，但是随着前端所传图片的大小越来越大的时候，耗费的时间也在急剧增加，最后测了一下压缩20M的文件竟然需要30秒的时间。压缩文件的代码如下。 *  *  *  *  *  *  *  *  *  *  *  *">
+<meta property="og:type" content="article">
+<meta property="og:title" content="20M 文件用 Java 压缩从30秒到1秒的优化过程">
+<meta property="og:url" content="https://smartlink-tech.gitee.cn/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/20M%20%E6%96%87%E4%BB%B6%E7%94%A8%20Java%20%E5%8E%8B%E7%BC%A9%E4%BB%8E30%E7%A7%92%E5%88%B01%E7%A7%92%E7%9A%84%E4%BC%98%E5%8C%96%E8%BF%87%E7%A8%8B/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="有一个需求需要将前端传过来的10张照片，然后后端进行处理以后压缩成一个压缩包通过网络流传输出去。之前没有接触过用Java压缩文件的，所以就直接上网找了一个例子改了一下用了，改完以后也能使用，但是随着前端所传图片的大小越来越大的时候，耗费的时间也在急剧增加，最后测了一下压缩20M的文件竟然需要30秒的时间。压缩文件的代码如下。 *  *  *  *  *  *  *  *  *  *  *  *">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/726E90A6D040FEC1313A5370B390361F.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/1AD18B7EB4AD74874689B626AA6EAEF1.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/2303E2720518DD2287CA4190328A6319.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/19C460E9AEF54BCD97DB678EA88A446E.jpg">
+<meta property="article:published_time" content="2020-04-30T03:23:00.000Z">
+<meta property="article:modified_time" content="2020-04-30T08:17:04.061Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://smartlink-tech.gitee.cn/Oops/resources/726E90A6D040FEC1313A5370B390361F.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/Oops',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"remove","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://smartlink-tech.gitee.cn/oops/2020/04/30/推荐阅读/20M 文件用 Java 压缩从30秒到1秒的优化过程/"/>
+
+
+
+
+
+  <title>20M 文件用 Java 压缩从30秒到1秒的优化过程 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/oops/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/oops/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/oops/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/oops/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/oops/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://smartlink-tech.gitee.cn/oops/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/20M%20%E6%96%87%E4%BB%B6%E7%94%A8%20Java%20%E5%8E%8B%E7%BC%A9%E4%BB%8E30%E7%A7%92%E5%88%B01%E7%A7%92%E7%9A%84%E4%BC%98%E5%8C%96%E8%BF%87%E7%A8%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="架构组">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/oops/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">20M 文件用 Java 压缩从30秒到1秒的优化过程</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-04-30T11:23:00+08:00">
+                2020-04-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/oops/categories/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/" itemprop="url" rel="index">
+                    <span itemprop="name">推荐阅读</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv">本文总阅读量
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>有一个需求需要将前端传过来的10张照片，然后后端进行处理以后压缩成一个压缩包通过网络流传输出去。之前没有接触过用Java压缩文件的，所以就直接上网找了一个例子改了一下用了，改完以后也能使用，但是随着前端所传图片的大小越来越大的时候，耗费的时间也在急剧增加，最后测了一下压缩20M的文件竟然需要30秒的时间。压缩文件的代码如下。</p>
+<pre><code>* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">public static void zipFileNoBuffer() &#123;File zipFile &#x3D; new File(ZIP\_FILE);try (ZipOutputStream zipOut &#x3D; new ZipOutputStream(new FileOutputStream(zipFile))) &#123;&#x2F;&#x2F;开始时间long beginTime &#x3D; System.currentTimeMillis();</span><br><span class="line">for (int i &#x3D; 0; i \&lt; 10; i++) &#123;try (InputStream input &#x3D; new FileInputStream(JPG\_FILE)) &#123; zipOut.putNextEntry(new ZipEntry(FILE\_NAME + i));int temp &#x3D; 0;while ((temp &#x3D; input.read()) !&#x3D; -1) &#123; zipOut.write(temp);&#125;&#125;&#125; printInfo(beginTime);&#125; catch (Exception e) &#123; e.printStackTrace();&#125;&#125;</span><br></pre></td></tr></table></figure></code></pre><p>这里找了一张2M大小的图片，并且循环十次进行测试。打印的结果如下，时间大概是30秒。</p>
+<pre><code>* 
+* 
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fileSize:20Mconsum time:29599</span><br></pre></td></tr></table></figure></code></pre><h2 id="第一次优化过程-从30秒到2秒"><a href="#第一次优化过程-从30秒到2秒" class="headerlink" title="第一次优化过程-从30秒到2秒"></a><strong>第一次优化过程-从30秒到2秒</strong></h2><p>进行优化首先想到的是利用<strong>缓冲区</strong> BufferInputStream。在 FileInputStream中 read()方法每次只读取一个字节。源码中也有说明。</p>
+<pre><code>* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;\*\*\* Reads a byte of data from this input stream. This method blocks \* if no input is yet available. \* \* @return the next byte of data, or \&lt;code\&gt;-1\&lt;&#x2F;code\&gt; if the end of the \* file is reached. \* @exception IOException if an I&#x2F;O error occurs. \*&#x2F;public native int read() throws IOException;</span><br></pre></td></tr></table></figure></code></pre><p>这是一个调用本地方法与原生操作系统进行交互，从磁盘中读取数据。每读取一个字节的数据就调用一次本地方法与操作系统交互，是非常耗时的。例如我们现在有30000个字节的数据，如果使用 FileInputStream那么就需要调用30000次的本地方法来获取这些数据，而如果使用缓冲区的话（这里假设初始的缓冲区大小足够放下30000字节的数据）那么只需要调用一次就行。因为缓冲区在第一次调用 read()方法的时候会直接从磁盘中将数据直接读取到内存中。随后再一个字节一个字节的慢慢返回。</p>
+<blockquote>
+<p>BufferedInputStream内部封装了一个byte数组用于存放数据，默认大小是8192</p>
+</blockquote>
+<p>优化过后的代码如下</p>
+<pre><code>* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">public static void zipFileBuffer() &#123;File zipFile &#x3D; new File(ZIP\_FILE);try (ZipOutputStream zipOut &#x3D; new ZipOutputStream(new FileOutputStream(zipFile));BufferedOutputStream bufferedOutputStream &#x3D; new BufferedOutputStream(zipOut)) &#123;&#x2F;&#x2F;开始时间long beginTime &#x3D; System.currentTimeMillis();for (int i &#x3D; 0; i \&lt; 10; i++) &#123;try (BufferedInputStream bufferedInputStream &#x3D; new BufferedInputStream(new FileInputStream(JPG\_FILE))) &#123; zipOut.putNextEntry(new ZipEntry(FILE\_NAME + i));int temp &#x3D; 0;while ((temp &#x3D; bufferedInputStream.read()) !&#x3D; -1) &#123; bufferedOutputStream.write(temp);&#125;&#125;&#125; printInfo(beginTime);&#125; catch (Exception e) &#123; e.printStackTrace();&#125;&#125;</span><br></pre></td></tr></table></figure></code></pre><p>输出</p>
+<pre><code>* 
+* 
+* 
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">------BufferfileSize:20Mconsum time:1808</span><br></pre></td></tr></table></figure></code></pre><p>可以看到相比较于第一次使用 FileInputStream效率已经提升了许多了</p>
+<h2 id="第二次优化过程-从2秒到1秒"><a href="#第二次优化过程-从2秒到1秒" class="headerlink" title="第二次优化过程-从2秒到1秒"></a><strong>第二次优化过程-从2秒到1秒</strong></h2><p>使用缓冲区 buffer的话已经是满足了我的需求了，但是秉着学以致用的想法，就想着用NIO中知识进行优化一下。</p>
+<h3 id="使用Channel"><a href="#使用Channel" class="headerlink" title="使用Channel"></a><strong>使用Channel</strong></h3><p>为什么要用 Channel呢？因为在NIO中新出了 Channel和 ByteBuffer。正是因为它们的结构更加符合操作系统执行I/O的方式，所以其速度相比较于传统IO而言速度有了显著的提高。Channel就像一个包含着煤矿的矿藏，而 ByteBuffer则是派送到矿藏的卡车。也就是说我们与数据的交互都是与 ByteBuffer的交互。</p>
+<p>在NIO中能够产生 FileChannel的有三个类。分别是 FileInputStream、 FileOutputStream、以及既能读又能写的 RandomAccessFile。</p>
+<p>源码如下</p>
+<pre><code>* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">public static void zipFileChannel() &#123;&#x2F;&#x2F;开始时间long beginTime &#x3D; System.currentTimeMillis();File zipFile &#x3D; new File(ZIP\_FILE);try (ZipOutputStream zipOut &#x3D; new ZipOutputStream(new FileOutputStream(zipFile));WritableByteChannel writableByteChannel &#x3D; Channels.newChannel(zipOut)) &#123;for (int i &#x3D; 0; i \&lt; 10; i++) &#123;try (FileChannel fileChannel &#x3D; new FileInputStream(JPG\_FILE).getChannel()) &#123; zipOut.putNextEntry(new ZipEntry(i + SUFFIX\_FILE)); fileChannel.transferTo(0, FILE\_SIZE, writableByteChannel);&#125;&#125; printInfo(beginTime);&#125; catch (Exception e) &#123; e.printStackTrace();&#125;&#125;</span><br></pre></td></tr></table></figure></code></pre><p>我们可以看到这里并没有使用 ByteBuffer进行数据传输，而是使用了 transferTo的方法。这个方法是将两个通道进行直连。</p>
+<pre><code>* 
+* 
+* 
+* 
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">This method is potentially much more efficient than a simple loop\* that reads from this channel and writes to the target channel. Many\* operating systems can transfer bytes directly from the filesystem cache\* to the target channel without actually copying them.</span><br></pre></td></tr></table></figure></code></pre><p>这是源码上的描述文字，大概意思就是使用 transferTo的效率比循环一个 Channel读取出来然后再循环写入另一个 Channel好。操作系统能够直接传输字节从文件系统缓存到目标的 Channel中，而不需要实际的 copy阶段。</p>
+<blockquote>
+<p>copy阶段就是从内核空间转到用户空间的一个过程</p>
+</blockquote>
+<p>可以看到速度相比较使用缓冲区已经有了一些的提高。</p>
+<pre><code>* 
+* 
+* 
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">------ChannelfileSize:20Mconsum time:1416</span><br></pre></td></tr></table></figure></code></pre><h3 id="内核空间和用户空间"><a href="#内核空间和用户空间" class="headerlink" title="内核空间和用户空间"></a><strong>内核空间和用户空间</strong></h3><p>那么为什么从内核空间转向用户空间这段过程会慢呢？首先我们需了解的是什么是内核空间和用户空间。在常用的操作系统中为了保护系统中的核心资源，于是将系统设计为四个区域，越往里权限越大，所以Ring0被称之为内核空间，用来访问一些关键性的资源。Ring3被称之为用户空间。</p>
+<p><img src="/Oops/resources/726E90A6D040FEC1313A5370B390361F.jpg" alt></p>
+<p>image</p>
+<blockquote>
+<p>用户态、内核态：线程处于内核空间称之为内核态，线程处于用户空间属于用户态</p>
+</blockquote>
+<p>那么我们如果此时应用程序（应用程序是都属于用户态的）需要访问核心资源怎么办呢？那就需要调用内核中所暴露出的接口用以调用，称之为<strong>系统调用</strong>。例如此时我们应用程序需要访问磁盘上的文件。此时应用程序就会调用系统调用的接口 open方法，然后内核去访问磁盘中的文件，将文件内容返回给应用程序。大致的流程如下</p>
+<p><img src="/Oops/resources/1AD18B7EB4AD74874689B626AA6EAEF1.jpg" alt></p>
+<p>image</p>
+<h3 id="直接缓冲区和非直接缓冲区"><a href="#直接缓冲区和非直接缓冲区" class="headerlink" title="直接缓冲区和非直接缓冲区"></a><strong>直接缓冲区和非直接缓冲区</strong></h3><p>既然我们要读取一个磁盘的文件，要废这么大的周折。有没有什么简单的方法能够使我们的应用直接操作磁盘文件，不需要内核进行中转呢？有，那就是建立直接缓冲区了。</p>
+<p><strong>非直接缓冲区：</strong>非直接缓冲区就是我们上面所讲内核态作为中间人，每次都需要内核在中间作为中转。</p>
+<pre><code>* 
+* 
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">![](https:&#x2F;&#x2F;upload-images.jianshu.io&#x2F;upload\_images&#x2F;13146186-6bbfb5446221cb2d.jpg?imageMogr2&#x2F;auto-orient&#x2F;strip|imageView2&#x2F;2&#x2F;w&#x2F;812&#x2F;format&#x2F;webp)image</span><br></pre></td></tr></table></figure></code></pre><p><strong>直接缓冲区：</strong>直接缓冲区不需要内核空间作为中转copy数据，而是直接在物理内存申请一块空间，这块空间映射到内核地址空间和用户地址空间，应用程序与磁盘之间数据的存取通过这块直接申请的物理内存进行交互。</p>
+<p><img src="/Oops/resources/2303E2720518DD2287CA4190328A6319.jpg" alt></p>
+<p>image</p>
+<p>既然直接缓冲区那么快，我们为什么不都用直接缓冲区呢？其实直接缓冲区有以下的缺点。直接缓冲区的缺点：</p>
+<p>1、不安全</p>
+<p>2、消耗更多，因为它不是在JVM中直接开辟空间。这部分内存的回收只能依赖于垃圾回收机制，垃圾什么时候回收不受我们控制。</p>
+<p>3、数据写入物理内存缓冲区中，程序就丧失了对这些数据的管理，即什么时候这些数据被最终写入从磁盘只能由操作系统来决定，应用程序无法再干涉。</p>
+<blockquote>
+<p>综上所述，所以我们使用 transferTo方法就是直接开辟了一段直接缓冲区。所以性能相比而言提高了许多</p>
+</blockquote>
+<h3 id="使用内存映射文件"><a href="#使用内存映射文件" class="headerlink" title="使用内存映射文件"></a><strong>使用内存映射文件</strong></h3><p>NIO中新出的另一个特性就是内存映射文件，内存映射文件为什么速度快呢？其实原因和上面所讲的一样，也是在内存中开辟了一段直接缓冲区。与数据直接作交互。源码如下</p>
+<pre><code>* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;Version 4 使用Map映射文件public static void zipFileMap() &#123;&#x2F;&#x2F;开始时间long beginTime &#x3D; System.currentTimeMillis();File zipFile &#x3D; new File(ZIP\_FILE);try (ZipOutputStream zipOut &#x3D; new ZipOutputStream(new FileOutputStream(zipFile));WritableByteChannel writableByteChannel &#x3D; Channels.newChannel(zipOut)) &#123;for (int i &#x3D; 0; i \&lt; 10; i++) &#123; zipOut.putNextEntry(new ZipEntry(i + SUFFIX\_FILE));&#x2F;&#x2F;内存中的映射文件MappedByteBuffer mappedByteBuffer &#x3D; new RandomAccessFile(JPG\_FILE\_PATH, &quot;r&quot;).getChannel().map(FileChannel.MapMode.READ\_ONLY, 0, FILE\_SIZE); writableByteChannel.write(mappedByteBuffer);&#125;  printInfo(beginTime);&#125; catch (Exception e) &#123;  e.printStackTrace();&#125;&#125;</span><br></pre></td></tr></table></figure></code></pre><p>打印如下</p>
+<pre><code>* 
+* 
+* 
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">---------MapfileSize:20Mconsum time:1305</span><br></pre></td></tr></table></figure></code></pre><p>可以看到速度和使用Channel的速度差不多的。</p>
+<h3 id="使用Pipe"><a href="#使用Pipe" class="headerlink" title="使用Pipe"></a><strong>使用Pipe</strong></h3><p>Java NIO 管道是2个线程之间的单向数据连接。Pipe有一个source通道和一个sink通道。其中source通道用于读取数据，sink通道用于写入数据。可以看到源码中的介绍，大概意思就是写入线程会阻塞至有读线程从通道中读取数据。如果没有数据可读，读线程也会阻塞至写线程写入数据。直至通道关闭。</p>
+<pre><code>* 
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Whether or not a thread writing bytes to a pipe will block until another thread reads those bytes</span><br></pre></td></tr></table></figure></code></pre><p><img src="/Oops/resources/19C460E9AEF54BCD97DB678EA88A446E.jpg" alt></p>
+<p>image</p>
+<p>我想要的效果是这样的。源码如下</p>
+<pre><code>* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;Version 5 使用Pippublic static void zipFilePip() &#123;long beginTime &#x3D; System.currentTimeMillis();try(WritableByteChannel out &#x3D; Channels.newChannel(new FileOutputStream(ZIP\_FILE))) &#123;Pipe pipe &#x3D; Pipe.open();&#x2F;&#x2F;异步任务CompletableFuture.runAsync(()-\&gt;runTask(pipe));</span><br><span class="line">&#x2F;&#x2F;获取读通道ReadableByteChannel readableByteChannel &#x3D; pipe.source();ByteBuffer buffer &#x3D; ByteBuffer.allocate(((int) FILE\_SIZE)\*10);while (readableByteChannel.read(buffer)\&gt;&#x3D; 0) &#123; buffer.flip();out.write(buffer); buffer.clear();&#125;&#125;catch (Exception e)&#123; e.printStackTrace();&#125; printInfo(beginTime);&#125;&#x2F;&#x2F;异步任务public static void runTask(Pipe pipe) &#123;try(ZipOutputStream zos &#x3D; new ZipOutputStream(Channels.newOutputStream(pipe.sink()));WritableByteChannel out &#x3D; Channels.newChannel(zos)) &#123;System.out.println(&quot;Begin&quot;);for (int i &#x3D; 0; i \&lt; 10; i++) &#123; zos.putNextEntry(new ZipEntry(i+SUFFIX\_FILE));FileChannel jpgChannel &#x3D; new FileInputStream(new File(JPG\_FILE\_PATH)).getChannel(); jpgChannel.transferTo(0, FILE\_SIZE, out); jpgChannel.close();&#125;&#125; catch (Exception e)&#123;  e.printStackTrace();&#125;&#125;</span><br></pre></td></tr></table></figure></code></pre><h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h2><p>生活处处都需要学习，有时候只是一个简单的优化，可以让你深入学习到各种不同的知识。所以在学习中要不求甚解，不仅要知道这个知识也要了解为什么要这么做。</p>
+<p>知行合一：学习完一个知识要尽量应用一遍。这样才能记得牢靠</p>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><p><a href="https://www.jianshu.com/p/f90866dcbffc" target="_blank" rel="noopener">https://www.jianshu.com/p/f90866dcbffc</a> <a href="https://juejin.im/post/5af942c6f265da0b7026050c" target="_blank" rel="noopener">https://juejin.im/post/5af942c6f265da0b7026050c</a><br>来源：<a href="https://www.jianshu.com/p/25b328753017" target="_blank" rel="noopener">https://www.jianshu.com/p/25b328753017</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/oops/uploads/wechat-qcode.jpg" alt="架构组 wechat" style="width: 200px; max-width: 100%;"/>
+    <div>欢迎您扫一扫上面的微信二维码，订阅我的公众号</div>
+</div>
+
+      </div>
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/18%20%E4%B8%AA%20Java8%20%E6%97%A5%E6%9C%9F%E5%A4%84%E7%90%86%E7%9A%84%E5%AE%9E%E8%B7%B5%EF%BC%8C%E5%A4%AA%E6%9C%89%E7%94%A8%E4%BA%86%EF%BC%81/" rel="next" title="18 个 Java8 日期处理的实践，太有用了！">
+                <i class="fa fa-chevron-left"></i> 18 个 Java8 日期处理的实践，太有用了！
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/Elasticsearch%20%E5%9C%A8%E5%90%84%E5%A4%A7%E4%BA%92%E8%81%94%E7%BD%91%E5%85%AC%E5%8F%B8%E5%A4%A7%E9%87%8F%E7%9C%9F%E5%AE%9E%E7%9A%84%E5%BA%94%E7%94%A8%E6%A1%88%E4%BE%8B%EF%BC%81/" rel="prev" title="Elasticsearch 在各大互联网公司大量真实的应用案例！">
+                Elasticsearch 在各大互联网公司大量真实的应用案例！ <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner" style="text-align:center;">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      本站访客数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人次
+    </span>
+  
+
+  
+    <span class="site-pv">
+      本站总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/oops/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/oops/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/oops/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/oops/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/oops/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/oops/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/oops/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/oops/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/oops/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/oops/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/oops/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/oops/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="一、数据库瓶颈不管是IO瓶颈，还是CPU瓶颈，最终都会导致数据库的活跃连接数增加，进而逼近甚至达到数据库可承载活跃连接数的阈值。 在业务Service来看就是，可用数据库连接少甚至无连接可用。接下来就可以想象了吧（并发量、吞吐量、崩溃）。 1、IO瓶颈第一种：磁盘读IO瓶颈，热点数据太多，数据库缓存放不下，每次查询时会产生大量的IO，降低查询速度 -&gt; 分库和垂直分表。 第二种：网络IO瓶颈">
+<meta property="og:type" content="article">
+<meta property="og:title" content="不用找了，大厂在用的分库分表方案，都在这里！">
+<meta property="og:url" content="https://smartlink-tech.gitee.cn/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E4%B8%8D%E7%94%A8%E6%89%BE%E4%BA%86%EF%BC%8C%E5%A4%A7%E5%8E%82%E5%9C%A8%E7%94%A8%E7%9A%84%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E6%96%B9%E6%A1%88%EF%BC%8C%E9%83%BD%E5%9C%A8%E8%BF%99%E9%87%8C%EF%BC%81/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="一、数据库瓶颈不管是IO瓶颈，还是CPU瓶颈，最终都会导致数据库的活跃连接数增加，进而逼近甚至达到数据库可承载活跃连接数的阈值。 在业务Service来看就是，可用数据库连接少甚至无连接可用。接下来就可以想象了吧（并发量、吞吐量、崩溃）。 1、IO瓶颈第一种：磁盘读IO瓶颈，热点数据太多，数据库缓存放不下，每次查询时会产生大量的IO，降低查询速度 -&gt; 分库和垂直分表。 第二种：网络IO瓶颈">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/D00E0483F086E6D424677842CECA2E92.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/909310D04E3C8651DE1A59FF051FD820.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/92C2B009ABDFD39FFFD4CC561DEB00A8.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/A4855D045E7DF1ED13B3EE431E9B9105.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/36E685C2D45F7F6F2A1965FDDFACF70D.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/E53CC375321231CFD24FA41185A765FC.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/0C155424A485CAA47DEDA3231B83588D.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/4EE1EE6C15D607946EF13E6AE41852FC.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/92A2F44C840D6F514EB910B87F215D57.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/D49AEF3A133300ADE0D969077518E46B.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/2AE26877A69AB98DC0B80EB5F5F87871.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/E6B60F86E673AD2DE0CD30FCBA54D32F.png">
+<meta property="article:published_time" content="2020-04-30T03:23:00.000Z">
+<meta property="article:modified_time" content="2020-04-30T08:17:04.064Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://smartlink-tech.gitee.cn/Oops/resources/D00E0483F086E6D424677842CECA2E92.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/Oops',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"remove","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://smartlink-tech.gitee.cn/oops/2020/04/30/推荐阅读/不用找了，大厂在用的分库分表方案，都在这里！/"/>
+
+
+
+
+
+  <title>不用找了，大厂在用的分库分表方案，都在这里！ | Hexo</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/oops/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/oops/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/oops/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/oops/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/oops/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://smartlink-tech.gitee.cn/oops/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E4%B8%8D%E7%94%A8%E6%89%BE%E4%BA%86%EF%BC%8C%E5%A4%A7%E5%8E%82%E5%9C%A8%E7%94%A8%E7%9A%84%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E6%96%B9%E6%A1%88%EF%BC%8C%E9%83%BD%E5%9C%A8%E8%BF%99%E9%87%8C%EF%BC%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="架构组">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/oops/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">不用找了，大厂在用的分库分表方案，都在这里！</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-04-30T11:23:00+08:00">
+                2020-04-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/oops/categories/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/" itemprop="url" rel="index">
+                    <span itemprop="name">推荐阅读</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv">本文总阅读量
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="一、数据库瓶颈"><a href="#一、数据库瓶颈" class="headerlink" title="一、数据库瓶颈"></a><strong>一、数据库瓶颈</strong></h3><p>不管是IO瓶颈，还是CPU瓶颈，最终都会导致数据库的活跃连接数增加，进而逼近甚至达到数据库可承载活跃连接数的阈值。</p>
+<p>在业务Service来看就是，可用数据库连接少甚至无连接可用。接下来就可以想象了吧（并发量、吞吐量、崩溃）。</p>
+<h4 id="1、IO瓶颈"><a href="#1、IO瓶颈" class="headerlink" title="1、IO瓶颈"></a><strong>1、IO瓶颈</strong></h4><p>第一种：磁盘读IO瓶颈，热点数据太多，数据库缓存放不下，每次查询时会产生大量的IO，降低查询速度 -&gt; <strong>分库和垂直分表</strong>。</p>
+<p>第二种：网络IO瓶颈，请求的数据太多，网络带宽不够 -&gt; <strong>分库</strong>。</p>
+<h4 id="2、CPU瓶颈"><a href="#2、CPU瓶颈" class="headerlink" title="2、CPU瓶颈"></a><strong>2、CPU瓶颈</strong></h4><p>第一种：SQL问题，如SQL中包含join，group by，order by，非索引字段条件查询等，增加CPU运算的操作 -&gt; SQL优化，建立合适的索引，在业务Service层进行业务计算。</p>
+<p>第二种：单表数据量太大，查询时扫描的行太多，SQL效率低，CPU率先出现瓶颈 -&gt; <strong>水平分表</strong>。</p>
+<h3 id="二、分库分表"><a href="#二、分库分表" class="headerlink" title="二、分库分表"></a><strong>二、分库分表</strong></h3><h4 id="1、水平分库"><a href="#1、水平分库" class="headerlink" title="1、水平分库"></a><strong>1、水平分库</strong></h4><p><img src="/Oops/resources/D00E0483F086E6D424677842CECA2E92.png" alt></p>
+<p>1.概念：以<strong>字段</strong>为依据，按照一定策略（hash、range等），将一个<strong>库</strong>中的数据拆分到多个<strong>库</strong>中。</p>
+<p>2.结果：</p>
+<ul>
+<li>每个<strong>库</strong>的<strong>结构</strong>都一样;</li>
+<li>每个<strong>库</strong>的<strong>数据</strong>都不一样，没有交集;</li>
+<li>所有<strong>库</strong>的<strong>并集</strong>是全量数据;</li>
+</ul>
+<p>3.场景：系统绝对并发量上来了，分表难以根本上解决问题，并且还没有明显的业务归属来垂直分库。</p>
+<p>4.分析：库多了，io和cpu的压力自然可以成倍缓解。</p>
+<h4 id="2、水平分表"><a href="#2、水平分表" class="headerlink" title="2、水平分表"></a><strong>2、水平分表</strong></h4><p><img src="/Oops/resources/909310D04E3C8651DE1A59FF051FD820.png" alt></p>
+<p>1.概念：以<strong>字段</strong>为依据，按照一定策略（hash、range等），将一个<strong>表</strong>中的数据拆分到多个<strong>表</strong>中。</p>
+<p>2.结果：</p>
+<ul>
+<li>每个<strong>表</strong>的<strong>结构</strong>都一样</li>
+<li>每个<strong>表</strong>的<strong>数据</strong>都不一样，没有交集;</li>
+<li>所有<strong>表</strong>的<strong>并集</strong>是全量数据;</li>
+</ul>
+<p>3.场景：系统绝对并发量并没有上来，只是单表的数据量太多，影响了SQL效率，加重了CPU负担，以至于成为瓶颈。</p>
+<p>4.分析：表的数据量少了，单次SQL执行效率高，自然减轻了CPU的负担。</p>
+<h4 id="3、垂直分库"><a href="#3、垂直分库" class="headerlink" title="3、垂直分库"></a><strong>3、垂直分库</strong></h4><p><img src="/Oops/resources/92C2B009ABDFD39FFFD4CC561DEB00A8.png" alt></p>
+<p>1.概念：以<strong>表</strong>为依据，按照业务归属不同，将不同的<strong>表</strong>拆分到不同的<strong>库</strong>中。</p>
+<p>2.结果：</p>
+<ul>
+<li>每个<strong>库</strong>的<strong>结构</strong>都不一样；</li>
+<li>每个<strong>库</strong>的<strong>数据</strong>也不一样，没有交集；</li>
+<li>所有<strong>库</strong>的<strong>并集</strong>是全量数据；</li>
+</ul>
+<p>3.场景：系统绝对并发量上来了，并且可以抽象出单独的业务模块。</p>
+<p>4.分析：到这一步，基本上就可以服务化了。</p>
+<p>例如，随着业务的发展一些公用的配置表、字典表等越来越多，这时可以将这些表拆到单独的库中，甚至可以服务化。</p>
+<p>再有，随着业务的发展孵化出了一套业务模式，这时可以将相关的表拆到单独的库中，甚至可以服务化。</p>
+<h4 id="4、垂直分表"><a href="#4、垂直分表" class="headerlink" title="4、垂直分表"></a><strong>4、垂直分表</strong></h4><p><img src="/Oops/resources/A4855D045E7DF1ED13B3EE431E9B9105.png" alt></p>
+<p>1.概念：以<strong>字段</strong>为依据，按照字段的活跃性，将<strong>表</strong>中字段拆到不同的<strong>表</strong>（主表和扩展表）中。</p>
+<p>2.结果：</p>
+<ul>
+<li>每个<strong>表</strong>的<strong>结构</strong>都不一样；</li>
+<li>每个<strong>表</strong>的<strong>数据</strong>也不一样，一般来说，每个表的<strong>字段</strong>至少有一列交集，一般是主键，用于关联数据；</li>
+<li>所有<strong>表</strong>的<strong>并集</strong>是全量数据；</li>
+</ul>
+<p>3.场景：系统绝对并发量并没有上来，表的记录并不多，但是字段多，并且热点数据和非热点数据在一起，单行数据所需的存储空间较大。以至于数据库缓存的数据行减少，查询时会去读磁盘数据产生大量的随机读IO，产生IO瓶颈。</p>
+<p>4.分析：可以用列表页和详情页来帮助理解。垂直分表的拆分原则是将热点数据（可能会冗余经常一起查询的数据）放在一起作为主表，非热点数据放在一起作为扩展表。</p>
+<p>这样更多的热点数据就能被缓存下来，进而减少了随机读IO。拆了之后，要想获得全部数据就需要关联两个表来取数据。</p>
+<p>但记住，千万别用join，因为join不仅会增加CPU负担并且会讲两个表耦合在一起（必须在一个数据库实例上）。</p>
+<p>关联数据，应该在业务Service层做文章，分别获取主表和扩展表数据然后用关联字段关联得到全部数据。</p>
+<h3 id="三、分库分表工具"><a href="#三、分库分表工具" class="headerlink" title="三、分库分表工具"></a><strong>三、分库分表工具</strong></h3><ol>
+<li>sharding-sphere：jar，前身是sharding-jdbc；</li>
+<li>TDDL：jar，Taobao Distribute Data Layer；</li>
+<li>Mycat：中间件。</li>
+</ol>
+<p>注：工具的利弊，请自行调研，官网和社区优先。</p>
+<h3 id="四、分库分表步骤"><a href="#四、分库分表步骤" class="headerlink" title="四、分库分表步骤"></a><strong>四、分库分表步骤</strong></h3><p>根据容量（当前容量和增长量）评估分库或分表个数 -&gt; 选key（均匀）-&gt; 分表规则（hash或range等）-&gt; 执行（一般双写）-&gt; 扩容问题（尽量减少数据的移动）。</p>
+<h3 id="五、分库分表问题"><a href="#五、分库分表问题" class="headerlink" title="五、分库分表问题"></a><strong>五、分库分表问题</strong></h3><h4 id="1、非partition-key的查询问题（水平分库分表，拆分策略为常用的hash法）"><a href="#1、非partition-key的查询问题（水平分库分表，拆分策略为常用的hash法）" class="headerlink" title="1、非partition key的查询问题（水平分库分表，拆分策略为常用的hash法）"></a>1、非partition key的查询问题（水平分库分表，拆分策略为常用的hash法）</h4><ol>
+<li><strong>端上</strong>除了partition key只有一个非partition key作为条件查询</li>
+</ol>
+<ul>
+<li><strong>映射法****</strong></li>
+</ul>
+<p><img src="/Oops/resources/36E685C2D45F7F6F2A1965FDDFACF70D.png" alt></p>
+<ul>
+<li><strong>基因法****</strong></li>
+</ul>
+<p><img src="/Oops/resources/E53CC375321231CFD24FA41185A765FC.png" alt></p>
+<p>注：写入时，基因法生成userid，如图。</p>
+<p>关于xbit基因，例如要分8张表，23=8，故x取3，即3bit基因。根据userid查询时可直接取模路由到对应的分库或分表。</p>
+<p>根据username查询时，先通过usernamecode生成函数生成username_code再对其取模路由到对应的分库或分表。</p>
+<p>id生成常用<strong>snowflake算法</strong>。</p>
+<ol>
+<li><strong>端上</strong>除了partition key不止一个非partition key作为条件查询</li>
+</ol>
+<ul>
+<li><strong>映射法****</strong></li>
+</ul>
+<p><img src="/Oops/resources/0C155424A485CAA47DEDA3231B83588D.png" alt></p>
+<ul>
+<li><strong>冗余法****</strong></li>
+</ul>
+<p><img src="/Oops/resources/4EE1EE6C15D607946EF13E6AE41852FC.jpg" alt></p>
+<p>注：按照orderid或buyerid查询时路由到dbobuyer库中，按照sellerid查询时路由到dbo_seller库中。感觉有点本末倒置！有其他好的办法吗？改变技术栈呢？</p>
+<ol>
+<li><strong>后台</strong>除了partition key还有各种非partition key组合条件查询</li>
+</ol>
+<ul>
+<li>NoSQL法</li>
+</ul>
+<p><img src="/Oops/resources/92A2F44C840D6F514EB910B87F215D57.png" alt></p>
+<ul>
+<li>冗余法</li>
+</ul>
+<p><img src="/Oops/resources/D49AEF3A133300ADE0D969077518E46B.png" alt></p>
+<h4 id="2、非partition-key跨库跨表分页查询问题（水平分库分表，拆分策略为常用的hash法）"><a href="#2、非partition-key跨库跨表分页查询问题（水平分库分表，拆分策略为常用的hash法）" class="headerlink" title="2、非partition key跨库跨表分页查询问题（水平分库分表，拆分策略为常用的hash法）"></a>2、非partition key跨库跨表分页查询问题（水平分库分表，拆分策略为常用的hash法）</h4><p>注：用<strong>NoSQL法</strong>解决（ES等）。</p>
+<h4 id="3、扩容问题（水平分库分表，拆分策略为常用的hash法）"><a href="#3、扩容问题（水平分库分表，拆分策略为常用的hash法）" class="headerlink" title="3、扩容问题（水平分库分表，拆分策略为常用的hash法）"></a>3、扩容问题（水平分库分表，拆分策略为常用的hash法）</h4><p>1.水平扩容库（升级从库法）</p>
+<p><img src="/Oops/resources/2AE26877A69AB98DC0B80EB5F5F87871.jpg" alt></p>
+<p>注：扩容是成倍的。</p>
+<p>2.水平扩容表（双写迁移法） </p>
+<p><img src="/Oops/resources/E6B60F86E673AD2DE0CD30FCBA54D32F.png" alt></p>
+<p>第一步：（同步双写）应用配置双写，部署；</p>
+<p>第二步：（同步双写）将老库中的老数据复制到新库中；</p>
+<p>第三步：（同步双写）以老库为准校对新库中的老数据；</p>
+<p>第四步：（同步双写）应用去掉双写，部署；</p>
+<p>注：<strong>双写</strong>是通用方案。</p>
+<h3 id="六、分库分表总结"><a href="#六、分库分表总结" class="headerlink" title="六、分库分表总结"></a><strong>六、分库分表总结</strong></h3><ol>
+<li>分库分表，首先得知道瓶颈在哪里，然后才能合理地拆分（分库还是分表？水平还是垂直？分几个？）。且不可为了分库分表而拆分。</li>
+<li>选key很重要，既要考虑到拆分均匀，也要考虑到非partition key的查询。</li>
+<li>只要能满足需求，拆分规则越简单越好。</li>
+</ol>
+<h3 id="七、分库分表示例"><a href="#七、分库分表示例" class="headerlink" title="七、分库分表示例"></a><strong>七、分库分表示例</strong></h3><p>示例GitHub址: </p>
+<p><a href="https://github.com/LiHaodong888/SpringBootLear" target="_blank" rel="noopener">https://github.com/LiHaodong888/SpringBootLear</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/oops/uploads/wechat-qcode.jpg" alt="架构组 wechat" style="width: 200px; max-width: 100%;"/>
+    <div>欢迎您扫一扫上面的微信二维码，订阅我的公众号</div>
+</div>
+
+      </div>
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E4%BD%BF%E7%94%A8Redis+AOP%E4%BC%98%E5%8C%96%E6%9D%83%E9%99%90%E7%AE%A1%E7%90%86%E5%8A%9F%E8%83%BD%EF%BC%8C%E8%BF%99%E6%B3%A2%E6%93%8D%E4%BD%9C%E8%B4%BC%E7%88%BD%EF%BC%81/" rel="next" title="使用Redis+AOP优化权限管理功能，这波操作贼爽！">
+                <i class="fa fa-chevron-left"></i> 使用Redis+AOP优化权限管理功能，这波操作贼爽！
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E4%B8%80%E6%96%87%E6%90%9E%E5%AE%9A%EF%BC%9ASpringBoot%20%E9%9B%86%E6%88%90%20Apollo%20%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83/" rel="prev" title="一文搞定：SpringBoot 集成 Apollo 配置中心">
+                一文搞定：SpringBoot 集成 Apollo 配置中心 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner" style="text-align:center;">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      本站访客数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人次
+    </span>
+  
+
+  
+    <span class="site-pv">
+      本站总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/oops/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/oops/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/oops/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/oops/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/oops/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

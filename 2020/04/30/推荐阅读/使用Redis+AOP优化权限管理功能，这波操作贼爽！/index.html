@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/oops/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/oops/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/oops/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/oops/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/oops/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/oops/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/oops/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="以下文章来源于macrozheng ，作者梦想de星空 [  macrozheng 专注Java技术分享，涵盖SpringBoot、SpringCloud、Docker、中间件等实用技术，作者Github开源项目mall（25K+Star）。 ](https:&#x2F;&#x2F;mp.weixin.qq.com&#x2F;s?__biz&#x3D;Mzg3MjA4MTExMw&#x3D;&#x3D;&amp;mid&#x3D;2247488188&amp;idx">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用Redis+AOP优化权限管理功能，这波操作贼爽！">
+<meta property="og:url" content="https://smartlink-tech.gitee.cn/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E4%BD%BF%E7%94%A8Redis+AOP%E4%BC%98%E5%8C%96%E6%9D%83%E9%99%90%E7%AE%A1%E7%90%86%E5%8A%9F%E8%83%BD%EF%BC%8C%E8%BF%99%E6%B3%A2%E6%93%8D%E4%BD%9C%E8%B4%BC%E7%88%BD%EF%BC%81/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="以下文章来源于macrozheng ，作者梦想de星空 [  macrozheng 专注Java技术分享，涵盖SpringBoot、SpringCloud、Docker、中间件等实用技术，作者Github开源项目mall（25K+Star）。 ](https:&#x2F;&#x2F;mp.weixin.qq.com&#x2F;s?__biz&#x3D;Mzg3MjA4MTExMw&#x3D;&#x3D;&amp;mid&#x3D;2247488188&amp;idx">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/58D737DEFB909C449329FECE25052F25.jpg">
+<meta property="article:published_time" content="2020-04-30T03:23:00.000Z">
+<meta property="article:modified_time" content="2020-04-30T08:17:04.064Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://smartlink-tech.gitee.cn/Oops/resources/58D737DEFB909C449329FECE25052F25.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/Oops',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"remove","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://smartlink-tech.gitee.cn/oops/2020/04/30/推荐阅读/使用Redis+AOP优化权限管理功能，这波操作贼爽！/"/>
+
+
+
+
+
+  <title>使用Redis+AOP优化权限管理功能，这波操作贼爽！ | Hexo</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/oops/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/oops/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/oops/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/oops/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/oops/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://smartlink-tech.gitee.cn/oops/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E4%BD%BF%E7%94%A8Redis+AOP%E4%BC%98%E5%8C%96%E6%9D%83%E9%99%90%E7%AE%A1%E7%90%86%E5%8A%9F%E8%83%BD%EF%BC%8C%E8%BF%99%E6%B3%A2%E6%93%8D%E4%BD%9C%E8%B4%BC%E7%88%BD%EF%BC%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="架构组">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/oops/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">使用Redis+AOP优化权限管理功能，这波操作贼爽！</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-04-30T11:23:00+08:00">
+                2020-04-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/oops/categories/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/" itemprop="url" rel="index">
+                    <span itemprop="name">推荐阅读</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv">本文总阅读量
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>以下文章来源于macrozheng ，作者梦想de星空</p>
+<p>[</p>
+<p><img src="/Oops/resources/58D737DEFB909C449329FECE25052F25.jpg" alt="macrozheng"></p>
+<p>macrozheng</p>
+<p>专注Java技术分享，涵盖SpringBoot、SpringCloud、Docker、中间件等实用技术，作者Github开源项目mall（25K+Star）。</p>
+<p>](<a href="https://mp.weixin.qq.com/s?__biz=Mzg3MjA4MTExMw==&amp;mid=2247488188&amp;idx=1&amp;sn=3a6e41c758de3892666916fd9d917be6&amp;chksm=cef5e10af982681c9f1671cb082ba9a1cdcb06fcc9e04a8d33183c5b53b1ceea7d285f2f15b6&amp;mpshare=1&amp;scene=24&amp;srcid=&amp;sharer_sharetime=1585285023770&amp;sharer_shareid=c160acc94f88b548659851d0c076f848&amp;key=2a099776fa69e9e7f4215e903d459976843c3ddcd9d97fdb88728487b5fbccd64bcab2bfe2bb2d38bd55b716839a3aaacfba312bcd80c5affa0658bdb321c0e0ad112a7b5b2089cdf522ad324443779a&amp;ascene=0&amp;uin=ODg4MTg5OTU%253D&amp;devicetype=iMac+MacBookPro11%252C4+OSX+OSX+10.15.4+build(19E287)&amp;version=12031d11&amp;nettype=WIFI&amp;lang=zh_CN&amp;fontScale=100&amp;exportkey=AbdnYiEkQuXU%252BI%252FLRCAR0%252Fw%253D&amp;pass_ticket=6Uk%252FL70PHmhyEfsGvmtGjHfRs1BoRzNc9lwVCUejU6U%253D#" target="_blank" rel="noopener">https://mp.weixin.qq.com/s?__biz=Mzg3MjA4MTExMw==&amp;mid=2247488188&amp;idx=1&amp;sn=3a6e41c758de3892666916fd9d917be6&amp;chksm=cef5e10af982681c9f1671cb082ba9a1cdcb06fcc9e04a8d33183c5b53b1ceea7d285f2f15b6&amp;mpshare=1&amp;scene=24&amp;srcid=&amp;sharer_sharetime=1585285023770&amp;sharer_shareid=c160acc94f88b548659851d0c076f848&amp;key=2a099776fa69e9e7f4215e903d459976843c3ddcd9d97fdb88728487b5fbccd64bcab2bfe2bb2d38bd55b716839a3aaacfba312bcd80c5affa0658bdb321c0e0ad112a7b5b2089cdf522ad324443779a&amp;ascene=0&amp;uin=ODg4MTg5OTU%253D&amp;devicetype=iMac+MacBookPro11%252C4+OSX+OSX+10.15.4+build(19E287)&amp;version=12031d11&amp;nettype=WIFI&amp;lang=zh_CN&amp;fontScale=100&amp;exportkey=AbdnYiEkQuXU%252BI%252FLRCAR0%252Fw%253D&amp;pass_ticket=6Uk%252FL70PHmhyEfsGvmtGjHfRs1BoRzNc9lwVCUejU6U%253D#</a>)</p>
+<blockquote>
+<p>之前有很多朋友提过，mall项目中的权限管理功能有性能问题，因为每次访问接口进行权限校验时都会从数据库中去查询用户信息。最近对这个问题进行了优化，通过Redis+AOP解决了该问题，下面来讲下我的优化思路。</p>
+</blockquote>
+<h2 id="问题重现"><a href="#问题重现" class="headerlink" title="问题重现"></a>问题重现</h2><p>在<code>mall-security</code>模块中有一个过滤器，当用户登录后，请求会带着token经过这个过滤器。这个过滤器会根据用户携带的token进行类似免密登录的操作，其中有一步会从数据库中查询登录用户信息，下面是这个过滤器类的代码。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;\*\*</span><br><span class="line"> \* JWT登录授权过滤器</span><br><span class="line"> \* Created by macro on 2018&#x2F;4&#x2F;26.</span><br><span class="line"> \*&#x2F;</span><br><span class="line">public class JwtAuthenticationTokenFilter extends OncePerRequestFilter &#123;</span><br><span class="line">    private static final Logger LOGGER &#x3D; LoggerFactory.getLogger(JwtAuthenticationTokenFilter.class);</span><br><span class="line">    @Autowired</span><br><span class="line">    private UserDetailsService userDetailsService;</span><br><span class="line">    @Autowired</span><br><span class="line">    private JwtTokenUtil jwtTokenUtil;</span><br><span class="line">    @Value(&quot;$&#123;jwt.tokenHeader&#125;&quot;)</span><br><span class="line">    private String tokenHeader;</span><br><span class="line">    @Value(&quot;$&#123;jwt.tokenHead&#125;&quot;)</span><br><span class="line">    private String tokenHead;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected void doFilterInternal(HttpServletRequest request,</span><br><span class="line"> HttpServletResponse response,</span><br><span class="line"> FilterChain chain) throws ServletException, IOException &#123;</span><br><span class="line">        String authHeader &#x3D; request.getHeader(this.tokenHeader);</span><br><span class="line">        if (authHeader !&#x3D; null &amp;&amp; authHeader.startsWith(this.tokenHead)) &#123;</span><br><span class="line">            String authToken &#x3D; authHeader.substring(this.tokenHead.length());&#x2F;&#x2F; The part after &quot;Bearer &quot;</span><br><span class="line">            String username &#x3D; jwtTokenUtil.getUserNameFromToken(authToken);</span><br><span class="line">            LOGGER.info(&quot;checking username:&#123;&#125;&quot;, username);</span><br><span class="line">            if (username !&#x3D; null &amp;&amp; SecurityContextHolder.getContext().getAuthentication() &#x3D;&#x3D; null) &#123;</span><br><span class="line">                &#x2F;&#x2F;此处会从数据库中获取登录用户信息</span><br><span class="line">                UserDetails userDetails &#x3D; this.userDetailsService.loadUserByUsername(username);</span><br><span class="line">                if (jwtTokenUtil.validateToken(authToken, userDetails)) &#123;</span><br><span class="line">                    UsernamePasswordAuthenticationToken authentication &#x3D; new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());</span><br><span class="line">                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));</span><br><span class="line">                    LOGGER.info(&quot;authenticated user:&#123;&#125;&quot;, username);</span><br><span class="line">                    SecurityContextHolder.getContext().setAuthentication(authentication);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        chain.doFilter(request, response);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当我们登录后访问任意接口时，控制台会打印如下日志，表示会从数据库中查询用户信息和用户所拥有的资源信息，每次访问接口都触发这种操作，有的时候会带来一定的性能问题。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">2020-03-17 16:13:02.623 DEBUG 4544 --- [nio-8081-exec-2] c.m.m.m.UmsAdminMapper.selectByExample   : &#x3D;&#x3D;&gt;  Preparing: select id, username, password, icon, email, nick_name, note, create_time, login_time, status from ums_admin WHERE ( username &#x3D; ? )</span><br><span class="line">2020-03-17 16:13:02.624 DEBUG 4544 --- [nio-8081-exec-2] c.m.m.m.UmsAdminMapper.selectByExample   : &#x3D;&#x3D;&gt; Parameters: admin(String)</span><br><span class="line">2020-03-17 16:13:02.625 DEBUG 4544 --- [nio-8081-exec-2] c.m.m.m.UmsAdminMapper.selectByExample   : &lt;&#x3D;&#x3D;      Total: 1</span><br><span class="line">2020-03-17 16:13:02.628 DEBUG 4544 --- [nio-8081-exec-2] c.macro.mall.dao.UmsRoleDao.getMenuList  : &#x3D;&#x3D;&gt;  Preparing: SELECT m.id id, m.parent_id parentId, m.create_time createTime, m.title title, m.level level, m.sort sort, m.name name, m.icon icon, m.hidden hidden FROM ums_admin_role_relation arr LEFT JOIN ums_role r ON arr.role_id &#x3D; r.id LEFT JOIN ums_role_menu_relation rmr ON r.id &#x3D; rmr.role_id LEFT JOIN ums_menu m ON rmr.menu_id &#x3D; m.id WHERE arr.admin_id &#x3D; ? AND m.id IS NOT NULL GROUP BY m.id</span><br><span class="line">2020-03-17 16:13:02.628 DEBUG 4544 --- [nio-8081-exec-2] c.macro.mall.dao.UmsRoleDao.getMenuList  : &#x3D;&#x3D;&gt; Parameters: 3(Long)</span><br><span class="line">2020-03-17 16:13:02.632 DEBUG 4544 --- [nio-8081-exec-2] c.macro.mall.dao.UmsRoleDao.getMenuList  : &lt;&#x3D;&#x3D;      Total: 24</span><br></pre></td></tr></table></figure>
+
+<h2 id="使用Redis作为缓存"><a href="#使用Redis作为缓存" class="headerlink" title="使用Redis作为缓存"></a>使用Redis作为缓存</h2><blockquote>
+<p>对于上面的问题，最容易想到的就是把用户信息和用户资源信息存入到Redis中去，避免频繁查询数据库，本文的优化思路大体也是这样的。</p>
+</blockquote>
+<p>首先我们需要对Spring Security中获取用户信息的方法添加缓存，我们先来看下这个方法执行了哪些数据库查询操作。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;\*\*</span><br><span class="line"> \* UmsAdminService实现类</span><br><span class="line"> \* Created by macro on 2018&#x2F;4&#x2F;26.</span><br><span class="line"> \*&#x2F;</span><br><span class="line">@Service</span><br><span class="line">public class UmsAdminServiceImpl implements UmsAdminService &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public UserDetails loadUserByUsername(String username)&#123;</span><br><span class="line">        &#x2F;&#x2F;获取用户信息</span><br><span class="line">        UmsAdmin admin &#x3D; getAdminByUsername(username);</span><br><span class="line">        if (admin !&#x3D; null) &#123;</span><br><span class="line">            &#x2F;&#x2F;获取用户的资源信息</span><br><span class="line">            List&lt;UmsResource&gt; resourceList &#x3D; getResourceList(admin.getId());</span><br><span class="line">            return new AdminUserDetails(admin,resourceList);</span><br><span class="line">        &#125;</span><br><span class="line">        throw new UsernameNotFoundException(&quot;用户名或密码错误&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>主要是获取用户信息和获取用户的资源信息这两个操作，接下来我们需要给这两个操作添加缓存操作，这里使用的是RedisTemple的操作方式。当查询数据时，先去Redis缓存中查询，如果Redis中没有，再从数据库查询，查询到以后在把数据存储到Redis中去。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;\*\*</span><br><span class="line"> \* UmsAdminService实现类</span><br><span class="line"> \* Created by macro on 2018&#x2F;4&#x2F;26.</span><br><span class="line"> \*&#x2F;</span><br><span class="line">@Service</span><br><span class="line">public class UmsAdminServiceImpl implements UmsAdminService &#123;</span><br><span class="line">    &#x2F;&#x2F;专门用来操作Redis缓存的业务类</span><br><span class="line">    @Autowired</span><br><span class="line">    private UmsAdminCacheService adminCacheService;</span><br><span class="line">    @Override</span><br><span class="line">    public UmsAdmin getAdminByUsername(String username) &#123;</span><br><span class="line">        &#x2F;&#x2F;先从缓存中获取数据</span><br><span class="line">        UmsAdmin admin &#x3D; adminCacheService.getAdmin(username);</span><br><span class="line">        if(admin!&#x3D;null) return  admin;</span><br><span class="line">        &#x2F;&#x2F;缓存中没有从数据库中获取</span><br><span class="line">        UmsAdminExample example &#x3D; new UmsAdminExample();</span><br><span class="line">        example.createCriteria().andUsernameEqualTo(username);</span><br><span class="line">        List&lt;UmsAdmin&gt; adminList &#x3D; adminMapper.selectByExample(example);</span><br><span class="line">        if (adminList !&#x3D; null &amp;&amp; adminList.size() &gt; 0) &#123;</span><br><span class="line">            admin &#x3D; adminList.get(0);</span><br><span class="line">            &#x2F;&#x2F;将数据库中的数据存入缓存中</span><br><span class="line">            adminCacheService.setAdmin(admin);</span><br><span class="line">            return admin;</span><br><span class="line">        &#125;</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line">    @Override</span><br><span class="line">    public List\&lt;UmsResource\&gt; getResourceList(Long adminId) &#123;</span><br><span class="line">        &#x2F;&#x2F;先从缓存中获取数据</span><br><span class="line">        List&lt;UmsResource&gt; resourceList &#x3D; adminCacheService.getResourceList(adminId);</span><br><span class="line">        if(CollUtil.isNotEmpty(resourceList))&#123;</span><br><span class="line">            return  resourceList;</span><br><span class="line">        &#125;</span><br><span class="line">        &#x2F;&#x2F;缓存中没有从数据库中获取</span><br><span class="line">        resourceList &#x3D; adminRoleRelationDao.getResourceList(adminId);</span><br><span class="line">        if(CollUtil.isNotEmpty(resourceList))&#123;</span><br><span class="line">            &#x2F;&#x2F;将数据库中的数据存入缓存中</span><br><span class="line">            adminCacheService.setResourceList(adminId,resourceList);</span><br><span class="line">        &#125;</span><br><span class="line">        return resourceList;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面这种查询操作其实用Spring Cache来操作更简单，直接使用@Cacheable即可实现，为什么还要使用RedisTemplate来直接操作呢？因为作为缓存，我们所希望的是，如果Redis宕机了，我们的业务逻辑不会有影响，而使用Spring Cache来实现的话，当Redis宕机以后，用户的登录等种种操作就会都无法进行了。</p>
+<p>由于我们把用户信息和用户资源信息都缓存到了Redis中，所以当我们修改用户信息和资源信息时都需要删除缓存中的数据，具体什么时候删除，查看缓存业务类的注释即可。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;\*\*</span><br><span class="line"> \* 后台用户缓存操作类</span><br><span class="line"> \* Created by macro on 2020&#x2F;3&#x2F;13.</span><br><span class="line"> \*&#x2F;</span><br><span class="line">public interface UmsAdminCacheService &#123;</span><br><span class="line">    &#x2F;\*\*</span><br><span class="line"> \* 删除后台用户缓存</span><br><span class="line"> \*&#x2F;</span><br><span class="line">    void delAdmin(Long adminId);</span><br><span class="line"></span><br><span class="line">    &#x2F;\*\*</span><br><span class="line"> \* 删除后台用户资源列表缓存</span><br><span class="line"> \*&#x2F;</span><br><span class="line">    void delResourceList(Long adminId);</span><br><span class="line"></span><br><span class="line">    &#x2F;\*\*</span><br><span class="line"> \* 当角色相关资源信息改变时删除相关后台用户缓存</span><br><span class="line"> \*&#x2F;</span><br><span class="line">    void delResourceListByRole(Long roleId);</span><br><span class="line"></span><br><span class="line">    &#x2F;\*\*</span><br><span class="line"> \* 当角色相关资源信息改变时删除相关后台用户缓存</span><br><span class="line"> \*&#x2F;</span><br><span class="line">    void delResourceListByRoleIds(List\&lt;Long\&gt; roleIds);</span><br><span class="line"></span><br><span class="line">    &#x2F;\*\*</span><br><span class="line"> \* 当资源信息改变时，删除资源项目后台用户缓存</span><br><span class="line"> \*&#x2F;</span><br><span class="line">    void delResourceListByResource(Long resourceId);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>经过上面的一系列优化之后，性能问题解决了。但是引入新的技术之后，新的问题也会产生，比如说当Redis宕机以后，我们直接就无法登录了，下面我们使用AOP来解决这个问题。</p>
+<h2 id="使用AOP处理缓存操作异常"><a href="#使用AOP处理缓存操作异常" class="headerlink" title="使用AOP处理缓存操作异常"></a>使用AOP处理缓存操作异常</h2><blockquote>
+<p>为什么要用AOP来解决这个问题呢？因为我们的缓存业务类<code>UmsAdminCacheService</code>已经写好了，要保证缓存业务类中的方法执行不影响正常的业务逻辑，就需要在所有方法中添加<code>try catch</code>逻辑。使用AOP，我们可以在一个地方写上<code>try catch</code>逻辑，然后应用到所有方法上去。试想下，我们如果又多了几个缓存业务类，只要配置下切面即可，这波操作多方便！</p>
+</blockquote>
+<p>首先我们先定义一个切面，在相关缓存业务类上面应用，在它的环绕通知中直接处理掉异常，保障后续操作能执行。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;\*\*</span><br><span class="line"> \* Redis缓存切面，防止Redis宕机影响正常业务逻辑</span><br><span class="line"> \* Created by macro on 2020&#x2F;3&#x2F;17.</span><br><span class="line"> \*&#x2F;</span><br><span class="line">@Aspect</span><br><span class="line">@Component</span><br><span class="line">@Order(2)</span><br><span class="line">public class RedisCacheAspect &#123;</span><br><span class="line">    private static Logger LOGGER &#x3D; LoggerFactory.getLogger(RedisCacheAspect.class);</span><br><span class="line"></span><br><span class="line">    @Pointcut(&quot;execution(public \* com.macro.mall.portal.service.\*CacheService.\*(..)) || execution(public \* com.macro.mall.service.\*CacheService.\*(..))&quot;)</span><br><span class="line">    public void cacheAspect() &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Around(&quot;cacheAspect()&quot;)</span><br><span class="line">    public Object doAround(ProceedingJoinPoint joinPoint) throws Throwable &#123;</span><br><span class="line">        Object result &#x3D; null;</span><br><span class="line">        try &#123;</span><br><span class="line">            result &#x3D; joinPoint.proceed();</span><br><span class="line">        &#125; catch (Throwable throwable) &#123;</span><br><span class="line">            LOGGER.error(throwable.getMessage());</span><br><span class="line">        &#125;</span><br><span class="line">        return result;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样处理之后，就算我们的Redis宕机了，我们的业务逻辑也能正常执行。</p>
+<p>不过并不是所有的方法都需要处理异常的，比如我们的验证码存储，如果我们的Redis宕机了，我们的验证码存储接口需要的是报错，而不是返回执行成功。</p>
+<p>对于上面这种需求我们可以通过自定义注解来完成，首先我们自定义一个<code>CacheException</code>注解，如果方法上面有这个注解，发生异常则直接抛出。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;\*\*</span><br><span class="line"> \* 自定义注解，有该注解的缓存方法会抛出异常</span><br><span class="line"> \*&#x2F;</span><br><span class="line">@Documented</span><br><span class="line">@Target(ElementType.METHOD)</span><br><span class="line">@Retention(RetentionPolicy.RUNTIME)</span><br><span class="line">public @interface CacheException &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>之后需要改造下我们的切面类，对于有<code>@CacheException</code>注解的方法，如果发生异常直接抛出。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;\*\*</span><br><span class="line"> \* Redis缓存切面，防止Redis宕机影响正常业务逻辑</span><br><span class="line"> \* Created by macro on 2020&#x2F;3&#x2F;17.</span><br><span class="line"> \*&#x2F;</span><br><span class="line">@Aspect</span><br><span class="line">@Component</span><br><span class="line">@Order(2)</span><br><span class="line">public class RedisCacheAspect &#123;</span><br><span class="line">    private static Logger LOGGER &#x3D; LoggerFactory.getLogger(RedisCacheAspect.class);</span><br><span class="line"></span><br><span class="line">    @Pointcut(&quot;execution(public \* com.macro.mall.portal.service.\*CacheService.\*(..)) || execution(public \* com.macro.mall.service.\*CacheService.\*(..))&quot;)</span><br><span class="line">    public void cacheAspect() &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Around(&quot;cacheAspect()&quot;)</span><br><span class="line">    public Object doAround(ProceedingJoinPoint joinPoint) throws Throwable &#123;</span><br><span class="line">        Signature signature &#x3D; joinPoint.getSignature();</span><br><span class="line">        MethodSignature methodSignature &#x3D; (MethodSignature) signature;</span><br><span class="line">        Method method &#x3D; methodSignature.getMethod();</span><br><span class="line">        Object result &#x3D; null;</span><br><span class="line">        try &#123;</span><br><span class="line">            result &#x3D; joinPoint.proceed();</span><br><span class="line">        &#125; catch (Throwable throwable) &#123;</span><br><span class="line">            &#x2F;&#x2F;有CacheException注解的方法需要抛出异常</span><br><span class="line">            if (method.isAnnotationPresent(CacheException.class)) &#123;</span><br><span class="line">                throw throwable;</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                LOGGER.error(throwable.getMessage());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return result;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>接下来我们需要把<code>@CacheException</code>注解应用到存储和获取验证码的方法上去，这里需要注意的是要应用在实现类上而不是接口上，因为<code>isAnnotationPresent</code>方法只能获取到当前方法上的注解，而不能获取到它实现接口方法上的注解。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;\*\*</span><br><span class="line"> \* UmsMemberCacheService实现类</span><br><span class="line"> \* Created by macro on 2020&#x2F;3&#x2F;14.</span><br><span class="line"> \*&#x2F;</span><br><span class="line">@Service</span><br><span class="line">public class UmsMemberCacheServiceImpl implements UmsMemberCacheService &#123;</span><br><span class="line">    @Autowired</span><br><span class="line">    private RedisService redisService;</span><br><span class="line"></span><br><span class="line">    @CacheException</span><br><span class="line">    @Override</span><br><span class="line">    public void setAuthCode(String telephone, String authCode) &#123;</span><br><span class="line">        String key &#x3D; REDIS_DATABASE + &quot;:&quot; + REDIS_KEY_AUTH_CODE + &quot;:&quot; + telephone;</span><br><span class="line">        redisService.set(key,authCode,REDIS_EXPIRE_AUTH_CODE);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @CacheException</span><br><span class="line">    @Override</span><br><span class="line">    public String getAuthCode(String telephone) &#123;</span><br><span class="line">        String key &#x3D; REDIS_DATABASE + &quot;:&quot; + REDIS_KEY_AUTH_CODE + &quot;:&quot; + telephone;</span><br><span class="line">        return (String) redisService.get(key);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>对于影响性能的，频繁查询数据库的操作，我们可以通过Redis作为缓存来优化。缓存操作不该影响正常业务逻辑，我们可以使用AOP来统一处理缓存操作中的异常。</p>
+<h2 id="项目源码地址"><a href="#项目源码地址" class="headerlink" title="项目源码地址"></a>项目源码地址</h2><p><a href="https://github.com/macrozheng/mall" target="_blank" rel="noopener">https://github.com/macrozheng/mall</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/oops/uploads/wechat-qcode.jpg" alt="架构组 wechat" style="width: 200px; max-width: 100%;"/>
+    <div>欢迎您扫一扫上面的微信二维码，订阅我的公众号</div>
+</div>
+
+      </div>
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E4%BA%8B%E5%8A%A1%E5%B7%B2%E6%8F%90%E4%BA%A4%EF%BC%8C%E6%95%B0%E6%8D%AE%E5%8D%B4%E4%B8%A2%E4%BA%86%EF%BC%8C%E8%B5%B6%E7%B4%A7%E6%A3%80%E6%9F%A5%E4%B8%8B%E8%BF%99%E4%B8%AA%E9%85%8D%E7%BD%AE%EF%BC%81%EF%BC%81%EF%BC%81%20%20%20%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B3%BB%E5%88%97/" rel="next" title="事务已提交，数据却丢了，赶紧检查下这个配置！！！   数据库系列">
+                <i class="fa fa-chevron-left"></i> 事务已提交，数据却丢了，赶紧检查下这个配置！！！   数据库系列
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E4%B8%8D%E7%94%A8%E6%89%BE%E4%BA%86%EF%BC%8C%E5%A4%A7%E5%8E%82%E5%9C%A8%E7%94%A8%E7%9A%84%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E6%96%B9%E6%A1%88%EF%BC%8C%E9%83%BD%E5%9C%A8%E8%BF%99%E9%87%8C%EF%BC%81/" rel="prev" title="不用找了，大厂在用的分库分表方案，都在这里！">
+                不用找了，大厂在用的分库分表方案，都在这里！ <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner" style="text-align:center;">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      本站访客数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人次
+    </span>
+  
+
+  
+    <span class="site-pv">
+      本站总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/oops/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/oops/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/oops/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/oops/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/oops/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

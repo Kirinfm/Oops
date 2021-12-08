@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/oops/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/oops/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/oops/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/oops/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/oops/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/oops/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/oops/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="SpringBoot,Redis,Atomicity," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="前言原子性（atomicity）: 一个事务是一个不可分割的最小工作单位,要么都成功要么都失败。 在Redis控制台原子性操作方式123456789101112redis\&gt; MULTI \# 标记事务开始OKredis\&gt; INCR blog\_id \# 多条命令按顺序入队QUEUEDredis\&gt; INCR blog\_idQUEUEDredis\&gt; INCR blo">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何使用Redis原子性记录博客点击">
+<meta property="og:url" content="https://smartlink-tech.gitee.cn/oops/2019/12/24/%E5%A6%82%E4%BD%95%E7%94%A8Redis%E5%8E%9F%E5%AD%90%E6%80%A7%E8%AE%B0%E5%BD%95%E5%8D%9A%E5%AE%A2%E7%82%B9%E5%87%BB/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="前言原子性（atomicity）: 一个事务是一个不可分割的最小工作单位,要么都成功要么都失败。 在Redis控制台原子性操作方式123456789101112redis\&gt; MULTI \# 标记事务开始OKredis\&gt; INCR blog\_id \# 多条命令按顺序入队QUEUEDredis\&gt; INCR blog\_idQUEUEDredis\&gt; INCR blo">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/C41A1CC034ADE5C7AD61D88F0ACD6D9A.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/523017AD66484E84EB3C2BBBB68E0CE8.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/FA2A133DD6BD48D1534403D9F35FB8E3.png">
+<meta property="article:published_time" content="2019-12-23T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-03-12T09:11:46.434Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="SpringBoot">
+<meta property="article:tag" content="Redis">
+<meta property="article:tag" content="Atomicity">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://smartlink-tech.gitee.cn/Oops/resources/C41A1CC034ADE5C7AD61D88F0ACD6D9A.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/Oops',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"remove","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://smartlink-tech.gitee.cn/oops/2019/12/24/如何用Redis原子性记录博客点击/"/>
+
+
+
+
+
+  <title>如何使用Redis原子性记录博客点击 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/oops/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/oops/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/oops/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/oops/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/oops/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://smartlink-tech.gitee.cn/oops/oops/2019/12/24/%E5%A6%82%E4%BD%95%E7%94%A8Redis%E5%8E%9F%E5%AD%90%E6%80%A7%E8%AE%B0%E5%BD%95%E5%8D%9A%E5%AE%A2%E7%82%B9%E5%87%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="架构组">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/oops/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">如何使用Redis原子性记录博客点击</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-user"></i>
+              </span>
+              <span class="post-meta-item-text">FM</span>
+              <span class="post-meta-divider">|</span>
+            
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-12-24T00:00:00+08:00">
+                2019-12-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/oops/categories/JAVA/" itemprop="url" rel="index">
+                    <span itemprop="name">JAVA</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv">本文总阅读量
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p><strong>原子性（atomicity）:</strong> 一个事务是一个不可分割的最小工作单位,要么都成功要么都失败。</p>
+<h5 id="在Redis控制台原子性操作方式"><a href="#在Redis控制台原子性操作方式" class="headerlink" title="在Redis控制台原子性操作方式"></a>在Redis控制台原子性操作方式</h5><h5 id><a href="#" class="headerlink" title></a></h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">redis\&gt; MULTI \# 标记事务开始</span><br><span class="line">OK</span><br><span class="line">redis\&gt; INCR blog\_id \# 多条命令按顺序入队</span><br><span class="line">QUEUED</span><br><span class="line">redis\&gt; INCR blog\_id</span><br><span class="line">QUEUED</span><br><span class="line">redis\&gt; INCR blog\_id</span><br><span class="line">QUEUED</span><br><span class="line">redis\&gt; EXEC</span><br><span class="line"> 1) &quot;1&quot;</span><br><span class="line"> 2) &quot;2&quot;</span><br><span class="line"> 3) &quot;3&quot;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>事务开始命令后，INCR blog_id 命令被放入队列缓存<br>收到 EXEC 命令后进入事务执行，事务中任意命令执行失败，其余的命令都不会被执行<br>在事务执行过程，其他客户端提交的命令请求不会插入到事务执行命令序列中</p>
+</blockquote>
+<h3 id="springboot-实现redis记录博客点击"><a href="#springboot-实现redis记录博客点击" class="headerlink" title="springboot 实现redis记录博客点击"></a>springboot 实现redis记录博客点击</h3><h4 id="spring-boot-starter-data-redis"><a href="#spring-boot-starter-data-redis" class="headerlink" title="spring-boot-starter-data-redis"></a>spring-boot-starter-data-redis</h4><ul>
+<li>springboot 提供了 redis 的快速启动依赖</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">\&lt;dependency\&gt; </span><br><span class="line"> \&lt;groupId\&gt;org.springframework.boot\&lt;&#x2F;groupId\&gt; </span><br><span class="line"> \&lt;artifactId\&gt;spring-boot-starter-data-redis\&lt;&#x2F;artifactId\&gt;</span><br><span class="line">\&lt;&#x2F;dependency\&gt;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>RedisAtomicDouble</code> <code>RedisAtomicInteger</code> <code>RedisAtomicLong</code><br>redis 提供了对 <code>Double</code> <code>Integer</code> <code>Long</code> 三种类型的自增操作<br>以 <code>RedisAtomicLong</code> 为例，<code>RedisAtomicLong</code> 提供了方法 incrementAndGet， 该方法实际是 <code>redis</code> 的 <code>INCR</code> 命令。<br>进入其中的 <code>increment</code>方法，使用了 <code>execute(RedisCallback&lt;T&gt; callback, boolean exposeConnection)</code>回调方法。</li>
+</ul>
+<h4 id="对博客详情接口进行切面"><a href="#对博客详情接口进行切面" class="headerlink" title="对博客详情接口进行切面"></a>对博客详情接口进行切面</h4><ul>
+<li>博客详情接口</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">@Controller</span><br><span class="line">@RequestMapping(&quot;&#x2F;blog&quot;)</span><br><span class="line">public class IndexController &#123; </span><br><span class="line">@Autowired </span><br><span class="line">private BlogService blogService; </span><br><span class="line"></span><br><span class="line">@GetMapping(&quot;&#x2F;&#123;id&#125;&quot;) </span><br><span class="line">public ResponseEntity getBlog(@PathVariable String id) &#123; </span><br><span class="line">return new ResponseEntity\&lt;\&gt;(blogService.getById(id), HttpStatus.OK); </span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>切面</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">@Aspect</span><br><span class="line">@Component</span><br><span class="line">public class BlogViewAspect &#123; </span><br><span class="line">@Autowired </span><br><span class="line">private StringRedisTemplate redisTemplate; </span><br><span class="line"></span><br><span class="line">@Pointcut(</span><br><span class="line">&quot;execution(public \* com.kirin.fm.blog.controller.IndexController.getBlog(..))&quot;)</span><br><span class="line">public void getBlogDetail() &#123; &#125; </span><br><span class="line"></span><br><span class="line">@AfterReturning(value &#x3D; &quot;getBlogDetail()&quot;, returning &#x3D; &quot;response&quot;) </span><br><span class="line">public void countBlogView(JoinPoint joinPoint, Object response) &#123; </span><br><span class="line">if (null &#x3D;&#x3D; ((ResponseEntity) response).getBody()) &#123; </span><br><span class="line">return; </span><br><span class="line">&#125; </span><br><span class="line">String blogId &#x3D; joinPoint.getArgs()[0].toString();</span><br><span class="line">\# 原子方法</span><br><span class="line">RedisAtomicLong entityIdCounter &#x3D; </span><br><span class="line">new RedisAtomicLong(blogId, redisTemplate.getConnectionFactory());</span><br><span class="line">entityIdCounter.getAndIncrement(); </span><br><span class="line">entityIdCounter.expire(24 \* 60 \* 60, TimeUnit.SECONDS); </span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>测试</li>
+</ul>
+<p><img src="/Oops/resources/C41A1CC034ADE5C7AD61D88F0ACD6D9A.png" alt></p>
+<p> 测试结果： </p>
+<p><img src="/Oops/resources/523017AD66484E84EB3C2BBBB68E0CE8.png" alt></p>
+<p><img src="/Oops/resources/FA2A133DD6BD48D1534403D9F35FB8E3.png" alt></p>
+<p> 点击数能够正确记录</p>
+<h5 id="多余的话"><a href="#多余的话" class="headerlink" title="多余的话"></a>多余的话</h5><p> 在编写测试用例的时候使用 Spring 提供的 <code>ThreadPoolTaskExecutor</code>查看线程是否都已执行完毕。<br> 最开始只判断了 <code>threadPoolTaskExecutor.getThreadPoolExecutor().getQueue()</code>队列是否为空，最后导致发现结果不是想要的 10000。<br>** 增加对线程活动数量的判断** <code>threadPoolTaskExecutor.getActiveCount() &lt;= 0</code></p>
+<p> 由此可见，需要判断线程活动数量以及队列中的数量，才能准确判断所有线程是否完全结束。</p>
+<h4 id="源码地址"><a href="#源码地址" class="headerlink" title="源码地址"></a>源码地址</h4><p><a href="https://github.com/Kirinfm/RedisAtomic" target="_blank" rel="noopener">https://github.com/Kirinfm/RedisAtomic</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/oops/uploads/wechat-qcode.jpg" alt="架构组 wechat" style="width: 200px; max-width: 100%;"/>
+    <div>欢迎您扫一扫上面的微信二维码，订阅我的公众号</div>
+</div>
+
+      </div>
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/oops/tags/SpringBoot/" rel="tag"># SpringBoot</a>
+          
+            <a href="/oops/tags/Redis/" rel="tag"># Redis</a>
+          
+            <a href="/oops/tags/Atomicity/" rel="tag"># Atomicity</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/oops/2019/12/19/Spring%20Web%E9%9B%86%E6%88%90Docker/" rel="next" title="Spring Web集成Docker">
+                <i class="fa fa-chevron-left"></i> Spring Web集成Docker
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/oops/2019/12/30/%E5%A6%82%E4%BD%95%E8%B0%83%E7%94%A8%E5%A4%96%E9%83%A8%E6%8E%A5%E5%8F%A3%20%EF%BC%9F/" rel="prev" title="如何调用外部接口？">
+                如何调用外部接口？ <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner" style="text-align:center;">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      本站访客数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人次
+    </span>
+  
+
+  
+    <span class="site-pv">
+      本站总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/oops/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/oops/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/oops/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/oops/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/oops/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

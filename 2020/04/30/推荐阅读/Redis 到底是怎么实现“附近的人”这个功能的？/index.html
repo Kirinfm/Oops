@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/oops/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/oops/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/oops/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/oops/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/oops/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/oops/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/oops/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="前言：针对“附近的人”这一位置服务领域的应用场景，常见的可使用PG、MySQL和MongoDB等多种DB的空间索引进行实现。而Redis另辟蹊径，结合其有序队列zset以及geohash编码，实现了空间搜索功能，且拥有极高的运行效率。 本文将从源码角度对其算法原理进行解析，并推算查询时间复杂度。 要提供完整的“附近的人”服务，最基本的是要实现“增”、“删”、“查”的功能。以下将分别进行介绍，其中会">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis 到底是怎么实现“附近的人”这个功能的？">
+<meta property="og:url" content="https://smartlink-tech.gitee.cn/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/Redis%20%E5%88%B0%E5%BA%95%E6%98%AF%E6%80%8E%E4%B9%88%E5%AE%9E%E7%8E%B0%E2%80%9C%E9%99%84%E8%BF%91%E7%9A%84%E4%BA%BA%E2%80%9D%E8%BF%99%E4%B8%AA%E5%8A%9F%E8%83%BD%E7%9A%84%EF%BC%9F/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="前言：针对“附近的人”这一位置服务领域的应用场景，常见的可使用PG、MySQL和MongoDB等多种DB的空间索引进行实现。而Redis另辟蹊径，结合其有序队列zset以及geohash编码，实现了空间搜索功能，且拥有极高的运行效率。 本文将从源码角度对其算法原理进行解析，并推算查询时间复杂度。 要提供完整的“附近的人”服务，最基本的是要实现“增”、“删”、“查”的功能。以下将分别进行介绍，其中会">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/142481DA111F2203E0E0ADA6D1235CC1.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/6E52D4EB8167C119D5FF39737C752655.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/9BDB360FF7DD74A31E79EA9FFD57FDAD.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/1F278E982D7AD74205C972E2CAF60123.jpg">
+<meta property="article:published_time" content="2020-04-30T03:23:00.000Z">
+<meta property="article:modified_time" content="2020-04-30T08:17:04.062Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://smartlink-tech.gitee.cn/Oops/resources/142481DA111F2203E0E0ADA6D1235CC1.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/Oops',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"remove","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://smartlink-tech.gitee.cn/oops/2020/04/30/推荐阅读/Redis 到底是怎么实现“附近的人”这个功能的？/"/>
+
+
+
+
+
+  <title>Redis 到底是怎么实现“附近的人”这个功能的？ | Hexo</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/oops/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/oops/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/oops/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/oops/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/oops/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://smartlink-tech.gitee.cn/oops/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/Redis%20%E5%88%B0%E5%BA%95%E6%98%AF%E6%80%8E%E4%B9%88%E5%AE%9E%E7%8E%B0%E2%80%9C%E9%99%84%E8%BF%91%E7%9A%84%E4%BA%BA%E2%80%9D%E8%BF%99%E4%B8%AA%E5%8A%9F%E8%83%BD%E7%9A%84%EF%BC%9F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="架构组">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/oops/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Redis 到底是怎么实现“附近的人”这个功能的？</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-04-30T11:23:00+08:00">
+                2020-04-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/oops/categories/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/" itemprop="url" rel="index">
+                    <span itemprop="name">推荐阅读</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv">本文总阅读量
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><strong>前言</strong>：针对“附近的人”这一位置服务领域的应用场景，常见的可使用PG、MySQL和MongoDB等多种DB的空间索引进行实现。而Redis另辟蹊径，结合其有序队列zset以及geohash编码，实现了空间搜索功能，且拥有极高的运行效率。</p>
+<p>本文将从源码角度对其算法原理进行解析，并推算查询时间复杂度。</p>
+<p>要提供完整的“附近的人”服务，最基本的是要实现“增”、“删”、“查”的功能。以下将分别进行介绍，其中会重点对查询功能进行解析。</p>
+<p>**<br>**</p>
+<h2 id="操作命令"><a href="#操作命令" class="headerlink" title="操作命令****"></a><strong>操作命令****</strong></h2><p>自Redis 3.2开始，Redis基于geohash和有序集合提供了地理位置相关功能。Redis Geo模块包含了以下6个命令：</p>
+<ul>
+<li><p><strong>GEOADD</strong>: 将给定的位置对象（纬度、经度、名字）添加到指定的key;</p>
+</li>
+<li><p>GEOPOS: 从key里面返回所有给定位置对象的位置（经度和纬度）;</p>
+</li>
+<li><p>GEODIST: 返回两个给定位置之间的距离;</p>
+</li>
+<li><p>GEOHASH: 返回一个或多个位置对象的Geohash表示;</p>
+</li>
+<li><p><strong>GEORADIUS</strong>: 以给定的经纬度为中心，返回目标集合中与中心的距离不超过给定最大距离的所有位置对象;</p>
+</li>
+<li><p>GEORADIUSBYMEMBER: 以给定的位置对象为中心，返回与其距离不超过给定最大距离的所有位置对象。</p>
+</li>
+</ul>
+<p>其中，组合使用GEOADD和GEORADIUS可实现“附近的人”中“增”和“查”的基本功能。</p>
+<p>要实现微信中“附近的人”功能，可直接使用GEORADIUSBYMEMBER命令。其中“给定的位置对象”即为用户本人，搜索的对象为其他用户。</p>
+<p>不过本质上，GEORADIUSBYMEMBER = GEOPOS + GEORADIUS，即先查找用户位置再通过该位置搜索附近满足位置相互距离条件的其他用户对象。</p>
+<p>以下会从源码角度入手对GEOADD和GEORADIUS命令进行分析，剖析其算法原理。</p>
+<blockquote>
+<p>Redis geo操作中只包含了“增”和“查”的操作，并没有专门的“删除”命令。主要是因为Redis内部使用有序集合(zset)保存位置对象，可用zrem进行删除。</p>
+</blockquote>
+<blockquote>
+<p>在Redis源码geo.c的文件注释中，只说明了该文件为GEOADD、GEORADIUS和GEORADIUSBYMEMBER的实现文件（其实在也实现了另三个命令）。从侧面看出其他三个命令为辅助命令。</p>
+</blockquote>
+<p>**<br>**</p>
+<hr>
+<h2 id="GEOADD"><a href="#GEOADD" class="headerlink" title="GEOADD"></a><strong>GEOADD</strong></h2><h3 id><a href="#" class="headerlink" title="**"></a>**</h3><p>**</p>
+<h3 id="使用方式"><a href="#使用方式" class="headerlink" title="使用方式"></a><strong>使用方式</strong></h3><p>**<br>**</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>GEOADD key longitude latitude member [longitude latitude member …]</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>将给定的位置对象（纬度、经度、名字）添加到指定的key。</p>
+<p>其中，key为集合名称，member为该经纬度所对应的对象。在实际运用中，当所需存储的对象数量过多时，可通过设置多key(如一个省一个key)的方式对对象集合变相做sharding，避免单集合数量过多。</p>
+<p>成功插入后的返回值：</p>
+<pre><code>(integer) N</code></pre><p>其中N为成功插入的个数。</p>
+<h3 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a><strong>源码分析</strong></h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;\* GEOADD key long lat name [long2 lat2 name2 ... longN latN nameN] \*&#x2F;</span><br><span class="line">void geoaddCommand(client \*c) &#123;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;参数校验</span><br><span class="line">    &#x2F;\* Check arguments number for sanity. \*&#x2F;</span><br><span class="line">    if ((c-&gt;argc - 2) % 3 !&#x3D; 0) &#123;</span><br><span class="line">        &#x2F;\* Need an odd number of arguments if we got this far... \*&#x2F;</span><br><span class="line">        addReplyError(c, &quot;syntax error. Try GEOADD key [x1] [y1] [name1] &quot;</span><br><span class="line">                         &quot;[x2] [y2] [name2] ... &quot;);</span><br><span class="line">          return;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;参数提取Redis</span><br><span class="line">    int elements &#x3D; (c-&gt;argc - 2) &#x2F; 3;</span><br><span class="line">    int argc &#x3D; 2+elements*2; &#x2F;\* ZADD key score ele ... \*&#x2F;</span><br><span class="line">    robj **argv &#x3D; zcalloc(argc*sizeof(robj*));</span><br><span class="line">    argv[0] &#x3D; createRawStringObject(&quot;zadd&quot;,4);</span><br><span class="line">    argv[1] &#x3D; c-&gt;argv[1]; &#x2F;\* key \*&#x2F;</span><br><span class="line">    incrRefCount(argv[1]);</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;参数遍历+转换</span><br><span class="line">    &#x2F;\* Create the argument vector to call ZADD in order to add all</span><br><span class="line"> \* the score,value pairs to the requested zset, where score is actually</span><br><span class="line"> \* an encoded version of lat,long. \*&#x2F;</span><br><span class="line">    int i;</span><br><span class="line">    for (i &#x3D; 0; i &lt; elements; i++) &#123;</span><br><span class="line">        double xy[2];</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;提取经纬度</span><br><span class="line">        if (extractLongLatOrReply(c, (c-&gt;argv+2)+(i*3),xy) &#x3D;&#x3D; C_ERR) &#123;</span><br><span class="line">            for (i &#x3D; 0; i &lt; argc; i++)</span><br><span class="line">                if (argv[i]) decrRefCount(argv[i]);</span><br><span class="line">            zfree(argv);</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;将经纬度转换为52位的geohash作为分值 &amp; 提取对象名称</span><br><span class="line">        &#x2F;\* Turn the coordinates into the score of the element. \*&#x2F;</span><br><span class="line">        GeoHashBits hash;</span><br><span class="line">        geohashEncodeWGS84(xy[0], xy[1], GEO_STEP_MAX, &amp;hash);</span><br><span class="line">        GeoHashFix52Bits bits &#x3D; geohashAlign52Bits(hash);</span><br><span class="line">        robj *score &#x3D; createObject(OBJ_STRING, sdsfromlonglong(bits));</span><br><span class="line">        robj *val &#x3D; c-&gt;argv[2 + i * 3 + 2];</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;设置有序集合的对象元素名称和分值</span><br><span class="line">        argv[2+i*2] &#x3D; score;</span><br><span class="line">        argv[3+i*2] &#x3D; val;</span><br><span class="line">        incrRefCount(val);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;调用zadd命令，存储转化好的对象</span><br><span class="line">    &#x2F;\* Finally call ZADD that will do the work for us. \*&#x2F;</span><br><span class="line">    replaceClientCommandVector(c,argc,argv);</span><br><span class="line">    zaddCommand(c);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>通过源码分析可以看出Redis内部使用有序集合(zset)保存位置对象，有序集合中每个元素都是一个带位置的对象，元素的score值为其经纬度对应的52位的geohash值。</p>
+<blockquote>
+<p>double类型精度为52位；<br>geohash是以base32的方式编码，52bits最高可存储10位geohash值，对应地理区域大小为0.6*0.6米的格子。换句话说经Redis geo转换过的位置理论上会有约0.3*1.414=0.424米的误差。</p>
+</blockquote>
+<h3 id="-1"><a href="#-1" class="headerlink" title></a></h3><h3 id="算法小结"><a href="#算法小结" class="headerlink" title="算法小结"></a><strong>算法小结</strong></h3><p>简单总结下GEOADD命令都干了啥：<br>1、参数提取和校验；<br>2、将入参经纬度转换为52位的geohash值（score）；<br>3、调用ZADD命令将member及其对应的score存入集合key中。</p>
+<p>-</p>
+<h2 id="GEORADIUS"><a href="#GEORADIUS" class="headerlink" title="GEORADIUS"></a><strong>GEORADIUS</strong></h2><h3 id="使用方式-1"><a href="#使用方式-1" class="headerlink" title="使用方式"></a><strong>使用方式</strong></h3><p>**<br>**</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GEORADIUS key longitude latitude radius m|km|ft|mi [WITHCOORD] [WITHDIST] [WITHHASH] [ASC|DESC] [COUNT count] [STORE key] [STORedisT key]</span><br></pre></td></tr></table></figure>
+
+<pre><code>以给定的经纬度为中心，返回目标集合中与中心的距离不超过给定最大距离的所有位置对象。</code></pre><p>范围单位：m | km | ft | mi –&gt; 米 | 千米 | 英尺 | 英里</p>
+<p>**<br>**</p>
+<p><strong>额外参数：</strong></p>
+<ul>
+<li><p>WITHDIST：在返回位置对象的同时，将位置对象与中心之间的距离也一并返回。距离的单位和用户给定的范围单位保持一致。</p>
+</li>
+<li><p>WITHCOORD：将位置对象的经度和维度也一并返回。</p>
+</li>
+<li><p>WITHHASH：以 52 位有符号整数的形式，返回位置对象经过原始 geohash 编码的有序集合分值。这个选项主要用于底层应用或者调试，实际中的作用并不大。</p>
+</li>
+<li><p>ASC|DESC：从近到远返回位置对象元素 | 从远到近返回位置对象元素。- COUNT count：选取前N个匹配位置对象元素。（不设置则返回所有元素） - STORE key：将返回结果的地理位置信息保存到指定key。- STORedisT key：将返回结果离中心点的距离保存到指定key。</p>
+</li>
+</ul>
+<blockquote>
+<p>由于 STORE 和 STORedisT 两个选项的存在，GEORADIUS 和 GEORADIUSBYMEMBER 命令在技术上会被标记为写入命令，从而只会查询（写入）主实例，QPS过高时容易造成主实例读写压力过大。</p>
+<p>为解决这个问题，在 Redis 3.2.10 和 Redis 4.0.0 中，分别新增了 GEORADIUS_RO 和 GEORADIUSBYMEMBER_RO两个只读命令。</p>
+<p>不过，在实际开发中笔者发现 在java package <code>Redis.clients.jedis.params.geo</code> 的 GeoRadiusParam 参数类中并不包含 STORE 和 STORedisT 两个参数选项，在调用georadius时是否真的只查询了主实例，还是进行了只读封装。感兴趣的朋友可以自己研究下。</p>
+</blockquote>
+<p>成功查询后的返回值：</p>
+<p>不带WITH限定，返回一个member list，如：</p>
+<pre><code>[&quot;member1&quot;,&quot;member2&quot;,&quot;member3&quot;]</code></pre><p>带WITH限定，member list中每个member也是一个嵌套list，如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[</span><br><span class="line">  [&quot;member1&quot;, distance1, [longitude1, latitude1]]</span><br><span class="line">  [&quot;member2&quot;, distance2, [longitude2, latitude2]]</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+<pre><code>**
+**</code></pre><h3 id="源码分析-1"><a href="#源码分析-1" class="headerlink" title="源码分析"></a><strong>源码分析</strong></h3><blockquote>
+<p>此段源码较长，看不下去的可直接看中文注释，或直接跳到小结部分</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;\* GEORADIUS key x y radius unit [WITHDIST] [WITHHASH] [WITHCOORD] [ASC|DESC]</span><br><span class="line"> \* [COUNT count] [STORE key] [STORedisT key]</span><br><span class="line"> \* GEORADIUSBYMEMBER key member radius unit ... options ... \*&#x2F;</span><br><span class="line">void georadiusGeneric(client \*c, int flags) &#123;</span><br><span class="line">    robj *key &#x3D; c-&gt;argv[1];</span><br><span class="line">    robj *storekey &#x3D; NULL;</span><br><span class="line">    int stoRedist &#x3D; 0; &#x2F;\* 0 for STORE, 1 for STORedisT. \*&#x2F;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;根据key获取有序集合</span><br><span class="line">    robj *zobj &#x3D; NULL;</span><br><span class="line">    if ((zobj &#x3D; lookupKeyReadOrReply(c, key, shared.null[c-&gt;resp])) &#x3D;&#x3D; NULL ||</span><br><span class="line">        checkType(c, zobj, OBJ_ZSET)) &#123;</span><br><span class="line">        return;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;根据用户输入（经纬度&#x2F;member）确认中心点经纬度</span><br><span class="line">    int base_args;</span><br><span class="line">    double xy[2] &#x3D; &#123; 0 &#125;;</span><br><span class="line">    if (flags &amp; RADIUS_COORDS) &#123;</span><br><span class="line">    ……</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;获取查询范围距离</span><br><span class="line">    double radius_meters &#x3D; 0, conversion &#x3D; 1;</span><br><span class="line">    if ((radius_meters &#x3D; extractDistanceOrReply(c, c-&gt;argv + base_args - 2,</span><br><span class="line">                                                &amp;conversion)) &lt; 0) &#123;</span><br><span class="line">        return;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;获取可选参数 （withdist、withhash、withcoords、sort、count）</span><br><span class="line">    int withdist &#x3D; 0, withhash &#x3D; 0, withcoords &#x3D; 0;</span><br><span class="line">    int sort &#x3D; SORT_NONE;</span><br><span class="line">    long long count &#x3D; 0;</span><br><span class="line">    if (c-&gt;argc &gt; base_args) &#123;</span><br><span class="line">        ... ...</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;获取 STORE 和 STORedisT 参数</span><br><span class="line">    if (storekey &amp;&amp; (withdist || withhash || withcoords)) &#123;</span><br><span class="line">        addReplyError(c,</span><br><span class="line">            &quot;STORE option in GEORADIUS is not compatible with &quot;</span><br><span class="line">            &quot;WITHDIST, WITHHASH and WITHCOORDS options&quot;);</span><br><span class="line">        return;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;设定排序</span><br><span class="line">    if (count !&#x3D; 0 &amp;&amp; sort &#x3D;&#x3D; SORT_NONE) sort &#x3D; SORT_ASC;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;利用中心点和半径计算目标区域范围</span><br><span class="line">    GeoHashRadius georadius &#x3D;</span><br><span class="line">        geohashGetAreasByRadiusWGS84(xy[0], xy[1], radius_meters);</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;对中心点及其周围8个geohash网格区域进行查找，找出范围内元素对象</span><br><span class="line">    geoArray *ga &#x3D; geoArrayCreate();</span><br><span class="line">    membersOfAllNeighbors(zobj, georadius, xy[0], xy[1], radius_meters, ga);</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;未匹配返空</span><br><span class="line">    &#x2F;\* If no matching results, the user gets an empty reply. \*&#x2F;</span><br><span class="line">    if (ga-&gt;used &#x3D;&#x3D; 0 &amp;&amp; storekey &#x3D;&#x3D; NULL) &#123;</span><br><span class="line">        addReplyNull(c);</span><br><span class="line">        geoArrayFree(ga);</span><br><span class="line">        return;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;一些返回值的设定和返回</span><br><span class="line">    ……</span><br><span class="line">    geoArrayFree(ga);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>上文代码中最核心的步骤有两个，一是“计算中心点范围”，二是“对中心点及其周围8个geohash网格区域进行查找”。</p>
+<p>对应的是<code>geohashGetAreasByRadiusWGS84</code>和<code>membersOfAllNeighbors</code>两个函数。</p>
+<p>我们依次来看：</p>
+<ul>
+<li>计算中心点范围：</li>
+</ul>
+<p><strong>// geohash_helper.c</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">GeoHashRadius geohashGetAreasByRadiusWGS84(double longitude, double latitude,</span><br><span class="line"> double radius\_meters) &#123;</span><br><span class="line">    return geohashGetAreasByRadius(longitude, latitude, radius_meters);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;返回能够覆盖目标区域范围的9个geohashBox</span><br><span class="line">GeoHashRadius geohashGetAreasByRadius(double longitude, double latitude, double radius\_meters) &#123;</span><br><span class="line">&#x2F;&#x2F;一些参数设置</span><br><span class="line">    GeoHashRange long_range, lat_range;</span><br><span class="line">    GeoHashRadius radius;</span><br><span class="line">    GeoHashBits hash;</span><br><span class="line">    GeoHashNeighbors neighbors;</span><br><span class="line">    GeoHashArea area;</span><br><span class="line">    double min_lon, max_lon, min_lat, max_lat;</span><br><span class="line">    double bounds[4];</span><br><span class="line">    int steps;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;计算目标区域外接矩形的经纬度范围（目标区域为：以目标经纬度为中心，半径为指定距离的圆）</span><br><span class="line">    geohashBoundingBox(longitude, latitude, radius_meters, bounds);</span><br><span class="line">    min_lon &#x3D; bounds[0];</span><br><span class="line">    min_lat &#x3D; bounds[1];</span><br><span class="line">    max_lon &#x3D; bounds[2];</span><br><span class="line">    max_lat &#x3D; bounds[3];</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;根据目标区域中心点纬度和半径，计算带查询的9个搜索框的geohash精度（位）</span><br><span class="line">&#x2F;&#x2F;这里用到latitude主要是针对极地的情况对精度进行了一些调整（纬度越高，位数越小）</span><br><span class="line">    steps &#x3D; geohashEstimateStepsByRadius(radius_meters,latitude);</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;设置经纬度最大最小值：-180\&lt;&#x3D;longitude\&lt;&#x3D;180, -85\&lt;&#x3D;latitude\&lt;&#x3D;85</span><br><span class="line">    geohashGetCoordRange(&amp;long_range,&amp;lat_range);</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;将待查经纬度按指定精度（steps）编码成geohash值</span><br><span class="line">    geohashEncode(&amp;long_range,&amp;lat_range,longitude,latitude,steps,&amp;hash);</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;将geohash值在8个方向上进行扩充，确定周围8个Box（neighbors）</span><br><span class="line">    geohashNeighbors(&amp;hash,&amp;neighbors);</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;根据hash值确定area经纬度范围</span><br><span class="line">    geohashDecode(long_range,lat_range,hash,&amp;area);</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;一些特殊情况处理</span><br><span class="line">    ……</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;构建并返回结果</span><br><span class="line">    radius.hash &#x3D; hash;</span><br><span class="line">    radius.neighbors &#x3D; neighbors;</span><br><span class="line">    radius.area &#x3D; area;</span><br><span class="line">    return radius;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>对中心点及其周围8个geohash网格区域进行查找:</li>
+</ul>
+<p><strong>// geo.c</strong></p>
+<p>**<br>**</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;在9个hashBox中获取想要的元素</span><br><span class="line">int membersOfAllNeighbors(robj \*zobj, GeoHashRadius n, double lon, double lat, double radius, geoArray \*ga) &#123;</span><br><span class="line">    GeoHashBits neighbors[9];</span><br><span class="line">    unsigned int i, count &#x3D; 0, last_processed &#x3D; 0;</span><br><span class="line">    int debugmsg &#x3D; 0;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;获取9个搜索hashBox</span><br><span class="line">    neighbors[0] &#x3D; n.hash;</span><br><span class="line">    ……</span><br><span class="line">    neighbors[8] &#x3D; n.neighbors.south_west;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;在每个hashBox中搜索目标点</span><br><span class="line">    for (i &#x3D; 0; i &lt; sizeof(neighbors) &#x2F; sizeof(*neighbors); i++) &#123;</span><br><span class="line">        if (HASHISZERO(neighbors[i])) &#123;</span><br><span class="line">            if (debugmsg) D(&quot;neighbors[%d] is zero&quot;,i);</span><br><span class="line">            continue;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F;剔除可能的重复hashBox (搜索半径\&gt;5000KM时可能出现)</span><br><span class="line">        if (last_processed &amp;&amp;</span><br><span class="line">            neighbors[i].bits &#x3D;&#x3D; neighbors[last_processed].bits &amp;&amp;</span><br><span class="line">            neighbors[i].step &#x3D;&#x3D; neighbors[last_processed].step)</span><br><span class="line">        &#123;</span><br><span class="line">            continue;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F;搜索hashBox中满足条件的对象</span><br><span class="line">        count +&#x3D; membersOfGeoHashBox(zobj, neighbors[i], ga, lon, lat, radius);</span><br><span class="line">        last_processed &#x3D; i;</span><br><span class="line">    &#125;</span><br><span class="line">    return count;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int membersOfGeoHashBox(robj \*zobj, GeoHashBits hash, geoArray \*ga, double lon, double lat, double radius) &#123;</span><br><span class="line">&#x2F;&#x2F;获取hashBox内的最大、最小geohash值（52位）</span><br><span class="line">    GeoHashFix52Bits min, max;</span><br><span class="line">    scoresOfGeoHashBox(hash,&amp;min,&amp;max);</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;根据最大、最小geohash值筛选zobj集合中满足条件的点</span><br><span class="line">    return geoGetPointsInRange(zobj, min, max, lon, lat, radius, ga);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int geoGetPointsInRange(robj \*zobj, double min, double max, double lon, double lat, double radius, geoArray \*ga) &#123;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;搜索Range的参数边界设置（即9个hashBox其中一个的边界范围）</span><br><span class="line">    zrangespec range &#x3D; &#123; .min &#x3D; min, .max &#x3D; max, .minex &#x3D; 0, .maxex &#x3D; 1 &#125;;</span><br><span class="line">    size\_t origincount &#x3D; ga-&gt;used;</span><br><span class="line">    sds member;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;搜索集合zobj可能有ZIPLIST和SKIPLIST两种编码方式，这里以SKIPLIST为例，逻辑是一样的</span><br><span class="line">    if (zobj-&gt;encoding &#x3D;&#x3D; OBJ_ENCODING_ZIPLIST) &#123;</span><br><span class="line">        ……</span><br><span class="line">    &#125; else if (zobj-&gt;encoding &#x3D;&#x3D; OBJ_ENCODING_SKIPLIST) &#123;</span><br><span class="line">        zset *zs &#x3D; zobj-&gt;ptr;</span><br><span class="line">        zskiplist *zsl &#x3D; zs-&gt;zsl;</span><br><span class="line">        zskiplistNode *ln;</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F;获取在hashBox范围内的首个元素（跳表数据结构，效率可比拟于二叉查找树），没有则返0</span><br><span class="line">        if ((ln &#x3D; zslFirstInRange(zsl, &amp;range)) &#x3D;&#x3D; NULL) &#123;</span><br><span class="line">            &#x2F;\* Nothing exists starting at our min. No results. \*&#x2F;</span><br><span class="line">            return 0;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F;从首个元素开始遍历集合</span><br><span class="line">        while (ln) &#123;</span><br><span class="line">            sds ele &#x3D; ln-&gt;ele;</span><br><span class="line">    &#x2F;&#x2F;遍历元素超出range范围则break</span><br><span class="line">            &#x2F;\* Abort when the node is no longer in range. \*&#x2F;</span><br><span class="line">            if (!zslValueLteMax(ln-&gt;score, &amp;range))</span><br><span class="line">                break;</span><br><span class="line">    &#x2F;&#x2F;元素校验（计算元素与中心点的距离）</span><br><span class="line">            ele &#x3D; sdsdup(ele);</span><br><span class="line">            if (geoAppendIfWithinRadius(ga,lon,lat,radius,ln-&gt;score,ele)</span><br><span class="line">                &#x3D;&#x3D; C_ERR) sdsfree(ele);</span><br><span class="line">            ln &#x3D; ln-&gt;level[0].forward;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return ga-&gt;used - origincount;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int geoAppendIfWithinRadius(geoArray \*ga, double lon, double lat, double radius, double score, sds member) &#123;</span><br><span class="line">    double distance, xy[2];</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;解码错误, 返回error</span><br><span class="line">    if (!decodeGeohash(score,xy)) return C_ERR; &#x2F;\* Can&#39;t decode. \*&#x2F;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;最终距离校验(计算球面距离distance看是否小于radius)</span><br><span class="line">    if (!geohashGetDistanceIfInRadiusWGS84(lon,lat, xy[0], xy[1],</span><br><span class="line">                                           radius, &amp;distance))</span><br><span class="line">    &#123;</span><br><span class="line">        return C_ERR;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;构建并返回满足条件的元素</span><br><span class="line">    geoPoint *gp &#x3D; geoArrayAppend(ga);</span><br><span class="line">    gp-&gt;longitude &#x3D; xy[0];</span><br><span class="line">    gp-&gt;latitude &#x3D; xy[1];</span><br><span class="line">    gp-&gt;dist &#x3D; distance;</span><br><span class="line">    gp-&gt;member &#x3D; member;</span><br><span class="line">    gp-&gt;score &#x3D; score;</span><br><span class="line">    return C_OK;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="算法小结-1"><a href="#算法小结-1" class="headerlink" title="算法小结"></a><strong>算法小结</strong></h3><p>抛开众多可选参数不谈，简单总结下GEORADIUS命令是怎么利用geohash获取目标位置对象的：</p>
+<p>1、参数提取和校验；</p>
+<p>2、利用中心点和输入半径计算待查区域范围。这个范围参数包括满足条件的最高的geohash网格等级(精度) 以及 对应的能够覆盖目标区域的九宫格位置；（后续会有详细说明）</p>
+<p>3、对九宫格进行遍历，根据每个geohash网格的范围框选出位置对象。进一步找出与中心点距离小于输入半径的对象，进行返回。</p>
+<p>直接描述不太好理解，我们通过如下两张图在对算法进行简单的演示：</p>
+<p><img src="/Oops/resources/142481DA111F2203E0E0ADA6D1235CC1.jpg" alt>)<img src="/Oops/resources/6E52D4EB8167C119D5FF39737C752655.jpg" alt></p>
+<p>令左图的中心为搜索中心，绿色圆形区域为目标区域，所有点为待搜索的位置对象，红色点则为满足条件的位置对象。</p>
+<p>在实际搜索时,首先会根据搜索半径计算geohash网格等级（即右图中网格大小等级），并确定九宫格位置（即红色九宫格位置信息）；再依次查找计算九宫格中的点（蓝点和红点）与中心点的距离，最终筛选出距离范围内的点（红点）。</p>
+<h3 id="算法分析"><a href="#算法分析" class="headerlink" title="算法分析"></a><strong>算法分析</strong></h3><p>为什么要用这种算法策略进行查询，或者说这种策略的优势在哪，让我们以问答的方式进行分析说明。</p>
+<p>为什么要找到满足条件的最高的geohash网格等级？为什么用九宫格？</p>
+<p>这其实是一个问题，本质上是对所有的元素对象进行了一次初步筛选。 在多层geohash网格中，每个低等级的geohash网格都是由4个高一级的网格拼接而成（如图）。</p>
+<p><img src="/Oops/resources/9BDB360FF7DD74A31E79EA9FFD57FDAD.jpg" alt></p>
+<p>换句话说，geohash网格等级越高，所覆盖的地理位置范围就越小。当我们根据输入半径和中心点位置计算出的能够覆盖目标区域的最高等级的九宫格（网格）时，就已经对九宫格外的元素进行了筛除。</p>
+<p>这里之所以使用九宫格，而不用单个网格，主要原因还是为了避免边界情况，尽可能缩小查询区域范围。试想以0经纬度为中心，就算查1米范围，单个网格覆盖的话也得查整个地球区域。而向四周八个方向扩展一圈可有效避免这个问题。</p>
+<p>如何通过geohash网格的范围框选出元素对象？效率如何？</p>
+<p>首先在每个geohash网格中的geohash值都是连续的，有固定范围。所以只要找出有序集合中，处在该范围的位置对象即可。以下是有序集合的跳表数据结构：</p>
+<p><img src="/Oops/resources/1F278E982D7AD74205C972E2CAF60123.jpg" alt></p>
+<p>其拥有类似二叉查找树的查询效率，操作平均时间复杂性为O(log(N))。且最底层的所有元素都以链表的形式按序排列。</p>
+<p>所以在查询时，只要找到集合中处在目标geohash网格中的第一个值，后续依次对比即可，不用多次查找。 </p>
+<p>九宫格不能一起查，要一个个遍历的原因也在于九宫格各网格对应的geohash值不具有连续性。只有连续了，查询效率才会高，不然要多做许多距离运算。</p>
+<p>综上，我们从源码角度解析了Redis Geo模块中 “增（GEOADD）” 和 “查（GEORADIUS）” 的详细过程。并可推算出Redis中GEORADIUS查找附近的人功能，时间复杂度为：O(N+log(M))</p>
+<p>其中N为指定半径范围内的位置元素数量，而M则是被九宫格圈住计算距离的元素的数量。结合Redis本身基于内存的存储特性，在实际使用过程中有非常高的运行效率。</p>
+<p><strong>END</strong></p>
+<p>作者简介</p>
+<p>万汨，饿了么资深开发工程师。iOS，Go，Java均有涉猎。目前主攻大数据开发。喜欢骑行、爬山。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/oops/uploads/wechat-qcode.jpg" alt="架构组 wechat" style="width: 200px; max-width: 100%;"/>
+    <div>欢迎您扫一扫上面的微信二维码，订阅我的公众号</div>
+</div>
+
+      </div>
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/SpringBoot%20%E6%B7%B1%E5%BA%A6%E8%B0%83%E4%BC%98%EF%BC%8C%E8%AE%A9%E4%BD%A0%E7%9A%84%E9%A1%B9%E7%9B%AE%E9%A3%9E%E8%B5%B7%E6%9D%A5%EF%BC%81/" rel="next" title="SpringBoot 深度调优，让你的项目飞起来！">
+                <i class="fa fa-chevron-left"></i> SpringBoot 深度调优，让你的项目飞起来！
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/MySQL%EF%BC%9A%E4%BA%92%E8%81%94%E7%BD%91%E5%85%AC%E5%8F%B8%E5%B8%B8%E7%94%A8%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E6%96%B9%E6%A1%88%E6%B1%87%E6%80%BB%EF%BC%81/" rel="prev" title="MySQL：互联网公司常用分库分表方案汇总！">
+                MySQL：互联网公司常用分库分表方案汇总！ <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner" style="text-align:center;">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      本站访客数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人次
+    </span>
+  
+
+  
+    <span class="site-pv">
+      本站总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/oops/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/oops/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/oops/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/oops/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/oops/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/oops/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/oops/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/oops/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/oops/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/oops/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/oops/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/oops/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="1、Java 堆空间 2、GC 开销超过限制 3、请求的数组大小超过虚拟机限制 4、Perm gen 空间 5、Metaspace 6、无法新建本机线程 7、杀死进程或子进程 8、发生 stack_trace_with_native_method 1. Java 堆空间发生频率：5颗星 造成原因  无法在 Java 堆中分配对象 吞吐量增加 应用程序无意中保存了对象引用，对象无法被 GC 回收 应">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JVM 发生内存溢出的 8 种原因、及解决办法">
+<meta property="og:url" content="https://smartlink-tech.gitee.cn/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/JVM%20%E5%8F%91%E7%94%9F%E5%86%85%E5%AD%98%E6%BA%A2%E5%87%BA%E7%9A%84%208%20%E7%A7%8D%E5%8E%9F%E5%9B%A0%E3%80%81%E5%8F%8A%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="1、Java 堆空间 2、GC 开销超过限制 3、请求的数组大小超过虚拟机限制 4、Perm gen 空间 5、Metaspace 6、无法新建本机线程 7、杀死进程或子进程 8、发生 stack_trace_with_native_method 1. Java 堆空间发生频率：5颗星 造成原因  无法在 Java 堆中分配对象 吞吐量增加 应用程序无意中保存了对象引用，对象无法被 GC 回收 应">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-04-30T03:23:00.000Z">
+<meta property="article:modified_time" content="2020-04-30T08:17:04.062Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/Oops',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"remove","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://smartlink-tech.gitee.cn/oops/2020/04/30/推荐阅读/JVM 发生内存溢出的 8 种原因、及解决办法/"/>
+
+
+
+
+
+  <title>JVM 发生内存溢出的 8 种原因、及解决办法 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/oops/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/oops/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/oops/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/oops/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/oops/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://smartlink-tech.gitee.cn/oops/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/JVM%20%E5%8F%91%E7%94%9F%E5%86%85%E5%AD%98%E6%BA%A2%E5%87%BA%E7%9A%84%208%20%E7%A7%8D%E5%8E%9F%E5%9B%A0%E3%80%81%E5%8F%8A%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="架构组">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/oops/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">JVM 发生内存溢出的 8 种原因、及解决办法</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-04-30T11:23:00+08:00">
+                2020-04-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/oops/categories/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/" itemprop="url" rel="index">
+                    <span itemprop="name">推荐阅读</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv">本文总阅读量
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>1、Java 堆空间</p>
+<p>2、GC 开销超过限制</p>
+<p>3、请求的数组大小超过虚拟机限制</p>
+<p>4、Perm gen 空间</p>
+<p>5、Metaspace</p>
+<p>6、无法新建本机线程</p>
+<p>7、杀死进程或子进程</p>
+<p>8、发生 stack_trace_with_native_method</p>
+<h2 id="1-Java-堆空间"><a href="#1-Java-堆空间" class="headerlink" title="1. Java 堆空间"></a><strong>1. Java 堆空间</strong></h2><p><strong>发生频率：</strong>5颗星</p>
+<p><strong>造成原因</strong></p>
+<ul>
+<li>无法在 Java 堆中分配对象</li>
+<li>吞吐量增加</li>
+<li>应用程序无意中保存了对象引用，对象无法被 GC 回收</li>
+<li>应用程序过度使用 finalizer。finalizer 对象不能被 GC 立刻回收。finalizer 由结束队列服务的守护线程调用，有时 finalizer 线程的处理能力无法跟上结束队列的增长</li>
+</ul>
+<p><strong>解决方案</strong></p>
+<ul>
+<li>使用 -Xmx 增加堆大小</li>
+<li>修复应用程序中的内存泄漏</li>
+</ul>
+<h2 id="2-GC-开销超过限制"><a href="#2-GC-开销超过限制" class="headerlink" title="2. GC 开销超过限制"></a><strong>2. GC 开销超过限制</strong></h2><p><strong>发生频率：</strong>5颗星</p>
+<p><strong>造成原因</strong></p>
+<ul>
+<li>Java 进程98%的时间在进行垃圾回收，恢复了不到2%的堆空间，最后连续5个（编译时常量）垃圾回收一直如此。</li>
+</ul>
+<p><strong>解决方案</strong></p>
+<ul>
+<li>使用 -Xmx 增加堆大小</li>
+<li>使用 -XX:-UseGCOverheadLimit 取消 GC 开销限制</li>
+<li>修复应用程序中的内存泄漏</li>
+</ul>
+<h2 id="3-请求的数组大小超过虚拟机限制"><a href="#3-请求的数组大小超过虚拟机限制" class="headerlink" title="3. 请求的数组大小超过虚拟机限制"></a><strong>3. 请求的数组大小超过虚拟机限制</strong></h2><p><strong>发生频率：</strong>2颗星</p>
+<p><strong>造成原因</strong></p>
+<ul>
+<li>应用程序试图分配一个超过堆大小的数组</li>
+</ul>
+<p><strong>解决方案</strong></p>
+<ul>
+<li>使用 -Xmx 增加堆大小</li>
+<li>修复应用程序中分配巨大数组的 bug</li>
+</ul>
+<h2 id="4-Perm-gen-空间"><a href="#4-Perm-gen-空间" class="headerlink" title="4. Perm gen 空间"></a><strong>4. Perm gen 空间</strong></h2><p><strong>发生频率：</strong>3颗星</p>
+<p><strong>造成原因</strong></p>
+<p>Perm gen 空间包含：</p>
+<ul>
+<li>类的名字、字段、方法</li>
+<li>与类相关的对象数组和类型数组</li>
+<li>JIT 编译器优化</li>
+</ul>
+<p>当 Perm gen 空间用尽时，将抛出异常。</p>
+<p><strong>解决方案</strong></p>
+<ul>
+<li>使用 -XX: MaxPermSize 增加 Permgen 大小</li>
+<li>不重启应用部署应用程序可能会导致此问题。重启 JVM 解决</li>
+</ul>
+<h2 id="5-Metaspace"><a href="#5-Metaspace" class="headerlink" title="5. Metaspace"></a><strong>5. Metaspace</strong></h2><p><strong>发生频率：</strong>3颗星</p>
+<p><strong>造成原因</strong></p>
+<ul>
+<li>从 Java 8 开始 Perm gen 改成了 Metaspace，在本机内存中分配 class 元数据（称为 metaspace）。如果 metaspace 耗尽，则抛出异常</li>
+</ul>
+<p><strong>解决方案</strong></p>
+<ul>
+<li>通过命令行设置 -XX: MaxMetaSpaceSize 增加 metaspace 大小</li>
+<li>取消 -XX: maxmetsspacedize</li>
+<li>减小 Java 堆大小,为 MetaSpace 提供更多的可用空间</li>
+<li>为服务器分配更多的内存</li>
+<li>可能是应用程序 bug，修复 bug</li>
+</ul>
+<h2 id="6-无法新建本机线程"><a href="#6-无法新建本机线程" class="headerlink" title="6. 无法新建本机线程"></a><strong>6. 无法新建本机线程</strong></h2><p><strong>发生频率：</strong>5颗星</p>
+<p><strong>造成原因</strong></p>
+<ul>
+<li>内存不足，无法创建新线程。由于线程在本机内存中创建，报告这个错误表明本机内存空间不足</li>
+</ul>
+<p><strong>解决方案</strong></p>
+<ul>
+<li>为机器分配更多的内存</li>
+<li>减少 Java 堆空间</li>
+<li>修复应用程序中的线程泄漏。</li>
+<li>增加操作系统级别的限制<ul>
+<li>ulimit -a</li>
+<li>用户进程数增大 (-u) 1800</li>
+</ul>
+</li>
+<li>使用 -Xss 减小线程堆栈大小</li>
+</ul>
+<h2 id="7-杀死进程或子进程"><a href="#7-杀死进程或子进程" class="headerlink" title="7. 杀死进程或子进程"></a><strong>7. 杀死进程或子进程</strong></h2><p><strong>发生频率：</strong>1颗星</p>
+<p><strong>造成原因</strong></p>
+<ul>
+<li>内核任务：内存不足结束器，在可用内存极低的情况下会杀死进程</li>
+</ul>
+<p><strong>解决方案</strong></p>
+<ul>
+<li>将进程迁移到不同的机器上</li>
+<li>给机器增加更多内存</li>
+<li>与其他 OOM 错误不同，这是由操作系统而非 JVM 触发的。</li>
+</ul>
+<h2 id="8-发生-stack-trace-with-native-method"><a href="#8-发生-stack-trace-with-native-method" class="headerlink" title="8. 发生 stack_trace_with_native_method"></a><strong>8. 发生 stack_trace_with_native_method</strong></h2><p><strong>发生频率：</strong>1颗星</p>
+<p><strong>造成原因</strong></p>
+<ul>
+<li>本机方法（native method）分配失败</li>
+<li>打印的堆栈跟踪信息，最顶层的帧是本机方法</li>
+</ul>
+<p>解决方案</p>
+<ul>
+<li>使用操作系统本地工具进行诊断</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/oops/uploads/wechat-qcode.jpg" alt="架构组 wechat" style="width: 200px; max-width: 100%;"/>
+    <div>欢迎您扫一扫上面的微信二维码，订阅我的公众号</div>
+</div>
+
+      </div>
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/Java%E6%9C%8D%E5%8A%A1%EF%BC%8CCPU100%20%E9%97%AE%E9%A2%98%E5%A6%82%E4%BD%95%E5%BF%AB%E9%80%9F%E5%AE%9A%E4%BD%8D%EF%BC%9F/" rel="next" title="Java服务，CPU100 问题如何快速定位？">
+                <i class="fa fa-chevron-left"></i> Java服务，CPU100 问题如何快速定位？
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/Java%20%E5%B9%B6%E5%8F%91%E9%AB%98%E9%A2%91%E9%9D%A2%E8%AF%95%E9%A2%98%EF%BC%9A%E8%81%8A%E8%81%8A%E4%BD%A0%E5%AF%B9%20AQS%20%E7%9A%84%E7%90%86%E8%A7%A3%EF%BC%9F/" rel="prev" title="Java 并发高频面试题：聊聊你对 AQS 的理解？">
+                Java 并发高频面试题：聊聊你对 AQS 的理解？ <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner" style="text-align:center;">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      本站访客数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人次
+    </span>
+  
+
+  
+    <span class="site-pv">
+      本站总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/oops/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/oops/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/oops/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/oops/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/oops/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

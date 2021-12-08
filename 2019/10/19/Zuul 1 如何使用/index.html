@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/oops/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/oops/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/oops/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/oops/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/oops/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/oops/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/oops/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Zuul," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="1. 介绍目前使用最多的是Spring Cloud Zuul, 所以本文也针对Spring讲解。 2. 使用共3步 1.创建一个spring boot工程如何创建本文不做讲解 2. 修改pom引入zuul和eureka本文服务治理使用Eureka也可以使用其他组件，例如： Consul。 123456789&lt;dependency&gt;    &lt;groupId&gt;org.sprin">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Zuul1 如何使用">
+<meta property="og:url" content="https://smartlink-tech.gitee.cn/oops/2019/10/19/Zuul%201%20%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="1. 介绍目前使用最多的是Spring Cloud Zuul, 所以本文也针对Spring讲解。 2. 使用共3步 1.创建一个spring boot工程如何创建本文不做讲解 2. 修改pom引入zuul和eureka本文服务治理使用Eureka也可以使用其他组件，例如： Consul。 123456789&lt;dependency&gt;    &lt;groupId&gt;org.sprin">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2019-10-18T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-03-30T02:58:20.983Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="Zuul">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/Oops',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"remove","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://smartlink-tech.gitee.cn/oops/2019/10/19/Zuul 1 如何使用/"/>
+
+
+
+
+
+  <title>Zuul1 如何使用 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/oops/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/oops/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/oops/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/oops/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/oops/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://smartlink-tech.gitee.cn/oops/oops/2019/10/19/Zuul%201%20%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="架构组">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/oops/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Zuul1 如何使用</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-user"></i>
+              </span>
+              <span class="post-meta-item-text">YaNll</span>
+              <span class="post-meta-divider">|</span>
+            
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-19T00:00:00+08:00">
+                2019-10-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/oops/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index">
+                    <span itemprop="name">微服务</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv">本文总阅读量
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="1-介绍"><a href="#1-介绍" class="headerlink" title="1. 介绍"></a>1. 介绍</h2><p>目前使用最多的是Spring Cloud Zuul, 所以本文也针对Spring讲解。</p>
+<h2 id="2-使用"><a href="#2-使用" class="headerlink" title="2. 使用"></a>2. 使用</h2><p>共3步</p>
+<h3 id="1-创建一个spring-boot工程"><a href="#1-创建一个spring-boot工程" class="headerlink" title="1.创建一个spring boot工程"></a>1.创建一个spring boot工程</h3><p>如何创建本文不做讲解</p>
+<h3 id="2-修改pom引入zuul和eureka"><a href="#2-修改pom引入zuul和eureka" class="headerlink" title="2. 修改pom引入zuul和eureka"></a>2. 修改pom引入zuul和eureka</h3><p>本文服务治理使用Eureka也可以使用其他组件，例如： Consul。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;spring-cloud-starter-netflix-eureka-server&lt;/artifactId&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br><span class="line">		</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">	&lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;</span><br><span class="line">	&lt;artifactId&gt;spring-cloud-starter-netflix-zuul&lt;/artifactId&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-添加注释"><a href="#3-添加注释" class="headerlink" title="3.添加注释"></a>3.添加注释</h3><p>在启动类上加上注释＠EnableZuulProxy，@EnableEurekaClient</p>
+<h3 id="4-添加配置"><a href="#4-添加配置" class="headerlink" title="4.添加配置"></a>4.添加配置</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#eureka配置</span></span><br><span class="line">eureka:</span><br><span class="line">  client:</span><br><span class="line">    serviceUrl:</span><br><span class="line">      defaultZone: http://xxxxx/eureka/</span><br><span class="line"></span><br><span class="line">server:</span><br><span class="line">  <span class="comment">#服务端口</span></span><br><span class="line">  port: 9091</span><br><span class="line">  <span class="comment">#内核设置 tomcat or undertow</span></span><br><span class="line">  <span class="comment">#undertow是一个轻量级、高性能容器。</span></span><br><span class="line">  <span class="comment">#undertow 提供阻塞或基于 XNIO 的非阻塞机制，包大小不足 1M，内嵌模式运行时的堆内存占用只有 4M。</span></span><br><span class="line">  undertow:</span><br><span class="line">    <span class="comment">#CPU核数(物理)</span></span><br><span class="line">    io-threads: 1</span><br><span class="line">    <span class="comment"># io-threads * 8</span></span><br><span class="line">    worker-threads: 8</span><br><span class="line">    direct-buffers: <span class="literal">true</span></span><br><span class="line">    buffer-size: 1024 <span class="comment"># 字节数</span></span><br><span class="line"><span class="comment">#  tomcat:</span></span><br><span class="line"><span class="comment">#    #等待队列长度</span></span><br><span class="line"><span class="comment">#    accept-count: 1000</span></span><br><span class="line"><span class="comment">#    #最大线程数</span></span><br><span class="line"><span class="comment">#    max-threads: 1000</span></span><br><span class="line"><span class="comment">#    #最大连接数</span></span><br><span class="line"><span class="comment">#    max-connections: 2000</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#服务名称</span></span><br><span class="line">spring:</span><br><span class="line">  application:</span><br><span class="line">    name: zuul-service</span><br><span class="line"></span><br><span class="line"><span class="comment">#路由配置</span></span><br><span class="line">zuul:</span><br><span class="line">  prefix: /zuul</span><br><span class="line">  host:</span><br><span class="line">    <span class="comment">#使用 HttpClient 时有效，使用 OkHttp 无效</span></span><br><span class="line">    <span class="comment">#默认20</span></span><br><span class="line">    max-per-route-connections: 1000</span><br><span class="line">    <span class="comment">#默认200</span></span><br><span class="line">    max-total-connections: 1000</span><br><span class="line">  <span class="comment">#默认是使用信号量隔离</span></span><br><span class="line">  semaphore:</span><br><span class="line">    max-semaphores: 5000</span><br><span class="line">    </span><br><span class="line"><span class="comment">#默认是根据服务注册的服务名称进行转发，同时也可以单独指定</span></span><br><span class="line"><span class="comment">#  routes:</span></span><br><span class="line"><span class="comment">#    api-a:</span></span><br><span class="line"><span class="comment">#      path: /api-a/**</span></span><br><span class="line"><span class="comment">#      serviceId: service-ribbon</span></span><br><span class="line"><span class="comment">#    api-b:</span></span><br><span class="line"><span class="comment">#      path: /api-b/**</span></span><br><span class="line"><span class="comment">#      serviceId: service-feign</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#hystrix配置</span></span><br><span class="line">hystrix:</span><br><span class="line">  <span class="built_in">command</span>:</span><br><span class="line">    default:</span><br><span class="line">      execution:</span><br><span class="line">        isolation:</span><br><span class="line">          thread:</span><br><span class="line">            <span class="comment">#超时熔断60s</span></span><br><span class="line">            timeoutInMilliseconds: 60000</span><br><span class="line"></span><br><span class="line"><span class="comment">#ribbon配置</span></span><br><span class="line">ribbon:</span><br><span class="line">  ConnectTimeout: 5000</span><br><span class="line">  ReadTimeout: 5000</span><br><span class="line">  MaxAutoRetries: 1 <span class="comment"># 对第一次请求的发我的重试次数</span></span><br><span class="line">  MaxAutoRetriesNextServer: 1 <span class="comment">#要重试的下一个服务的最大数量（不包括第一个服务）</span></span><br><span class="line">  OkToRetryOnAllOperations: <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="3-配置详解"><a href="#3-配置详解" class="headerlink" title="3. 配置详解"></a>3. 配置详解</h2><h3 id="1-关于超时设置"><a href="#1-关于超时设置" class="headerlink" title="1. 关于超时设置"></a>1. 关于超时设置</h3><p>zuul的超时配置有两种方式：</p>
+<ul>
+<li>直接使用url配置的路由，是基于httpclient来发送请求，可以直接设置socket的连接时间</li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">zuul:</span><br><span class="line">  host:</span><br><span class="line">    socket-timeout-millis: 1000</span><br><span class="line">    connect-timeout-millis : 2000</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>使用ribbon的轮训机制，可以配置ribbon超时时间，也可以配置hystrix超时时间，两者取配置最小者</li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">ribbon:</span><br><span class="line">  ConnectTimeout: 1000</span><br><span class="line">  ReadTimeout: 1000</span><br><span class="line">hystrix:</span><br><span class="line">  <span class="built_in">command</span>:</span><br><span class="line">    default:</span><br><span class="line">      execution:</span><br><span class="line">        isolation:</span><br><span class="line">          thread:</span><br><span class="line">            timeoutInMillisecond: 1000</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-路由相关配置"><a href="#2-路由相关配置" class="headerlink" title="2. 路由相关配置"></a>2. 路由相关配置</h3><h3 id="模式"><a href="#模式" class="headerlink" title="模式"></a>模式</h3><ul>
+<li>serviceId模式</li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">zuul:</span><br><span class="line">  routes:</span><br><span class="line">    api<span class="_">-a</span>:</span><br><span class="line">      path: /api<span class="_">-a</span>/**</span><br><span class="line">      serviceId: service-one</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>url模式</li>
+</ul>
+<p>不能使用Hystrix和Ribbon</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">zuul:</span><br><span class="line">  routes:</span><br><span class="line">    api-b:</span><br><span class="line">      path: /api-b/**</span><br><span class="line">      url: http://localhost:8081/</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="路由配置"><a href="#路由配置" class="headerlink" title="路由配置"></a>路由配置</h3><p>一般是写成如下格式：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#路由名称 api-a </span></span><br><span class="line"><span class="comment">#路由地址为 /api-a/**</span></span><br><span class="line"><span class="comment">#路由服务为service-one</span></span><br><span class="line">zuul:</span><br><span class="line">  routes:</span><br><span class="line">    api<span class="_">-a</span>:</span><br><span class="line">      path: /api<span class="_">-a</span>/**</span><br><span class="line">      serviceId: service-one</span><br></pre></td></tr></table></figure>
+
+<p>还可以更简单一点如下：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">zuul:</span><br><span class="line">  routes:</span><br><span class="line">    service-one: /api<span class="_">-a</span>/**</span><br></pre></td></tr></table></figure>
+
+<p>如果路由映射规则不写也可以，系统会默认生成，比如service-one,service-two 不自动生成如下格式：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">zuul:</span><br><span class="line">  routes:</span><br><span class="line">    service-one:</span><br><span class="line">      path: /service-one/**</span><br><span class="line">      serviceId: service-one</span><br><span class="line">    service-two:</span><br><span class="line">      path: /service-two/**</span><br><span class="line">      serviceId: service-two</span><br></pre></td></tr></table></figure>
+
+<p>如果像排除某个服务路由映射 可以使用如下配置：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">zuul:</span><br><span class="line">  ignored-services: service-two</span><br></pre></td></tr></table></figure>
+
+<p>如果只是不想给默写几个做映射，可以使用如下配置：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">zuul:</span><br><span class="line">  ignored-patterns: /**/hello/**</span><br></pre></td></tr></table></figure>
+
+<p>如果希望在访问的url上加前缀路径：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">zuul:</span><br><span class="line">  prefix: /api</span><br></pre></td></tr></table></figure>
+
+<p>如果希望某个接口访问zuul本地的接口,而不是路由到服务：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">zuul:</span><br><span class="line">  routes:</span><br><span class="line">    <span class="built_in">local</span>:</span><br><span class="line">      path: /<span class="built_in">local</span>/**</span><br><span class="line">      url: forward:/<span class="built_in">local</span></span><br></pre></td></tr></table></figure>
+
+<p>url通配符规则如下：</p>
+<p>通配符 含义 举例 解释   ? 匹配任意单个字符 /service-one/? 匹配/service-one/a,/service-one/b,/service-one/c等   * 匹配任意数量的字符 /service-one/* 匹配/service-one/aaa,service-one/bbb,/service-one/ccc等<br> ，无法匹配/service-one/a/b/c   ** 匹配任意数量的字符 /service-one/** 匹配/service-one/aaa,service-one/bbb,/service-one/ccc等<br> ，也可以匹配/service-one/a/b/c</p>
+<h3 id="3-连接数配置"><a href="#3-连接数配置" class="headerlink" title="3. 连接数配置"></a>3. 连接数配置</h3><p>zuul的连接数配置有两种方式：</p>
+<ul>
+<li>直接使用url配置的路由，适用于ApacheHttpClient，如果是okhttp无效。每个服务的http客户端连接池最大连接和每个route可用的最大连接数</li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">zuul:</span><br><span class="line">  host:</span><br><span class="line">    max-total-connections: 200</span><br><span class="line">    max-per-route-connections: 20</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>使用ribbon的超时</li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ribbon:</span><br><span class="line">  MaxTotalConnections: 200   <span class="comment"># 默认值</span></span><br><span class="line">  MaxConnectionsPerHost: 20 <span class="comment"># 默认值</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="4-隔离策略"><a href="#4-隔离策略" class="headerlink" title="4. 隔离策略"></a>4. 隔离策略</h3><p>默认情况下，Zuul的隔离策略是SEMAPHORE（也是目前比较推荐的）。</p>
+<p>可设置将隔离策略改为THREAD。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">zuul.ribbonIsolationStrategy=THREAD</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>线程隔离 - THREAD</li>
+</ul>
+<p>当设置隔离策略为THREAD时，Hystrix的线程隔离策略将作用所有路由，HystrixThreadPoolKey 默认为RibbonCommand，这意味着，所有路由的HystrixCommand都会在相同的Hystrix线程池中执行。可使用以下配置，让每个路由使用独立的线程池:</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">zuul:</span><br><span class="line">  ribbonIsolationStrategy: THREAD</span><br><span class="line">  threadPool:</span><br><span class="line">    useSeparateThreadPools: <span class="literal">true</span></span><br><span class="line">    threadPoolKeyPrefix: zuulgw</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>信号量隔离 - SEMAPHORE</li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">zuul:</span><br><span class="line">  semaphore:</span><br><span class="line">    max-semaphores: 100 <span class="comment"># 默认值</span></span><br></pre></td></tr></table></figure>
+
+<p>为指定服务配置信号量(推荐用法)</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">zuul:</span><br><span class="line">  eureka:</span><br><span class="line">    &lt;serviceId&gt;:</span><br><span class="line">      semaphore:</span><br><span class="line">        max-semaphores: 100 <span class="comment"># 默认值</span></span><br></pre></td></tr></table></figure>
+
+<p>配置生效优先级如下(优先级依次降低)：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[优先级1] zuul.eureka.api.semaphore.maxSemaphores</span><br><span class="line">[优先级2] zuul.semaphore.max-semaphores</span><br><span class="line">[优先级3] hystrix.command.api.execution.isolation.semaphore.maxConcurrentRequests</span><br><span class="line">[优先级4] hystrix.command.default.execution.isolation.semaphore.maxConcurrentRequests</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-与Hystrix"><a href="#5-与Hystrix" class="headerlink" title="5. 与Hystrix"></a>5. 与Hystrix</h3><p>默认是开启，只需配置timeout即可</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">hystrix:</span><br><span class="line">  <span class="built_in">command</span>:</span><br><span class="line">    default:</span><br><span class="line">      execution:</span><br><span class="line">        isolation:</span><br><span class="line">          thread:</span><br><span class="line">            timeoutInMillisecond: 1000</span><br></pre></td></tr></table></figure>
+
+<p>设置超时也可以针对某些服务</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[优先级1] hystrix.command.default.XXX</span><br><span class="line">[优先级2] hystrix.command.[HystrixCommandKey].XXX</span><br></pre></td></tr></table></figure>
+
+<p>其他配置</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">hystrix:</span><br><span class="line">  <span class="built_in">command</span>:</span><br><span class="line">    <span class="comment">#指任意时间点允许的并发数。当请求达到或超过该设置值后，其其余就会被拒绝。默认值是100。</span></span><br><span class="line">    default:execution.isolation.semaphore.maxConcurrentRequests</span><br><span class="line">    <span class="comment">#要使用hystrix的超时fallback，必须设置，默认开启</span></span><br><span class="line">    execution.timeout.enabled</span><br><span class="line">    <span class="comment">#发生超时是是否中断线程，默认是true。</span></span><br><span class="line">    execution.isolation.thread.interruptOnTimeout</span><br><span class="line">    <span class="comment">#取消时是否中断线程，默认是false。</span></span><br><span class="line">    execution.isolation.thread.interruptOnCancel</span><br><span class="line">    <span class="comment">#*hystrix.command.default.fallback.isolation.semaphore.maxConcurrentRequests</span></span><br><span class="line">    <span class="comment">#设置fallback的线程数，默认是10，这个值在大量触发fallback逻辑时要注意调整。</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="6-与Ribbon"><a href="#6-与Ribbon" class="headerlink" title="6. 与Ribbon"></a>6. 与Ribbon</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">ribbon:</span><br><span class="line">  <span class="comment">#ribbon重试超时时间</span></span><br><span class="line">  ConnectTimeout: 250</span><br><span class="line">  <span class="comment">#建立连接后的超时时间</span></span><br><span class="line">  ReadTimeout: 1000</span><br><span class="line">  <span class="comment">#对所有操作请求都进行重试</span></span><br><span class="line">  OkToRetryOnAllOperations: <span class="literal">true</span></span><br><span class="line">  <span class="comment">#切换实例的重试次数</span></span><br><span class="line">  MaxAutoRetriesNextServer: 2</span><br><span class="line">  <span class="comment">#对当前实例的重试次数</span></span><br><span class="line">  MaxAutoRetries: 1</span><br><span class="line">  eureka:</span><br><span class="line">      <span class="built_in">enable</span>: <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">zuul:</span><br><span class="line">  <span class="comment">#默认为true</span></span><br><span class="line">  retryable: <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
+<p>如果使用重试配置需要 pom 需引入jar包</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.springframework.retry&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;spring-retry&lt;/artifactId&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="7-其他"><a href="#7-其他" class="headerlink" title="7. 其他"></a>7. 其他</h3><p>禁用Filter</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">zuul.FormBodyWrapperFilter.pre.disable= <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="8-说明"><a href="#8-说明" class="headerlink" title="8. 说明"></a>8. 说明</h3><p>以上配置主要是针对Dalston版本</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/oops/uploads/wechat-qcode.jpg" alt="架构组 wechat" style="width: 200px; max-width: 100%;"/>
+    <div>欢迎您扫一扫上面的微信二维码，订阅我的公众号</div>
+</div>
+
+      </div>
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/oops/tags/Zuul/" rel="tag"># Zuul</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/oops/2019/10/19/Zuul%201%E4%BB%8B%E7%BB%8D/" rel="next" title="Zuul1介绍">
+                <i class="fa fa-chevron-left"></i> Zuul1介绍
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/oops/2019/12/18/MySQL%E8%A1%A8%E8%AE%BE%E8%AE%A1%E7%9A%84%E9%82%A3%E4%BA%9B%E4%BA%8B/" rel="prev" title="MySQL表设计的那些事">
+                MySQL表设计的那些事 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner" style="text-align:center;">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      本站访客数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人次
+    </span>
+  
+
+  
+    <span class="site-pv">
+      本站总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/oops/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/oops/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/oops/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/oops/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/oops/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/oops/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/oops/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/oops/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/oops/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/oops/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/oops/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/oops/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="目录 . 一、基本概念 . 1、背景 . 2、简介 . 3、特点 . 4、基础模型 . 5、Apollo 的四个维度 . 6、本地缓存 . 7、客户端设计 . 8、总体设计 . 9、可用性考虑 . 二、Apollo 配置中心创建项目与配置 . 1、登录 Apollo . 2、修改与增加部门数据 . 3、创建一个项目 . 4、创建一个配置参数 . 三、创建 Apollo 客户端测试项目 . 1、Ma">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一文搞定：SpringBoot 集成 Apollo 配置中心">
+<meta property="og:url" content="https://smartlink-tech.gitee.cn/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E4%B8%80%E6%96%87%E6%90%9E%E5%AE%9A%EF%BC%9ASpringBoot%20%E9%9B%86%E6%88%90%20Apollo%20%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="目录 . 一、基本概念 . 1、背景 . 2、简介 . 3、特点 . 4、基础模型 . 5、Apollo 的四个维度 . 6、本地缓存 . 7、客户端设计 . 8、总体设计 . 9、可用性考虑 . 二、Apollo 配置中心创建项目与配置 . 1、登录 Apollo . 2、修改与增加部门数据 . 3、创建一个项目 . 4、创建一个配置参数 . 三、创建 Apollo 客户端测试项目 . 1、Ma">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/1EA9DCC0B1B543E6316BF609E384B141.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/BAB0B9E8D637F4751B675505CA52ECE8.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/E6891ABAFE32B02641160B6C1AB60703.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/9D72E73BADE7D310763A221E362062BF.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/580CFB4BFB8A1755BF693791DFE1AB21.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/2CA109197FAB8B99D84DC70BA819ACEB.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/53EE26285DC1563F702569C7707317A6.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/4E7F44CA5E7C031D8E4CF36DCD7041B1.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/4838BCD39800FF470C3C2F2FAD1C57F5.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/25D4596A82C684EBA1D90077AFFC0749.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/EF1A7C4806B9A5D2DEBE706D155E79AA.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/32ADB600700CC6BE035A7C0357B094F0.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/797ED783AC53E5CA9A7652841A581590.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/2F9C5B49ADE086EE2CF7BEC18F9AF747.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/0986C0D0A1B7ECBC17AB0446F3C9E143.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/2BCC8B2CC9EAB2C964AB553A4708A224.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/1C30260FB7C58E20CC5513C095DB458C.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/FA0058FDFA4601187FA861B3BC7181DA.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/5FE606BB5729E1BDCAE38D086E639593.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/B1718E001A3107236A66A63BAAA2387E.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/9AC476DDDFDE3B07233BEDE10E4B619D.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/CA262B113878D4D596007DAE516AEB3D.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/48E638D1997A65BE40380914C5C81B41.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/48E638D1997A65BE40380914C5C81B41.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/D751348E642A378A47B5FE7FF50E7213.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/147B393063E3F0248F64777FC8F7EFFE.jpg">
+<meta property="article:published_time" content="2020-04-30T03:23:00.000Z">
+<meta property="article:modified_time" content="2020-04-30T08:17:04.064Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://smartlink-tech.gitee.cn/Oops/resources/1EA9DCC0B1B543E6316BF609E384B141.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/Oops',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"remove","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://smartlink-tech.gitee.cn/oops/2020/04/30/推荐阅读/一文搞定：SpringBoot 集成 Apollo 配置中心/"/>
+
+
+
+
+
+  <title>一文搞定：SpringBoot 集成 Apollo 配置中心 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/oops/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/oops/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/oops/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/oops/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/oops/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://smartlink-tech.gitee.cn/oops/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E4%B8%80%E6%96%87%E6%90%9E%E5%AE%9A%EF%BC%9ASpringBoot%20%E9%9B%86%E6%88%90%20Apollo%20%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="架构组">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/oops/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">一文搞定：SpringBoot 集成 Apollo 配置中心</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-04-30T11:23:00+08:00">
+                2020-04-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/oops/categories/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/" itemprop="url" rel="index">
+                    <span itemprop="name">推荐阅读</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv">本文总阅读量
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>目录</p>
+<p>. 一、基本概念</p>
+<p>. 1、背景</p>
+<p>. 2、简介</p>
+<p>. 3、特点</p>
+<p>. 4、基础模型</p>
+<p>. 5、Apollo 的四个维度</p>
+<p>. 6、本地缓存</p>
+<p>. 7、客户端设计</p>
+<p>. 8、总体设计</p>
+<p>. 9、可用性考虑</p>
+<p>. 二、Apollo 配置中心创建项目与配置</p>
+<p>. 1、登录 Apollo</p>
+<p>. 2、修改与增加部门数据</p>
+<p>. 3、创建一个项目</p>
+<p>. 4、创建一个配置参数</p>
+<p>. 三、创建 Apollo 客户端测试项目</p>
+<p>. 1、Mavne 添加 Apollo 依赖</p>
+<p>. 2、配置文件添加参数</p>
+<p>. 3、创建测试 Controller 类</p>
+<p>. 4、创建启动类</p>
+<p>. 5、JVM 启动参数添加启动参数</p>
+<p>. 四、启动项目进行测试</p>
+<p>. 1、测试是否能够获取 Apollo 中设置的值</p>
+<p>. 2、测试当 Apollo 中修改参数值后客户端是否能及时刷新</p>
+<p>. 3、测试当 Apollo 执行配置回滚操作时客户端是否能及时改变</p>
+<p>. 4、测试当不能访问 Apollo 时客户端的变化</p>
+<p>. 5、测试当 Apollo 中将参数删除后客户端的变化</p>
+<p>. 五、对 Apollo 的 Cluster、Namespace 进行探究</p>
+<p>. 1、不同环境下的配置</p>
+<p>. 2、不同集群下的配置</p>
+<p>. 3、不同命名空间下的配置</p>
+<p>. 六、Kubernetes 的 SpringBoot 应用使用 Apollo 配置中心</p>
+<p>. 1、构建 Docker 镜像</p>
+<p>. 2、Kubernetes 部署示例应用</p>
+<p>. 3、测试部署的应用接口</p>
+<hr>
+<p><strong>目录</strong></p>
+<ul>
+<li>一、Kubernetes 部署配置中心 Apollo</li>
+<li>二、SpringBoot 集成 Apollo 配置中心</li>
+</ul>
+<p><strong>系统环境</strong></p>
+<ul>
+<li>SpringBoot 版本：2.1.8.RELEASE</li>
+<li>Apollo 版本：1.4.0</li>
+</ul>
+<p><strong>参考地址</strong></p>
+<ul>
+<li>Apollo 文档知识</li>
+<li>Apollo Github 地址</li>
+<li>SpringBoto 集成 Apollo 示例项目 Github 地址：<a href="https://github.com/my-dlq/blog-example/tree/master/springboot/springboot-apollo-demo" target="_blank" rel="noopener">https://github.com/my-dlq/blog-example/tree/master/springboot/springboot-apollo-demo</a></li>
+</ul>
+<h2 id="一、基本概念"><a href="#一、基本概念" class="headerlink" title="一、基本概念"></a>一、基本概念</h2><p>由于 Apollo 概念比较多，刚开始使用比较复杂，最好先过一遍概念再动手实践尝试使用。</p>
+<h3 id="1、背景"><a href="#1、背景" class="headerlink" title="1、背景"></a>1、背景</h3><p>随着程序功能的日益复杂，程序的配置日益增多，各种功能的开关、参数的配置、服务器的地址……对程序配置的期望值也越来越高，配置修改后实时生效，灰度发布，分环境、分集群管理配置，完善的权限、审核机制…… 在这样的大环境下，传统的通过配置文件、数据库等方式已经越来越无法满足开发人员对配置管理的需求。因此 Apollo 配置中心应运而生！</p>
+<h3 id="2、简介"><a href="#2、简介" class="headerlink" title="2、简介"></a>2、简介</h3><p>Apollo（阿波罗）是携程框架部门研发的开源配置管理中心，能够集中化管理应用不同环境、不同集群的配置，配置修改后能够实时推送到应用端，并且具备规范的权限、流程治理等特性。</p>
+<h3 id="3、特点"><a href="#3、特点" class="headerlink" title="3、特点"></a>3、特点</h3><ul>
+<li>部署简单</li>
+<li>灰度发布</li>
+<li>版本发布管理</li>
+<li>提供开放平台API</li>
+<li>客户端配置信息监控</li>
+<li>提供Java和.Net原生客户端</li>
+<li>配置修改实时生效（热发布）</li>
+<li>权限管理、发布审核、操作审计</li>
+<li>统一管理不同环境、不同集群的配置</li>
+</ul>
+<h3 id="4、基础模型"><a href="#4、基础模型" class="headerlink" title="4、基础模型"></a>4、基础模型</h3><p>如下即是 Apollo 的基础模型：</p>
+<ul>
+<li>(1)、用户在配置中心对配置进行修改并发布</li>
+<li>(2)、配置中心通知Apollo客户端有配置更新</li>
+<li>(3)、Apollo客户端从配置中心拉取最新的配置、更新本地配置并通知到应用</li>
+</ul>
+<p><img src="/Oops/resources/1EA9DCC0B1B543E6316BF609E384B141.jpg" alt></p>
+<h3 id="5、Apollo-的四个维度"><a href="#5、Apollo-的四个维度" class="headerlink" title="5、Apollo 的四个维度"></a>5、Apollo 的四个维度</h3><p><strong>Apollo支持4个维度管理Key-Value格式的配置：</strong></p>
+<ul>
+<li>application (应用)</li>
+<li>environment (环境)</li>
+<li>cluster (集群)</li>
+<li>namespace (命名空间)</li>
+</ul>
+<p><strong>(1)、application</strong></p>
+<ul>
+<li>Apollo 客户端在运行时需要知道当前应用是谁，从而可以根据不同的应用来获取对应应用的配置。</li>
+<li>每个应用都需要有唯一的身份标识，可以在代码中配置 <code>app.id</code> 参数来标识当前应用，Apollo 会根据此指来辨别当前应用。</li>
+</ul>
+<p><strong>(2)、environment</strong></p>
+<p>在实际开发中，我们的应用经常要部署在不同的环境中，一般情况下分为开发、测试、生产等等不同环境，不同环境中的配置也是不同的，在 Apollo 中默认提供了四种环境：</p>
+<ul>
+<li>FAT（Feature Acceptance Test）：功能测试环境</li>
+<li>UAT（User Acceptance Test）：集成测试环境</li>
+<li>DEV（Develop）：开发环境</li>
+<li>PRO（Produce）：生产环境</li>
+</ul>
+<p>在程序中如果想指定使用哪个环境，可以配置变量 <code>env</code> 的值为对应环境名称即可。</p>
+<p><strong>(3)、cluster</strong></p>
+<ul>
+<li>一个应用下不同实例的分组，比如典型的可以按照数据中心分，把上海机房的应用实例分为一个集群，把北京机房的应用实例分为另一个集群。</li>
+<li>对不同的集群，同一个配置可以有不一样的值，比如说上面所指的两个北京、上海两个机房设置两个集群，两个集群中都有 mysql 配置参数，其中参数中配置的地址是不一样的。</li>
+</ul>
+<p><strong>(4)、namespace</strong></p>
+<p>一个应用中不同配置的分组，可以简单地把 namespace 类比为不同的配置文件，不同类型的配置存放在不同的文件中，如数据库配置文件，RPC 配置文件，应用自身的配置文件等。</p>
+<p>熟悉 SpringBoot 的都知道，SpringBoot 项目都有一个默认配置文件 <code>application.yml</code>，如果还想用多个配置，可以创建多个配置文件来存放不同的配置信息，通过指定 <code>spring.profiles.active</code> 参数指定应用不同的配置文件。这里的 <code>namespace</code> 概念与其类似，将不同的配置放到不同的配置 <code>namespace</code> 中。</p>
+<p>Namespace 分为两种权限，分别为：</p>
+<ul>
+<li><strong>public（公共的）：</strong> public权限的 Namespace，能被任何应用获取。</li>
+<li><strong>private（私有的）：</strong> 只能被所属的应用获取到。一个应用尝试获取其它应用 private 的 Namespace，Apollo 会报 “404” 异常。</li>
+</ul>
+<p>Namespace 分为三种类型，分别为：</p>
+<ul>
+<li><strong>私有类型：</strong> 私有类型的 Namespace 具有 private 权限。例如 application Namespace 为私有类型。</li>
+<li><strong>公共类型：</strong> 公共类型的 Namespace 具有 public 权限。公共类型的N amespace 相当于游离于应用之外的配置，且通过 Namespace 的名称去标识公共 Namespace，所以公共的 Namespace 的名称必须全局唯一。</li>
+<li><strong>关联类型（继承类型）：</strong> 关联类型又可称为继承类型，关联类型具有 private 权限。关联类型的 Namespace 继承于公共类型的 Namespace，将里面的配置全部继承，并且可以用于覆盖公共 Namespace 的某些配置。</li>
+</ul>
+<h3 id="6、本地缓存"><a href="#6、本地缓存" class="headerlink" title="6、本地缓存"></a>6、本地缓存</h3><p>Apollo客户端会把从服务端获取到的配置在本地文件系统缓存一份，用于在遇到服务不可用，或网络不通的时候，依然能从本地恢复配置，不影响应用正常运行。</p>
+<p>本地缓存路径默认位于以下路径，所以请确保/opt/data或C:\opt\data\目录存在，且应用有读写权限。</p>
+<ul>
+<li><strong>Mac/Linux：</strong> /opt/data/{appId}/config-cache</li>
+<li><strong>Windows：</strong> C:\opt\data{appId}\config-cache</li>
+</ul>
+<p>本地配置文件会以下面的文件名格式放置于本地缓存路径下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1&#123;appId&#125;+&#123;cluster&#125;+&#123;namespace&#125;.properties</span><br></pre></td></tr></table></figure>
+
+<h3 id="7、客户端设计"><a href="#7、客户端设计" class="headerlink" title="7、客户端设计"></a>7、客户端设计</h3><p><img src="/Oops/resources/BAB0B9E8D637F4751B675505CA52ECE8.jpg" alt></p>
+<p><strong>上图简要描述了Apollo客户端的实现原理</strong></p>
+<ul>
+<li>客户端和服务端保持了一个长连接，从而能第一时间获得配置更新的推送。</li>
+<li>客户端还会定时从 Apollo 配置中心服务端拉取应用的最新配置。</li>
+<li>这是一个 fallback 机制，为了防止推送机制失效导致配置不更新</li>
+<li>客户端定时拉取会上报本地版本，所以一般情况下，对于定时拉取的操作，服务端都会返回 304 - Not Modified</li>
+<li>定时频率默认为每 5 分钟拉取一次，客户端也可以通过在运行时指定 <code>apollo.refreshInterval</code> 来覆盖，单位为分钟。</li>
+<li>客户端从 Apollo 配置中心服务端获取到应用的最新配置后，会保存在内存中。</li>
+<li>客户端会把从服务端获取到的配置在本地文件系统缓存一份 在遇到服务不可用，或网络不通的时候，依然能从本地恢复配置。</li>
+<li>应用程序从 Apollo 客户端获取最新的配置、订阅配置更新通知。</li>
+</ul>
+<p><strong>配置更新推送实现</strong></p>
+<p>前面提到了 Apollo 客户端和服务端保持了一个长连接，从而能第一时间获得配置更新的推送。长连接实际上我们是通过 Http Long Polling 实现的，具体而言：</p>
+<ul>
+<li>客户端发起一个 Http 请求到服务端</li>
+<li>服务端会保持住这个连接 60 秒</li>
+<li>如果在 60 秒内有客户端关心的配置变化，被保持住的客户端请求会立即返回，并告知客户端有配置变化的 namespace 信息，客户端会据此拉取对应 namespace 的最新配置</li>
+<li>如果在 60 秒内没有客户端关心的配置变化，那么会返回 Http 状态码 304 给客户端</li>
+<li>客户端在收到服务端请求后会立即重新发起连接，回到第一步</li>
+<li>考虑到会有数万客户端向服务端发起长连，在服务端我们使用了 async servlet(Spring DeferredResult) 来服务 Http Long Polling 请求。</li>
+</ul>
+<h3 id="8、总体设计"><a href="#8、总体设计" class="headerlink" title="8、总体设计"></a>8、总体设计</h3><p><img src="/Oops/resources/E6891ABAFE32B02641160B6C1AB60703.jpg" alt></p>
+<p>上图简要描述了Apollo的总体设计，我们可以从下往上看：</p>
+<ul>
+<li>Config Service 提供配置的读取、推送等功能，服务对象是 Apollo 客户端</li>
+<li>Admin Service 提供配置的修改、发布等功能，服务对象是 Apollo Portal（管理界面）</li>
+<li>Config Service 和 Admin Service 都是多实例、无状态部署，所以需要将自己注册到 Eureka 中并保持心跳</li>
+<li>在 Eureka 之上我们架了一层 Meta Server 用于封装Eureka的服务发现接口</li>
+<li>Client 通过域名访问 Meta Server 获取Config Service服务列表（IP+Port），而后直接通过 IP+Port 访问服务，同时在 Client 侧会做 load balance 错误重试</li>
+<li>Portal 通过域名访问 Meta Server 获取 Admin Service 服务列表（IP+Port），而后直接通过 IP+Port 访问服务，同时在 Portal 侧会做 load balance、错误重试</li>
+<li>为了简化部署，我们实际上会把 Config Service、Eureka 和 Meta Server 三个逻辑角色部署在同一个 JVM 进程中</li>
+</ul>
+<h3 id="9、可用性考虑"><a href="#9、可用性考虑" class="headerlink" title="9、可用性考虑"></a>9、可用性考虑</h3><p>配置中心作为基础服务，可用性要求非常高，下面的表格描述了不同场景下Apollo的可用性：</p>
+<p>场景影响降级原因某台 config service 下线无影响<br>Config service无状态，客户端重连其它config service所有 config service 下线客户端无法读取最新配置，Portal无影响客户端重启时,可以读取本地缓存配置文件<br>某台 admin service 下线无影响<br>Admin service无状态，Portal重连其它 admin service所有 admin service 下线客户端无影响，portal无法更新配置</p>
+<p>某台 portal 下线无影响<br>Portal域名通过slb绑定多台服务器，重试后指向可用的服务器全部 portal 下线客户端无影响，portal无法更新配置</p>
+<p>某个数据中心下线无影响<br>多数据中心部署，数据完全同步，Meta Server/Portal 域名通过 slb 自动切换到其它存活的数据中心</p>
+<h2 id="二、Apollo-配置中心创建项目与配置"><a href="#二、Apollo-配置中心创建项目与配置" class="headerlink" title="二、Apollo 配置中心创建项目与配置"></a>二、Apollo 配置中心创建项目与配置</h2><p>接下来我们将创建一个 Apollo 的客户端项目，引用 Apollo 来实现配置动态更新，不过在此之前我们需要提前进入 Apollo Portal 界面，在里面提前创建一个项目并在其配置一个参数，方便后续客户端引入该配置参数，测试是否能动态变化。</p>
+<h3 id="1、登录-Apollo"><a href="#1、登录-Apollo" class="headerlink" title="1、登录 Apollo"></a>1、登录 Apollo</h3><p>我这里是部署到 Kubernetes 中，通过 NodePort 方式暴露出一个端口，打开这个地址登录 Apollo：</p>
+<ul>
+<li>用户名：apollo</li>
+<li>密 码：admin</li>
+</ul>
+<p><img src="/Oops/resources/9D72E73BADE7D310763A221E362062BF.jpg" alt></p>
+<h3 id="2、修改与增加部门数据"><a href="#2、修改与增加部门数据" class="headerlink" title="2、修改与增加部门数据"></a>2、修改与增加部门数据</h3><p>在登录后创建项目时，选择部门默认只能选择 Apollo 自带的 测试部门1与测试部门2两个选项。</p>
+<p><img src="/Oops/resources/580CFB4BFB8A1755BF693791DFE1AB21.jpg" alt></p>
+<p>开始这真让人迷糊，原来 Apoloo 没有修改或新增部门信息的管理节目，只能通过修改数据库，来新增或者修改数据，这里打开 <code>Portal</code> 对月的数据库中的表 <code>ApolloPortalDB</code> 修改 <code>key</code> 为 <code>organizations</code> 的 <code>value</code> 的 json 数据，改成自己对于的部门信息。</p>
+<p><img src="/Oops/resources/2CA109197FAB8B99D84DC70BA819ACEB.jpg" alt></p>
+<h3 id="3、创建一个项目"><a href="#3、创建一个项目" class="headerlink" title="3、创建一个项目"></a>3、创建一个项目</h3><p>修改完数据库部门信息后，重新登录 Apollo Portal，然后创建项目，这时候选择部门可以看到已经变成我们自己修改后的部门信息了，选择我们自定义部门，然后设置应用 ID 为 <code>apollo-test</code>，应用名为 <code>apollo-demo</code> 。</p>
+<p><img src="/Oops/resources/53EE26285DC1563F702569C7707317A6.jpg" alt></p>
+<p>创建完成后进入配置管理界面</p>
+<p><img src="/Oops/resources/4E7F44CA5E7C031D8E4CF36DCD7041B1.jpg" alt></p>
+<h3 id="4、创建一个配置参数"><a href="#4、创建一个配置参数" class="headerlink" title="4、创建一个配置参数"></a>4、创建一个配置参数</h3><p>创建一个配置参数，方便后续 Apollo 客户端项目引入该参数，进行动态配置测试。</p>
+<p><img src="/Oops/resources/4838BCD39800FF470C3C2F2FAD1C57F5.jpg" alt></p>
+<p>设置 key 为 <code>test</code> value 为 <code>123456</code> 然后设置一个备注，保存。</p>
+<p><img src="/Oops/resources/25D4596A82C684EBA1D90077AFFC0749.jpg" alt></p>
+<p>创建完成后可以看到配置管理节目新增了一条配置。</p>
+<p><img src="/Oops/resources/EF1A7C4806B9A5D2DEBE706D155E79AA.jpg" alt></p>
+<p>接下来我们将此配置通过发布按钮，进行发布。</p>
+<p><img src="/Oops/resources/32ADB600700CC6BE035A7C0357B094F0.jpg" alt></p>
+<h2 id="三、创建-Apollo-客户端测试项目"><a href="#三、创建-Apollo-客户端测试项目" class="headerlink" title="三、创建 Apollo 客户端测试项目"></a>三、创建 Apollo 客户端测试项目</h2><p>这里创建一个 SpringBoot 项目，引入 Apollo 客户端来来实现与 Apollo 配置中心服务端交互。</p>
+<h3 id="1、Maven-添加-Apollo-依赖"><a href="#1、Maven-添加-Apollo-依赖" class="headerlink" title="1、Maven 添加 Apollo 依赖"></a>1、Maven 添加 Apollo 依赖</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"> 1</span><br><span class="line"> 2\&lt;project xmlns&#x3D;&quot;http:&#x2F;&#x2F;maven.apache.org&#x2F;POM&#x2F;4.0.0&quot; xmlns:xsi&#x3D;&quot;http:&#x2F;&#x2F;www.w3.org&#x2F;2001&#x2F;XMLSchema-instance&quot;</span><br><span class="line"> 3 xsi:schemaLocation&#x3D;&quot;http:&#x2F;&#x2F;maven.apache.org&#x2F;POM&#x2F;4.0.0 http:&#x2F;&#x2F;maven.apache.org&#x2F;xsd&#x2F;maven-4.0.0.xsd&quot;\&gt;</span><br><span class="line"> 4    \&lt;modelVersion\&gt;4.0.0modelVersion&gt;</span><br><span class="line"> 5</span><br><span class="line"> 6    \&lt;parent\&gt;</span><br><span class="line"> 7        \&lt;groupId\&gt;org.springframework.bootgroupId&gt;</span><br><span class="line"> 8        \&lt;artifactId\&gt;spring-boot-starter-parentartifactId&gt;</span><br><span class="line"> 9        \&lt;version\&gt;2.1.8.RELEASEversion&gt;</span><br><span class="line">10    parent&gt;</span><br><span class="line">11</span><br><span class="line">12    \&lt;groupId\&gt;club.mydlqgroupId&gt;</span><br><span class="line">13    \&lt;artifactId\&gt;apollo-demoartifactId&gt;</span><br><span class="line">14    \&lt;version\&gt;0.0.1version&gt;</span><br><span class="line">15    \&lt;name\&gt;apollo-demoname&gt;</span><br><span class="line">16    \&lt;description\&gt;Apollo Demodescription&gt;</span><br><span class="line">17</span><br><span class="line">18    \&lt;properties\&gt;</span><br><span class="line">19        \&lt;java.version\&gt;1.8java.version&gt;</span><br><span class="line">20    properties&gt;</span><br><span class="line">21</span><br><span class="line">22    \&lt;dependencies\&gt;</span><br><span class="line">23        \&lt;dependency\&gt;</span><br><span class="line">24            \&lt;groupId\&gt;org.springframework.bootgroupId&gt;</span><br><span class="line">25            \&lt;artifactId\&gt;spring-boot-starter-webartifactId&gt;</span><br><span class="line">26        dependency&gt;</span><br><span class="line">27        \&lt;dependency\&gt;</span><br><span class="line">28            \&lt;groupId\&gt;com.ctrip.framework.apollogroupId&gt;</span><br><span class="line">29            \&lt;artifactId\&gt;apollo-clientartifactId&gt;</span><br><span class="line">30            \&lt;version\&gt;1.4.0version&gt;</span><br><span class="line">31        dependency&gt;</span><br><span class="line">32    dependencies&gt;</span><br><span class="line">33</span><br><span class="line">34    \&lt;build\&gt;</span><br><span class="line">35        \&lt;plugins\&gt;</span><br><span class="line">36            \&lt;plugin\&gt;</span><br><span class="line">37                \&lt;groupId\&gt;org.springframework.bootgroupId&gt;</span><br><span class="line">38                \&lt;artifactId\&gt;spring-boot-maven-pluginartifactId&gt;</span><br><span class="line">39            plugin&gt;</span><br><span class="line">40        plugins&gt;</span><br><span class="line">41    build&gt;</span><br><span class="line">42</span><br><span class="line">43project&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2、配置文件添加参数"><a href="#2、配置文件添加参数" class="headerlink" title="2、配置文件添加参数"></a>2、配置文件添加参数</h3><p>在 application.yml 配置文件中添加下面参数，这里简单介绍下 Apollo 参数作用：</p>
+<ul>
+<li><strong>apollo.meta：</strong> Apollo 配置中心地址。</li>
+<li><strong>apollo.cluster：</strong> 指定使用某个集群下的配置。</li>
+<li><strong>apollo.bootstrap.enabled：</strong> 是否开启 Apollo。</li>
+<li><strong>apollo.bootstrap.namespaces ：</strong> 指定使用哪个 Namespace 的配置，默认 application。</li>
+<li><strong>apollo.cacheDir=/opt/data/some-cache-dir：</strong> 为了防止配置中心无法连接等问题，Apollo 会自动将配置本地缓存一份。</li>
+<li><strong>apollo.autoUpdateInjectedSpringProperties：</strong> Spring应用通常会使用 Placeholder 来注入配置，如${someKey:someDefaultValue}，冒号前面的是 key，冒号后面的是默认值。如果想关闭 placeholder 在运行时自动更新功能，可以设置为 false。</li>
+<li><strong>apollo.bootstrap.eagerLoad.enabled ：</strong> 将 Apollo 加载提到初始化日志系统之前，如果设置为 false，那么将打印出 Apollo 的日志信息，但是由于打印 Apollo 日志信息需要日志先启动，启动后无法对日志配置进行修改，所以 Apollo 不能管理应用的日志配置，如果设置为 true，那么 Apollo 可以管理日志的配置，但是不能打印出 Apollo 的日志信息。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"> 1#应用配置</span><br><span class="line"> 2server:</span><br><span class="line"> 3  port: 8080</span><br><span class="line"> 4spring:</span><br><span class="line"> 5  application:</span><br><span class="line"> 6    name: apollo-demo</span><br><span class="line"> 7</span><br><span class="line"> 8#Apollo 配置</span><br><span class="line"> 9app:</span><br><span class="line">10  id: apollo-test                            #应用ID</span><br><span class="line">11apollo:</span><br><span class="line">12  cacheDir: &#x2F;opt&#x2F;data&#x2F;                       #配置本地配置缓存目录</span><br><span class="line">13  cluster: default                           #指定使用哪个集群的配置</span><br><span class="line">14  meta: http:&#x2F;&#x2F;192.168.2.11:30002            #DEV环境配置中心地址</span><br><span class="line">15  autoUpdateInjectedSpringProperties: true   #是否开启 Spring 参数自动更新</span><br><span class="line">16  bootstrap:                                </span><br><span class="line">17    enabled: true                            #是否开启 Apollo</span><br><span class="line">18    namespaces: application                  #设置 Namespace</span><br><span class="line">19    eagerLoad:</span><br><span class="line">20      enabled: false                         #将 Apollo 加载提到初始化日志系统之前</span><br></pre></td></tr></table></figure>
+
+<h3 id="3、创建测试-Controller-类"><a href="#3、创建测试-Controller-类" class="headerlink" title="3、创建测试 Controller 类"></a>3、创建测试 Controller 类</h3><p>写一个 Controller 类来输出 test 变量的值，使用了 <code>Spring</code> 的 <code>@Value</code> 注解，用于读取配置文件中的变量的值，这里来测试该值，项目启动后读取到的变量的值是设置在 application 配置文件中的默认值，还是远程 Apollo 中的值，如果是 Apollo 中配置的值，那么再测试在 Apollo 配置中心中改变该变量的值后，这里是否会产生变化。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"> 1import org.springframework.beans.factory.annotation.Value;</span><br><span class="line"> 2import org.springframework.web.bind.annotation.GetMapping;</span><br><span class="line"> 3import org.springframework.web.bind.annotation.RestController;</span><br><span class="line"> 4</span><br><span class="line"> 5@RestController</span><br><span class="line"> 6public class TestController &#123;</span><br><span class="line"> 7</span><br><span class="line"> 8    @Value(&quot;$&#123;test:默认值&#125;&quot;)</span><br><span class="line"> 9    private String test;</span><br><span class="line">10</span><br><span class="line">11    @GetMapping(&quot;&#x2F;test&quot;)</span><br><span class="line">12    public String test()&#123;</span><br><span class="line">13        return &quot;test的值为:&quot; + test;</span><br><span class="line">14    &#125;</span><br><span class="line">15&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4、创建启动类"><a href="#4、创建启动类" class="headerlink" title="4、创建启动类"></a>4、创建启动类</h3><p>SpringBoot 项目启动类。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"> 1import org.springframework.boot.SpringApplication;</span><br><span class="line"> 2import org.springframework.boot.autoconfigure.SpringBootApplication;</span><br><span class="line"> 3</span><br><span class="line"> 4@SpringBootApplication</span><br><span class="line"> 5public class Application &#123;</span><br><span class="line"> 6</span><br><span class="line"> 7    public static void main(String[] args) &#123;</span><br><span class="line"> 8        SpringApplication.run(Application.class, args);</span><br><span class="line"> 9    &#125;</span><br><span class="line">10</span><br><span class="line">11&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="5、JVM-启动参数添加启动参数"><a href="#5、JVM-启动参数添加启动参数" class="headerlink" title="5、JVM 启动参数添加启动参数"></a>5、JVM 启动参数添加启动参数</h3><p>由于本人的 Apollo 是部署在 Kubernetes 环境中的，JVM 参数中必须添加两个变量：</p>
+<ul>
+<li><strong>env：</strong> 应用使用 Apollo 哪个环境，例如设置为 <code>DEV</code> 就是指定使用开发环境，如果设置为 <code>PRO</code> 就是制定使用生产环境。</li>
+<li><strong>apollo.configService：</strong> 指定配置中心的地址，跳过 meta 的配置，在测试时指定 meta 地址无效果。如果 Apollo 是部署在 Kubernetes 中，则必须设置该参数为配置中心地址，如果 Apollo 不是在 Kubernetes 环境中，可以不设置此参数，只设置 meta 参数即可。一般情况下，configService 和 meta 值一致。</li>
+</ul>
+<p><strong>如果是在 Idea 中启动，可以配置启动参数，加上：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1-Dapollo.configService&#x3D;http:&#x2F;&#x2F;192.168.2.11:30002 -Denv&#x3D;DEV</span><br></pre></td></tr></table></figure>
+
+<p><img src="/Oops/resources/797ED783AC53E5CA9A7652841A581590.jpg" alt></p>
+<p><strong>如果是 java 命令启动程序，需要 JVM 加上:</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1$ java -Dapollo.configService&#x3D;http:&#x2F;&#x2F;192.168.2.11:30002 -Denv&#x3D;DEV -jar apollo-demo.jar</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注意：上面 env 指定的环境，要和 apollo.meta 指定 Config 地址的环境一致，例如 -Denv=DEV 即使用开发环境，那么 apollo.meta=<a href="http://xxx.xxx.xxx:8080" target="_blank" rel="noopener">http://xxx.xxx.xxx:8080</a> 这个url 的 Config 也是开发环境下的配置中心服务，而不能是 PRO 或者其它环境下的配置中心。</p>
+</blockquote>
+<h2 id="四、启动项目进行测试"><a href="#四、启动项目进行测试" class="headerlink" title="四、启动项目进行测试"></a>四、启动项目进行测试</h2><h3 id="1、测试是否能够获取-Apollo-中设置的值"><a href="#1、测试是否能够获取-Apollo-中设置的值" class="headerlink" title="1、测试是否能够获取 Apollo 中设置的值"></a>1、测试是否能够获取 Apollo 中设置的值</h3><p>启动上面的测试用例，然后输入地址 <a href="http://localhost:8080/test" target="_blank" rel="noopener">http://localhost:8080/test</a> 查看：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1test的值为:123456</span><br></pre></td></tr></table></figure>
+
+<p>可以看到使用的是 Apollo 中配置的 <code>test</code> 参数的值 <code>123456</code>，而不是默认的值。</p>
+<h3 id="2、测试当-Apollo-中修改参数值后客户端是否能及时刷新"><a href="#2、测试当-Apollo-中修改参数值后客户端是否能及时刷新" class="headerlink" title="2、测试当 Apollo 中修改参数值后客户端是否能及时刷新"></a>2、测试当 Apollo 中修改参数值后客户端是否能及时刷新</h3><p>修改 Apollo 配置中心参数 <code>test</code> 值为 <code>666666</code> ，然后再次发布。</p>
+<p><img src="/Oops/resources/2F9C5B49ADE086EE2CF7BEC18F9AF747.jpg" alt></p>
+<p>发布完成后再次输入地址 <a href="http://localhost:8080/test" target="_blank" rel="noopener">http://localhost:8080/test</a> 查看：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1test的值为:666666</span><br></pre></td></tr></table></figure>
+
+<p>可以看到示例应用中的值已经改变为最新的值。</p>
+<h3 id="3、测试当-Apollo-执行配置回滚操作时客户端是否能及时改变"><a href="#3、测试当-Apollo-执行配置回滚操作时客户端是否能及时改变" class="headerlink" title="3、测试当 Apollo 执行配置回滚操作时客户端是否能及时改变"></a>3、测试当 Apollo 执行配置回滚操作时客户端是否能及时改变</h3><p><img src="/Oops/resources/0986C0D0A1B7ECBC17AB0446F3C9E143.jpg" alt></p>
+<p>回滚完成后状态将变为未发布状态，则时候输入地址 <a href="http://localhost:8080/test" target="_blank" rel="noopener">http://localhost:8080/test</a> 查看：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1test的值为:123456</span><br></pre></td></tr></table></figure>
+
+<p>可以看到已经回滚到之前的 <code>test</code> 配置的值了。</p>
+<h3 id="4、测试当不能访问-Apollo-时客户端的变化"><a href="#4、测试当不能访问-Apollo-时客户端的变化" class="headerlink" title="4、测试当不能访问 Apollo 时客户端的变化"></a>4、测试当不能访问 Apollo 时客户端的变化</h3><p>这里我们将 JVM 参数中 Apollo 配置中心地址故意改错：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1-Dapollo.configService&#x3D;http:&#x2F;&#x2F;192.168.2.100:30002 -Denv&#x3D;DEV</span><br></pre></td></tr></table></figure>
+
+<p>然后输入地址 <a href="http://localhost:8080/test" target="_blank" rel="noopener">http://localhost:8080/test</a> 可以看到值为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1test的值为:123456</span><br></pre></td></tr></table></figure>
+
+<p>可以看到显示的值并不是我们定义的默认值，而还是 Apollo 配置中心配置的 <code>test</code> 参数的值。考虑到由于 Apollo 会在本地将配置缓存一份，出现上面原因，估计是缓存生效。当客户端不能连接到 Apollo 配置中心时候，默认使用本地缓存文件中的配置。</p>
+<p>上面我们配置了本地缓存配置文件存放地址为 “/opt/data/” ，接下来进入缓存目录，找到对应的缓存配置文件，删除缓存配置文件后，重启应用，再次输入地址查看：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1test的值为:默认值</span><br></pre></td></tr></table></figure>
+
+<p>删除缓存配置文件后，可以看到输出的值为自己定义的默认值。</p>
+<h3 id="5、测试当-Apollo-中将参数删除后客户端的变化"><a href="#5、测试当-Apollo-中将参数删除后客户端的变化" class="headerlink" title="5、测试当 Apollo 中将参数删除后客户端的变化"></a>5、测试当 Apollo 中将参数删除后客户端的变化</h3><p>这里我们进入 Apollo 配置中心，删除之前创建的 <code>test</code> 参数，然后发布。</p>
+<p><img src="/Oops/resources/2BCC8B2CC9EAB2C964AB553A4708A224.jpg" alt></p>
+<p>然后再次打开地址 <a href="http://localhost:8080/test" target="_blank" rel="noopener">http://localhost:8080/test</a> 查看：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1test的值为:默认值</span><br></pre></td></tr></table></figure>
+
+<p>可以看到显示的是应用程序中设置的默认值。</p>
+<h2 id="五、对-Apollo-的-Cluster、Namespace-进行探究"><a href="#五、对-Apollo-的-Cluster、Namespace-进行探究" class="headerlink" title="五、对 Apollo 的 Cluster、Namespace 进行探究"></a>五、对 Apollo 的 Cluster、Namespace 进行探究</h2><p>在 Apollo 中，配置可以根据不同的环境划分为 Dev（开发）、Prod（生产） 等环境，又能根据区域划分为不同的 Cluster（集群），还能根据配置参数作用功能的不同划分为不同的 Namespace（命名空间），这里探究下，如何使用上述能力。</p>
+<h3 id="1、不同环境下的配置"><a href="#1、不同环境下的配置" class="headerlink" title="1、不同环境下的配置"></a>1、不同环境下的配置</h3><p><strong>（1）、Apollo 配置中心 PRO 环境添加参数</strong></p>
+<p>打开 Apollo 配置中心，环境列表点击 PRO 环境，然后新增一条配置，和之前例子中参数保持一致，都为 <code>test</code> 参数，创建完成后发布。</p>
+<p><img src="/Oops/resources/1C30260FB7C58E20CC5513C095DB458C.jpg" alt></p>
+<p>然后修改上面的示例项目，将配置参数指定为 PRO 环境:</p>
+<p><strong>（2）、示例项目修改 application.yml 配置文件</strong></p>
+<p>把 <code>apollo.meta</code> 参数改成 RPO 的配置中心地址</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">1......</span><br><span class="line">2</span><br><span class="line">3apollo:</span><br><span class="line">4  meta: http:&#x2F;&#x2F;192.168.2.11:30005            #RPO环境配置中心地址</span><br><span class="line">5</span><br><span class="line">6......</span><br></pre></td></tr></table></figure>
+
+<p><strong>（3）、示例项目修改 JVM 参数</strong></p>
+<p>把 <code>apollo.configService</code> 参数改成 PRO 配置中心地址，<code>env</code> 参数的值改为 <code>PRO</code>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1-Dapollo.configService&#x3D;http:&#x2F;&#x2F;192.168.2.11:30005 -Denv&#x3D;PRO</span><br></pre></td></tr></table></figure>
+
+<p><strong>（4）、启动示例项目观察结果</strong></p>
+<p>启动示例项目，然后接着输入地址 <a href="http://localhost:8080/test" target="_blank" rel="noopener">http://localhost:8080/test</a> 查看信息：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1test的值为:abcdefg</span><br></pre></td></tr></table></figure>
+
+<p>可以看到已经改成生成环境配置，所以在实际项目中，如果要更换环境，需要修改 JVM 参数 <code>env</code>（如果 Apollo 部署在 Kubernetes 环境中，还需要修改 <code>apollo.configService</code> 参数），和修改 application.yml 配置文件的参数 <code>apollo.meta</code> 值。</p>
+<h3 id="2、不同集群下的配置"><a href="#2、不同集群下的配置" class="headerlink" title="2、不同集群下的配置"></a>2、不同集群下的配置</h3><p><strong>（1）、创建两个集群</strong></p>
+<p>例如在开发过程中，经常要将应用部署到不同的机房，这里分别创建 <code>beijing</code>、<code>shanghai</code> 两个集群。</p>
+<p><img src="/Oops/resources/FA0058FDFA4601187FA861B3BC7181DA.jpg" alt>)<img src="/Oops/resources/5FE606BB5729E1BDCAE38D086E639593.jpg" alt>)<img src="/Oops/resources/B1718E001A3107236A66A63BAAA2387E.jpg" alt></p>
+<p><strong>（2）、两个集群都配置同样的参数不同的值</strong></p>
+<p>在两个集群 <code>beijing</code> 与 <code>shanghai</code> 中，都统一配置参数 <code>test</code>，并且设置不同的值。</p>
+<p><img src="/Oops/resources/9AC476DDDFDE3B07233BEDE10E4B619D.jpg" alt>)<img src="/Oops/resources/CA262B113878D4D596007DAE516AEB3D.jpg" alt></p>
+<p><strong>（3）、示例项目 application.yml 修改集群配置参数,并启动项目观察结果</strong></p>
+<p><strong>指定集群为 beijing:</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">1......</span><br><span class="line">2</span><br><span class="line">3apollo:</span><br><span class="line">4  cluster: beijing                      #指定使用 beijing 集群</span><br><span class="line">5</span><br><span class="line">6......</span><br></pre></td></tr></table></figure>
+
+<p>启动示例项目，然后接着输入地址 <a href="http://localhost:8080/test" target="_blank" rel="noopener">http://localhost:8080/test</a> 查看信息：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1test的值为:Cluster-BeiJing</span><br></pre></td></tr></table></figure>
+
+<p>可以看到用的是 beijing 集群的配置</p>
+<p><strong>指定集群为 shanghai:</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">1......</span><br><span class="line">2</span><br><span class="line">3apollo:</span><br><span class="line">4  cluster: shanghai                      #指定使用 shanghai 集群</span><br><span class="line">5</span><br><span class="line">6......</span><br></pre></td></tr></table></figure>
+
+<p>启动示例项目，然后接着输入地址 <a href="http://localhost:8080/test" target="_blank" rel="noopener">http://localhost:8080/test</a> 查看信息：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1test的值为:Cluster-ShangHai</span><br></pre></td></tr></table></figure>
+
+<p>可以看到用的是 shanghai 集群的配置</p>
+<h3 id="3、不同命名空间下的配置"><a href="#3、不同命名空间下的配置" class="headerlink" title="3、不同命名空间下的配置"></a>3、不同命名空间下的配置</h3><p><strong>（1）、创建两个命名空间</strong></p>
+<p>命名空间有两种，一种是 public（公开），一种是 private 私有，公开命名空间所有项目都能读取配置信息，而私有的只能 <code>app.id</code> 值属于该应用的才能读取配置。</p>
+<p>这里创建 <code>dev-1</code> 与 <code>dev-2</code> 两个私有的命名空间，用于测试。</p>
+<p><img src="/Oops/resources/48E638D1997A65BE40380914C5C81B41.jpg" alt>)<img src="/Oops/resources/48E638D1997A65BE40380914C5C81B41.jpg" alt>)<img src="/Oops/resources/D751348E642A378A47B5FE7FF50E7213.jpg" alt></p>
+<p><strong>（2）、两个集群都配置同样的参数不同的值</strong></p>
+<p>在两个命名空间中，都统一配置参数 <code>test</code>，并且设置不同的值，设置完后发布。</p>
+<p><img src="/Oops/resources/147B393063E3F0248F64777FC8F7EFFE.jpg" alt></p>
+<p><strong>（3）、示例项目 application.yml 修改命名空间配置参数,并启动项目观察结果</strong></p>
+<p><strong>指定命名空间为 dev-1:</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">1......</span><br><span class="line">2</span><br><span class="line">3apollo:</span><br><span class="line">4  bootstrap:</span><br><span class="line">5    namespaces: dev-1                   #设置 dev-1 命名空间</span><br><span class="line">6</span><br><span class="line">7......</span><br></pre></td></tr></table></figure>
+
+<p>启动示例项目，然后接着输入地址 <a href="http://localhost:8080/test" target="_blank" rel="noopener">http://localhost:8080/test</a> 查看信息：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1test的值为:dev-1 Namespace</span><br></pre></td></tr></table></figure>
+
+<p>可以看到用的是 dev-1 命名空间的配置</p>
+<p><strong>指定命名空间为 dev-2:</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">1......</span><br><span class="line">2</span><br><span class="line">3apollo:</span><br><span class="line">4  bootstrap:</span><br><span class="line">5    namespaces: dev-2                   #设置 dev-1 命名空间</span><br><span class="line">6</span><br><span class="line">7......</span><br></pre></td></tr></table></figure>
+
+<p>启动示例项目，然后接着输入地址 <a href="http://localhost:8080/test" target="_blank" rel="noopener">http://localhost:8080/test</a> 查看信息：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1test的值为:dev-2 Namespace</span><br></pre></td></tr></table></figure>
+
+<p>可以看到用的是 dev-2 命名空间的配置</p>
+<h2 id="六、Kubernetes-的-SpringBoot-应用使用-Apollo-配置中心"><a href="#六、Kubernetes-的-SpringBoot-应用使用-Apollo-配置中心" class="headerlink" title="六、Kubernetes 的 SpringBoot 应用使用 Apollo 配置中心"></a>六、Kubernetes 的 SpringBoot 应用使用 Apollo 配置中心</h2><p>本人的 Apollo 和 SpringBoot 应用一般都是基于 Kubernetes 部署的，所以这里简单介绍下，如何在 Kubernetes 环境下部署 SpringBoot 应用且使用 Apollo 作为配置中心。</p>
+<p>这里项目依旧使用上面的示例，不过首先要将其编译成 Docker 镜像，方便后续部署到 Kubernetes 环境下。</p>
+<h3 id="1、构建-Docker-镜像"><a href="#1、构建-Docker-镜像" class="headerlink" title="1、构建 Docker 镜像"></a>1、构建 Docker 镜像</h3><p><strong>（1）、执行 Maven 编译</strong></p>
+<p>首先执行 Maven 命令，将项目编译成一个可执行 JAR。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1$ mvn clean install</span><br></pre></td></tr></table></figure>
+
+<p><strong>（2）、准备 Dockerfile</strong></p>
+<p>创建构建 Docker 镜像需要的 Dockerfile 文件，将 Maven 编译的 JAR 复制到镜像内部，然后设置两个变量，分别是：</p>
+<ul>
+<li><strong>JAVA_OPTS：</strong> Java JVM 启动参数变量，这里需要在这里加一个时区参数。</li>
+<li><strong>APP_OPTS：</strong> Spring 容器启动参数变量，方便后续操作时能通过此变量配置 Spring 参数。</li>
+</ul>
+<p>Dockerfile：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">1FROM openjdk:8u222-jre-slim</span><br><span class="line">2VOLUME &#x2F;tmp</span><br><span class="line">3ADD target&#x2F;*.jar app.jar</span><br><span class="line">4RUN sh -c &#39;touch &#x2F;app.jar&#39;</span><br><span class="line">5ENV JAVA_OPTS&#x3D;&quot;-Duser.timezone&#x3D;Asia&#x2F;Shanghai&quot;</span><br><span class="line">6ENV APP_OPTS&#x3D;&quot;&quot;</span><br><span class="line">7ENTRYPOINT [ &quot;sh&quot;, &quot;-c&quot;, &quot;java $JAVA\_OPTS -Djava.security.egd&#x3D;file:&#x2F;dev&#x2F;.&#x2F;urandom -jar &#x2F;app.jar $APP\_OPTS&quot; ]</span><br></pre></td></tr></table></figure>
+
+<p><strong>（3）、构建 Docker 镜像</strong></p>
+<p>执行 Docker Build 命令构建 Docker 镜像。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1$ docker build -t mydlqclub&#x2F;springboot-apollo:0.0.1 .</span><br></pre></td></tr></table></figure>
+
+<h3 id="2、Kubernetes-部署示例应用"><a href="#2、Kubernetes-部署示例应用" class="headerlink" title="2、Kubernetes 部署示例应用"></a>2、Kubernetes 部署示例应用</h3><p><strong>（1）、创建 SpringBoot 且使用 Apollo 配置中心的 Kubernetes 部署文件</strong></p>
+<p>这里创建 Kubernetes 下的 SpringBoot 部署文件 <code>apollo-demo-example.yaml</code>。在之前 Dockerfile 中设置了两个环境变量，<code>JAVA_OPTS</code> 与 <code>APP_OPTS</code>。其中 <code>JAVA_OPTS</code> 变量的值将会作为 JVM 启动参数，<code>APP_OPTS</code> 变量的值将会作为应用的配置参数。所以，这里我们将 Apollo 配置参数放置到变量中，这样一来就可以方便修改与维护 Apollo 的配置信息。</p>
+<blockquote>
+<p>在下面配置的环境变量参数中，设置的配置中心地址为 <code>http://service-apollo-config-server-dev.mydlqclub:8080</code>，这是因为 Apollo 部署在 K8S 环境中，且可以使用域名方式访问，service-apollo-config-server-dev 是应用的 Service 名称，mydlqcloud 是 K8S 下的 Namespace 名称。</p>
+</blockquote>
+<p><strong>springboot-apollo.yaml</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line"> 1apiVersion: v1</span><br><span class="line"> 2kind: Service</span><br><span class="line"> 3metadata:</span><br><span class="line"> 4  name: springboot-apollo</span><br><span class="line"> 5spec:</span><br><span class="line"> 6  type: NodePort</span><br><span class="line"> 7  ports:</span><br><span class="line"> 8    - name: server</span><br><span class="line"> 9      nodePort: 31080</span><br><span class="line">10      port: 8080</span><br><span class="line">11      targetPort: 8080</span><br><span class="line">12    - name: management</span><br><span class="line">13      nodePort: 31081</span><br><span class="line">14      port: 8081</span><br><span class="line">15      targetPort: 8081</span><br><span class="line">16  selector:</span><br><span class="line">17    app: springboot-apollo</span><br><span class="line">18---</span><br><span class="line">19apiVersion: apps&#x2F;v1</span><br><span class="line">20kind: Deployment</span><br><span class="line">21metadata:</span><br><span class="line">22  name: springboot-apollo</span><br><span class="line">23  labels:</span><br><span class="line">24    app: springboot-apollo</span><br><span class="line">25spec:</span><br><span class="line">26  replicas: 1</span><br><span class="line">27  selector:</span><br><span class="line">28    matchLabels:</span><br><span class="line">29      app: springboot-apollo</span><br><span class="line">30  template:</span><br><span class="line">31    metadata:</span><br><span class="line">32      name: springboot-apollo</span><br><span class="line">33      labels:</span><br><span class="line">34        app: springboot-apollo</span><br><span class="line">35    spec:</span><br><span class="line">36      restartPolicy: Always</span><br><span class="line">37      containers:</span><br><span class="line">38        - name: springboot-apollo</span><br><span class="line">39          image: mydlqclub&#x2F;springboot-apollo:0.0.1</span><br><span class="line">40          imagePullPolicy: Always</span><br><span class="line">41          ports:</span><br><span class="line">42            - containerPort: 8080</span><br><span class="line">43              name: server</span><br><span class="line">44          env:</span><br><span class="line">45            - name: JAVA_OPTS</span><br><span class="line">46              value: &quot;-Denv&#x3D;DEV&quot;</span><br><span class="line">47              ##注意修改此处的 mydlqcloud 为你自己的 Namespace 名称</span><br><span class="line">48            - name: APP_OPTS</span><br><span class="line">49              value: &quot;</span><br><span class="line">50                     --app.id&#x3D;apollo-demo</span><br><span class="line">51                     --apollo.bootstrap.enabled&#x3D;true</span><br><span class="line">52                     --apollo.bootstrap.eagerLoad.enabled&#x3D;false</span><br><span class="line">53                     --apollo.cacheDir&#x3D;&#x2F;opt&#x2F;data&#x2F;</span><br><span class="line">54                     --apollo.cluster&#x3D;default</span><br><span class="line">55                     --apollo.bootstrap.namespaces&#x3D;application</span><br><span class="line">56                     --apollo.autoUpdateInjectedSpringProperties&#x3D;true</span><br><span class="line">57                     --apollo.meta&#x3D;http:&#x2F;&#x2F;service-apollo-config-server-dev.mydlqcloud:8080    </span><br><span class="line">58                     &quot;</span><br><span class="line">59          resources:</span><br><span class="line">60            limits:</span><br><span class="line">61              memory: 1000Mi</span><br><span class="line">62              cpu: 1000m</span><br><span class="line">63            requests:</span><br><span class="line">64              memory: 500Mi</span><br><span class="line">65              cpu: 500m</span><br></pre></td></tr></table></figure>
+
+<p><strong>（2）、部署 SpringBoot 应用到 Kubernetes</strong></p>
+<p>-n：创建应用到指定的 Namespace 中。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1$ kubectl apply -f springboot-apollo.yaml -n mydlqcloud</span><br></pre></td></tr></table></figure>
+
+<h3 id="3、测试部署的应用接口"><a href="#3、测试部署的应用接口" class="headerlink" title="3、测试部署的应用接口"></a>3、测试部署的应用接口</h3><p>上面的应用配置了 NodePort 端口，可以通过此端口访问 Kubernetes 集群内的应用接口，本人 Kubernetes 集群地址为 192.168.2.11 且 NodePort 端口为 31081，所以浏览器访问地址 <a href="http://192.168.2.11:31081/test" target="_blank" rel="noopener">http://192.168.2.11:31081/test</a> 来测试接口，显示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1test的值为:123456</span><br></pre></td></tr></table></figure>
+
+<p>可以看到能通过 Apollo 获取参数值，此文章到此结束。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/oops/uploads/wechat-qcode.jpg" alt="架构组 wechat" style="width: 200px; max-width: 100%;"/>
+    <div>欢迎您扫一扫上面的微信二维码，订阅我的公众号</div>
+</div>
+
+      </div>
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E4%B8%8D%E7%94%A8%E6%89%BE%E4%BA%86%EF%BC%8C%E5%A4%A7%E5%8E%82%E5%9C%A8%E7%94%A8%E7%9A%84%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E6%96%B9%E6%A1%88%EF%BC%8C%E9%83%BD%E5%9C%A8%E8%BF%99%E9%87%8C%EF%BC%81/" rel="next" title="不用找了，大厂在用的分库分表方案，都在这里！">
+                <i class="fa fa-chevron-left"></i> 不用找了，大厂在用的分库分表方案，都在这里！
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E4%B8%80%E5%8F%A3%E6%B0%94%E8%AF%B4%E5%87%BA%206%E7%A7%8D%20@Transactional%20%E6%B3%A8%E8%A7%A3%E5%A4%B1%E6%95%88%E5%9C%BA%E6%99%AF/" rel="prev" title="一口气说出 6种 @Transactional 注解失效场景">
+                一口气说出 6种 @Transactional 注解失效场景 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner" style="text-align:center;">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      本站访客数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人次
+    </span>
+  
+
+  
+    <span class="site-pv">
+      本站总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/oops/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/oops/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/oops/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/oops/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/oops/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

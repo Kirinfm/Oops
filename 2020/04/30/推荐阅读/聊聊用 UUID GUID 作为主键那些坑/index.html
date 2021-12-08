@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/oops/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/oops/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/oops/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/oops/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/oops/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/oops/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/oops/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="访问欠友好的 UUID 我刚读了一篇有关如何扩展数据库的文章，作者建议将 UUID（类似于 GUID）用作数据库表的主键（PK）。 使用 UUID 的优点 与自动递增整数相比，将 UUID 用作主键的优点很多：  适合大规模数据。当你把数据分片（例如一组客户数据）存在多个数据库时，使用 UUID 意味着 ID 在所有数据分片中都是唯一，而不仅仅是当前那个分片所在数据库。这使得跨数据库移动更为安全">
+<meta property="og:type" content="article">
+<meta property="og:title" content="聊聊用 UUID GUID 作为主键那些坑">
+<meta property="og:url" content="https://smartlink-tech.gitee.cn/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E8%81%8A%E8%81%8A%E7%94%A8%20UUID%20GUID%20%E4%BD%9C%E4%B8%BA%E4%B8%BB%E9%94%AE%E9%82%A3%E4%BA%9B%E5%9D%91/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="访问欠友好的 UUID 我刚读了一篇有关如何扩展数据库的文章，作者建议将 UUID（类似于 GUID）用作数据库表的主键（PK）。 使用 UUID 的优点 与自动递增整数相比，将 UUID 用作主键的优点很多：  适合大规模数据。当你把数据分片（例如一组客户数据）存在多个数据库时，使用 UUID 意味着 ID 在所有数据分片中都是唯一，而不仅仅是当前那个分片所在数据库。这使得跨数据库移动更为安全">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/D04EAA08469001585CBD45888DF8D21B.jpg">
+<meta property="article:published_time" content="2020-04-30T03:23:00.000Z">
+<meta property="article:modified_time" content="2020-04-30T08:17:04.067Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://smartlink-tech.gitee.cn/Oops/resources/D04EAA08469001585CBD45888DF8D21B.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/Oops',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"remove","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://smartlink-tech.gitee.cn/oops/2020/04/30/推荐阅读/聊聊用 UUID GUID 作为主键那些坑/"/>
+
+
+
+
+
+  <title>聊聊用 UUID GUID 作为主键那些坑 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/oops/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/oops/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/oops/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/oops/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/oops/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://smartlink-tech.gitee.cn/oops/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E8%81%8A%E8%81%8A%E7%94%A8%20UUID%20GUID%20%E4%BD%9C%E4%B8%BA%E4%B8%BB%E9%94%AE%E9%82%A3%E4%BA%9B%E5%9D%91/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="架构组">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/oops/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">聊聊用 UUID GUID 作为主键那些坑</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-04-30T11:23:00+08:00">
+                2020-04-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/oops/categories/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/" itemprop="url" rel="index">
+                    <span itemprop="name">推荐阅读</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv">本文总阅读量
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><img src="/Oops/resources/D04EAA08469001585CBD45888DF8D21B.jpg" alt></p>
+<p>访问欠友好的 UUID</p>
+<p>我刚读了一篇有关如何扩展数据库的文章，作者建议将 UUID（类似于 GUID）用作数据库表的主键（PK）。</p>
+<p><strong>使用 UUID 的优点</strong></p>
+<p>与自动递增整数相比，将 UUID 用作主键的优点很多：</p>
+<ul>
+<li><strong>适合大规模数据。</strong>当你把数据分片（例如一组客户数据）存在多个数据库时，使用 UUID 意味着 ID 在所有数据分片中都是唯一，而不仅仅是当前那个分片所在数据库。这使得跨数据库移动更为安全。在我的环境，所有数据库分片都可以简单合并到 Hadoop 集群中，不会有主键冲突的问题。</li>
+<li><strong>在插入数据之前就可以知道 PK</strong>，这避免了查询 DB 开销，并简化了事务逻辑，比如在使用该键作为其它表外键（FK）时，需要预先获得这个 PK</li>
+<li><strong>UUID 不会泄露数据信息</strong>，因此在 URL中暴露会更安全。如果一个用户 ID 是 12345678，很容易猜到还有用户 12345677 和 1234569，这构成了攻击因素。（请参见下面的更好的选择）。</li>
+</ul>
+<p><strong>使用 UUID 的缺点</strong></p>
+<p><strong>不直观</strong></p>
+<p>很多人直接使用 UUID （类似像70E2E8DE-500E-4630-B3CB-166131D35C21 ）作为字符串，例如 varchar(36) — 请不要这样做！</p>
+<p>你可能会说没有人会这么干。</p>
+<p>这个问题请三思 — 我曾接手过某些大公司中两个非常大的数据库案例，这恰恰是现实。除了 9 倍大小的开销（int 的大小为 4 字节），字符串的排序速度也不如数值型字段快，因为它们依赖于排序规则。</p>
+<p>在一家最初决定使用 Latin-1 字符集的公司中，情况就更麻烦。当我们需要将字符集转换为 UTF-8 时，几个复合键索引就存不下更改后的字符串。</p>
+<p><strong>UUID 的痛苦</strong></p>
+<p>不要低估字段太长无法口头表达及记住的痛苦。</p>
+<p><strong>规划扩展计划</strong></p>
+<p>如果我们的目标是扩展，是真正地扩展，那么首先要承认，int 在许多情况下不够大，4 字节最大值限制在 20 亿左右。我们很多数据库都有超过 20 亿笔交易。</p>
+<p>因此在这些情况下需要使用 bigint，它占用 8 个字节。还可以使用一些其他策略，诸如 PostgreSQL 和 SQL Server 等数据库都有本机类型，可以使用 16 个字节存储。</p>
+<p>这时候，谁会在乎它的大小是 bigint 两倍或 int 的四倍呢？毕竟也只是几个字节，对不对？</p>
+<p><strong>规范化数据库中主键的问题</strong></p>
+<p>如果你拥有一个规范的数据库（就像我们目前所在的公司一样），每个主键连接的外键都存在逐渐增加开销。</p>
+<p>不仅体现在磁盘上，还包括连接查询和排序过程中，这些外键都需要存在于内存中。尽管内存越来越便宜，但无论是磁盘还是 RAM，它们都是有限的资源，也都不是免费的。</p>
+<p>我们的数据库有很多中间表，这些中间表是指向其他表外键的容器，尤其是在一对多关系中。帐户具有多个卡号、地址、电话号码，用户名等。对于具有数十亿用户的一组表中的每个列，外键带来额外空间会迅速增加。</p>
+<p><strong>对随机字符串排序真的很麻烦</strong></p>
+<p>另一个问题是碎片化 — 由于 UUID 是随机的，它们没有自然顺序，因此不能用于聚集索引（clustering index）。这就是为什么 SQL Server 实现了newsequentialid()，它适合在聚集索引中使用，并且可能是所有 UUID 主键的一个正确实现。</p>
+<p>(见 <a href="https://msdn.microsoft.com/en-us/library/ms189786.aspx" target="_blank" rel="noopener">https://msdn.microsoft.com/en-us/library/ms189786.aspx</a> )</p>
+<p>其他数据库 PostgreSQL，MySQL 也可能有类似的解决方案。</p>
+<p><strong>主键不应该公开，即使是 UUID</strong></p>
+<p>根据定义，主键在其范围内是唯一的。因此，用作用户 ID 或在 URL 中当做唯一标识是很自然的事情。</p>
+<p>但是别这样做！我认为在任何公共场合暴露主键是一个很不好的做法。</p>
+<p>前面提到，简单的使用自动递增 ID 的问题是，它很容易被猜测。攻击爬虫会不断猜测，直到找到一个存在的为止（即使你转向 UUID 爬虫也可能会尝试，但猜中的概率就变得非常的低）。</p>
+<p>尝试猜测一个 UUID 可能是愚蠢的事，但是微软也警告过，引入 newsequentialid() 来解决聚集索引问题，它使得它的数字更容易被猜测。</p>
+<p><strong>主键不需要修改（直到有人这样做）</strong></p>
+<p>有令人信服的理由，不在任何公共语境暴露主键：比如你修改了数据表结构定义，所有外部引用被打破，想想遍地的“404 Page Not Found”页面吧。</p>
+<p>何时需要更改主键？碰巧的是，我们本周正在进行数据迁移，谁能在 2003 年公司成立之初就能预知现在存在 13 个海量 SQL Server 数据库并且还在迅速增长？</p>
+<p>不要说“从不用修改”，我已经经历过好几次。事先规划简单，但当你数据万亿级别时候，很难修复。</p>
+<p>我目前公司的环境是一个很好的例子，说明了为什么需要 UUID，以及它的成本高昂，为什么对外暴露主键是一个问题。</p>
+<p><strong>我的内部系统是对外的</strong></p>
+<p>我管理 Hadoop 集群每晚都会从所有数据库中接收数据。Hadoop 系统连接（绑定）到 SQL Server 数据库，这也正常 — 毕竟我们是同一家公司。</p>
+<p>尽管如此，为了消除多个数据库中冲突的主键，我们通过连接两个字段：用户 ID（基于我们设计，它在所有库中是唯一的），再加上业务表本身的 ID（存在多库冲突），生成了一个伪主键。</p>
+<p>通过这样做，我们在多年的历史用户数据之间建立了紧密而有效的永久绑定。如果 RDBMS 中的一些主键发生了变化，我们数据也得更改这些主键，否则我们会在前后遇到一些可怕的情况。</p>
+<p><strong>两者兼顾：**</strong>内部整型，外部 UUID？**</p>
+<p>简而言之，可采用两者兼顾的方法，我已经在几种不同场景下使用过这种解决方案。（不过注意：这不是一个好的解决方案，请参阅下面 Chris 评论）。</p>
+<p>在内部，数据库使用简短高效的连续数字作为主键（int 或 bigint）。</p>
+<p>然后添加一个 UUID 的字段（可以使用插入时的触发器）。在数据库本身的范围内，可以使用常规的主键和外键来管理关系。</p>
+<p>当需要将数据的引用公开给外部世界时，即使“外部”对应另外一个内部系统，它们也必须仅依赖 UUID。</p>
+<p>这样，如果确实必须更改内部主键，则可以确保它仅作用于一个数据库。（注意：正如 Chris 观察到的那样，这样也有缺陷）</p>
+<p>我们在另一家公司使用此策略来存储客户数据，只是为了避免“可猜测的”问题。（注意：避免与防止不同，请参见下文）。</p>
+<p>在另一种情况下，我们将生成一小段文本（例如在本文原文的地址中），从而使 URL 更加人性化。如果有重复项，则只需附加一个哈希值。</p>
+<p>即使作为“第二主键”，直接以字符串形式使用 UUID 也是错误的：我更希望使用内置的数据库机制，将其存储为 8 字节整型数字。</p>
+<p>使用整型是因为它们更高效有效。使用 UUID 的数据库实现用于混淆的外部引用。</p>
+<p>克里斯·罗素（Chris Russell）正确回应了本文的原始帖子，指出了两个重要的逻辑错误。</p>
+<p>首先，即使公开主键的替代品 UUID 也会暴露信息，这在使用 newsequentialid 函数时尤其如此 — 为了安全，请勿使用 UUID。</p>
+<p>其次，如果内部的主键是整型值，仍然存在合并两个数据库的键冲突问题，除非所有键都加倍增大……在这种情况下，只使用 UUID。</p>
+<p>因此，正确的做法是：使用 UUID 当做主键，并且永远不要公开它们。内外影射的事情留给诸如友好 URL 处理之类的模块，类似 Medium 那样使用哈希值。</p>
+<p>谢谢 Chris！（译者：Chris 评论请参看原文链接中的评论部分）</p>
+<p><strong>参考资料及致谢</strong></p>
+<p>感谢 Ruby 周刊（尽管我已经转到 Scala，我仍然经常阅读），Starr Horne 在 Honeybadger.io 上的博客， 以及 StackOverflow 的联合创始人 Jeff Atwood 的 Coding Horror 博客上有趣而精巧的文章；感谢Stackoverflow 旗下网站 dba.stackexchange.com 上相关提问、MySqlserverTeam 的文章，还包括 theBuild.com 以及前文提到的 MSDN。</p>
+<p><strong>附注：**</strong>为什么写这篇博客**</p>
+<p>通过写这篇文章，我也学到了很多东西。</p>
+<p>某个周日下午正在阅读电子邮件，然后遇到了 Starr 的一篇有趣的帖子，我觉得他的方法可能会产生一些意料外的结果。因此，我通过 Google 搜索和学习了更多有关 UUID 的方法，并且改变了我对 UUID 使用的基本理解和态度。</p>
+<p>在撰写本文的一半时，我向公司的技术负责人发送了电子邮件，想知道我们是否考虑过我讨论的这些话题。希望我们用过的方法没有问题，避免计划于本周发布的代码出现什么意外。</p>
+<p>请注意，我所做的这些都是出于完全自私的原因 :-)</p>
+<p>希望你也喜欢它！</p>
+<p>Image Credit：</p>
+<p><a href="http://unlockforus.blogspot.com/2008/03/advanced-how-to-creategenerate-new-guid.html" target="_blank" rel="noopener">http://unlockforus.blogspot.com/2008/03/advanced-how-to-creategenerate-new-guid.html</a></p>
+<p>原文链接：</p>
+<p><a href="https://tomharrisonjr.com/uuid-or-guid-as-primary-keys-be-careful-7b2aa3dcb439" target="_blank" rel="noopener">https://tomharrisonjr.com/uuid-or-guid-as-primary-keys-be-careful-7b2aa3dcb439</a></p>
+<p>在你的项目中，是否有更好的 UUID 及主键做法？欢迎留言。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/oops/uploads/wechat-qcode.jpg" alt="架构组 wechat" style="width: 200px; max-width: 100%;"/>
+    <div>欢迎您扫一扫上面的微信二维码，订阅我的公众号</div>
+</div>
+
+      </div>
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E8%81%8A%E8%81%8A%20Java%20%E7%9A%84%E5%87%A0%E6%8A%8A%20JVM%20%E7%BA%A7%E9%94%81/" rel="next" title="聊聊 Java 的几把 JVM 级锁">
+                <i class="fa fa-chevron-left"></i> 聊聊 Java 的几把 JVM 级锁
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E7%BB%8F%E9%AA%8C%EF%BC%9A%E4%B8%80%E4%B8%AA%E7%A7%92%E6%9D%80%E7%B3%BB%E7%BB%9F%E7%9A%84%E8%AE%BE%E8%AE%A1%E6%80%9D%E8%80%83%EF%BC%81/" rel="prev" title="经验：一个秒杀系统的设计思考！">
+                经验：一个秒杀系统的设计思考！ <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner" style="text-align:center;">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      本站访客数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人次
+    </span>
+  
+
+  
+    <span class="site-pv">
+      本站总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/oops/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/oops/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/oops/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/oops/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/oops/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

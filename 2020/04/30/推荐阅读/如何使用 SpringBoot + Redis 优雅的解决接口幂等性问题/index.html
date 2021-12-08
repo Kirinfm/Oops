@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/oops/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/oops/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/oops/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/oops/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/oops/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/oops/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/oops/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="前言:在实际的开发项目中，一个对外暴露的接口往往会面临，瞬间大量的重复的请求提交，如果想过滤掉重复请求造成对业务的伤害，那就需要实现幂等！ 我们来解释一下幂等的概念：任意多次执行所产生的影响均与一次执行的影响相同。按照这个含义，最终的含义就是对数据库的影响只能是一次性的，不能重复处理。  1、数据库建立唯一性索引，可以保证最终插入数据库的只有一条数据 2、token机制，每次接口请求前先获取一个t">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何使用 SpringBoot + Redis 优雅的解决接口幂等性问题">
+<meta property="og:url" content="https://smartlink-tech.gitee.cn/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8%20SpringBoot%20+%20Redis%20%E4%BC%98%E9%9B%85%E7%9A%84%E8%A7%A3%E5%86%B3%E6%8E%A5%E5%8F%A3%E5%B9%82%E7%AD%89%E6%80%A7%E9%97%AE%E9%A2%98/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="前言:在实际的开发项目中，一个对外暴露的接口往往会面临，瞬间大量的重复的请求提交，如果想过滤掉重复请求造成对业务的伤害，那就需要实现幂等！ 我们来解释一下幂等的概念：任意多次执行所产生的影响均与一次执行的影响相同。按照这个含义，最终的含义就是对数据库的影响只能是一次性的，不能重复处理。  1、数据库建立唯一性索引，可以保证最终插入数据库的只有一条数据 2、token机制，每次接口请求前先获取一个t">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/345A3C0B72A3F16F19E7CF9DF7698AF3.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/31C3DE2A53AEA3293E34823A0B451758.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/917912C4097B46398F6CE2BBE1860284.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/1AC93C57319F7B7859BDCC482FD28A0D.png">
+<meta property="article:published_time" content="2020-04-30T03:23:00.000Z">
+<meta property="article:modified_time" content="2020-04-30T08:17:04.065Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://smartlink-tech.gitee.cn/Oops/resources/345A3C0B72A3F16F19E7CF9DF7698AF3.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/Oops',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"remove","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://smartlink-tech.gitee.cn/oops/2020/04/30/推荐阅读/如何使用 SpringBoot + Redis 优雅的解决接口幂等性问题/"/>
+
+
+
+
+
+  <title>如何使用 SpringBoot + Redis 优雅的解决接口幂等性问题 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/oops/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/oops/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/oops/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/oops/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/oops/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://smartlink-tech.gitee.cn/oops/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8%20SpringBoot%20+%20Redis%20%E4%BC%98%E9%9B%85%E7%9A%84%E8%A7%A3%E5%86%B3%E6%8E%A5%E5%8F%A3%E5%B9%82%E7%AD%89%E6%80%A7%E9%97%AE%E9%A2%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="架构组">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/oops/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">如何使用 SpringBoot + Redis 优雅的解决接口幂等性问题</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-04-30T11:23:00+08:00">
+                2020-04-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/oops/categories/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/" itemprop="url" rel="index">
+                    <span itemprop="name">推荐阅读</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv">本文总阅读量
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言:"></a>前言:</h2><p>在实际的开发项目中，一个对外暴露的接口往往会面临，瞬间大量的重复的请求提交，如果想过滤掉重复请求造成对业务的伤害，那就需要实现<strong>幂等</strong>！</p>
+<h3 id="我们来解释一下幂等的概念："><a href="#我们来解释一下幂等的概念：" class="headerlink" title="我们来解释一下幂等的概念："></a>我们来解释一下幂等的概念：</h3><p><strong>任意多次执行所产生的影响均与一次执行的影响相同</strong>。按照这个含义，最终的含义就是<strong>对数据库的影响只能是一次性的，不能重复处理</strong>。</p>
+<ul>
+<li>1、数据库建立唯一性索引，可以保证最终插入数据库的只有一条数据</li>
+<li>2、token机制，每次接口请求前先获取一个token，然后再下次请求的时候在请求的header体中加上这个token，后台进行验证，如果验证通过删除token，下次请求再次判断token</li>
+<li>3、悲观锁或者乐观锁，悲观锁可以保证每次for update的时候其他sql无法update数据(在数据库引擎是innodb的时候,select的条件必须是唯一索引,防止锁全表)</li>
+<li>4、先查询后判断，首先通过查询数据库是否存在数据，如果存在证明已经请求过了，直接拒绝该请求，如果没有存在，就证明是第一次进来，直接放行。</li>
+</ul>
+<p><strong>Redis实现自动幂等的原理图：</strong></p>
+<p><img src="/Oops/resources/345A3C0B72A3F16F19E7CF9DF7698AF3.png" alt></p>
+<h3 id="一、搭建-Redis-的服务-Api"><a href="#一、搭建-Redis-的服务-Api" class="headerlink" title="一、搭建 Redis 的服务 Api"></a>一、搭建 Redis 的服务 Api</h3><ul>
+<li>1、首先是搭建redis服务器。</li>
+<li>2、引入springboot中到的redis的stater，或者Spring封装的jedis也可以，后面主要用到的api就是它的set方法和exists方法,这里我们使用springboot的封装好的redisTemplate</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;\*\*</span><br><span class="line"> \* redis工具类</span><br><span class="line"> \*&#x2F;</span><br><span class="line">@Component</span><br><span class="line">public class RedisService &#123;</span><br><span class="line">    @Autowired</span><br><span class="line">    privateRedisTemplate redisTemplate;</span><br><span class="line"></span><br><span class="line">    &#x2F;\*\*</span><br><span class="line"> \* 写入缓存</span><br><span class="line"> \*</span><br><span class="line"> \* @param key</span><br><span class="line"> \* @param value</span><br><span class="line"> \* @return</span><br><span class="line"> \*&#x2F;</span><br><span class="line">    public boolean set(final String key, Object value) &#123;</span><br><span class="line">        boolean result &#x3D; false;</span><br><span class="line">        try &#123;</span><br><span class="line">            ValueOperations&lt;Serializable, Object&gt; operations &#x3D; redisTemplate.opsForValue();</span><br><span class="line">            operations.set(key, value);</span><br><span class="line">            result &#x3D; true;</span><br><span class="line">        &#125; catch (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        return result;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;\*\*</span><br><span class="line"> \* 写入缓存设置时效时间</span><br><span class="line"> \*</span><br><span class="line"> \* @param key</span><br><span class="line"> \* @param value</span><br><span class="line"> \* @return</span><br><span class="line"> \*&#x2F;</span><br><span class="line">    public boolean setEx(final String key, Object value, Long expireTime) &#123;</span><br><span class="line">        boolean result &#x3D; false;</span><br><span class="line">        try &#123;</span><br><span class="line">            ValueOperations&lt;Serializable, Object&gt; operations &#x3D; redisTemplate.opsForValue();</span><br><span class="line">            operations.set(key, value);</span><br><span class="line">            redisTemplate.expire(key, expireTime, TimeUnit.SECONDS);</span><br><span class="line">            result &#x3D; true;</span><br><span class="line">        &#125; catch (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        return result;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;\*\*</span><br><span class="line"> \* 判断缓存中是否有对应的value</span><br><span class="line"> \*</span><br><span class="line"> \* @param key</span><br><span class="line"> \* @return</span><br><span class="line"> \*&#x2F;</span><br><span class="line">    public boolean exists(final String key) &#123;</span><br><span class="line">        return redisTemplate.hasKey(key);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;\*\*</span><br><span class="line"> \* 读取缓存</span><br><span class="line"> \*</span><br><span class="line"> \* @param key</span><br><span class="line"> \* @return</span><br><span class="line"> \*&#x2F;</span><br><span class="line">    public Object get(final String key) &#123;</span><br><span class="line">        Object result &#x3D; null;</span><br><span class="line">        ValueOperations&lt;Serializable, Object&gt; operations &#x3D; redisTemplate.opsForValue();</span><br><span class="line">        result &#x3D; operations.get(key);</span><br><span class="line">        return result;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;\*\*</span><br><span class="line"> \* 删除对应的value</span><br><span class="line"> \*</span><br><span class="line"> \* @param key</span><br><span class="line"> \*&#x2F;</span><br><span class="line">    public boolean remove(final String key) &#123;</span><br><span class="line">        if (exists(key)) &#123;</span><br><span class="line">            Boolean delete &#x3D; redisTemplate.delete(key);</span><br><span class="line">            return delete;</span><br><span class="line">        &#125;</span><br><span class="line">        return false;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="二、自定义注解AutoIdempotent"><a href="#二、自定义注解AutoIdempotent" class="headerlink" title="二、自定义注解AutoIdempotent"></a>二、自定义注解AutoIdempotent</h3><p>自定义一个注解，定义此注解的主要目的是把它添加在需要实现幂等的方法上，凡是某个方法注解了它，都会实现自动幂等。后台利用反射如果扫描到这个注解，就会处理这个方法实现自动幂等，使用元注解<code>ElementType.METHOD</code>表示它只能放在方法上，<code>RetentionPolicy.RUNTIME</code>表示它在运行时。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">@Target(&#123;ElementType.METHOD&#125;)</span><br><span class="line">@Retention(RetentionPolicy.RUNTIME)</span><br><span class="line">public @interface AutoIdempotent&#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="三、token创建和检验"><a href="#三、token创建和检验" class="headerlink" title="三、token创建和检验"></a>三、token创建和检验</h3><h4 id="1、token服务接口"><a href="#1、token服务接口" class="headerlink" title="1、token服务接口"></a>1、token服务接口</h4><p>我们新建一个接口，创建token服务，里面主要是两个方法，一个用来创建token，一个用来验证token。创建token主要产生的是一个字符串，检验token的话主要是传达request对象，为什么要传request对象呢？主要作用就是获取header里面的token,然后检验，通过抛出的Exception来获取具体的报错信息返回给前端。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">public interface TokenService&#123;</span><br><span class="line"> &#x2F;\*\*</span><br><span class="line"> \* 创建token</span><br><span class="line"> \* @return</span><br><span class="line"> \*&#x2F;</span><br><span class="line"> public String createToken();</span><br><span class="line"> &#x2F;\*\*</span><br><span class="line"> \* 检验token</span><br><span class="line"> \* @param request</span><br><span class="line"> \* @return</span><br><span class="line"> \*&#x2F;</span><br><span class="line"> public boolean checkToken(HttpServletRequest request) throwsException;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="2、token的服务实现类"><a href="#2、token的服务实现类" class="headerlink" title="2、token的服务实现类"></a>2、token的服务实现类</h4><p>token引用了redis服务，创建token采用随机算法工具类生成随机uuid字符串,然后放入到redis中(为了防止数据的冗余保留,这里设置过期时间为10000秒,具体可视业务而定)，如果放入成功，最后返回这个token值。checkToken方法就是从header中获取token到值(如果header中拿不到，就从paramter中获取)，如若不存在,直接抛出异常。这个异常信息可以被拦截器捕捉到，然后返回给前端。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line">@Service</span><br><span class="line"></span><br><span class="line">public class TokenServiceImpl implements TokenService &#123;</span><br><span class="line">    @Autowired</span><br><span class="line">    privateRedisService redisService;</span><br><span class="line"></span><br><span class="line">    &#x2F;\*\*</span><br><span class="line"> \* 创建token</span><br><span class="line"> \*</span><br><span class="line"> \* @return</span><br><span class="line"> \*&#x2F;</span><br><span class="line">    @Override</span><br><span class="line">    public String createToken() &#123;</span><br><span class="line">        String str &#x3D; RandomUtil.randomUUID();</span><br><span class="line">        StringBuilder token &#x3D; new StringBuilder();</span><br><span class="line">        try &#123;</span><br><span class="line">            token.append(Constant.Redis.TOKEN_PREFIX).append(str);</span><br><span class="line">            redisService.setEx(token.toString(), token.toString(), 10000L);</span><br><span class="line">            boolean notEmpty &#x3D; StrUtil.isNotEmpty(token.toString());</span><br><span class="line">            if (notEmpty) &#123;</span><br><span class="line">                return token.toString();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; catch (Exception ex) &#123;</span><br><span class="line">            ex.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;\*\*</span><br><span class="line"> \* 检验token</span><br><span class="line"> \*</span><br><span class="line"> \* @param request</span><br><span class="line"> \* @return</span><br><span class="line"> \*&#x2F;</span><br><span class="line">    @Override</span><br><span class="line">    public boolean checkToken(HttpServletRequest request) throws Exception &#123;</span><br><span class="line">        String token &#x3D; request.getHeader(Constant.TOKEN_NAME);</span><br><span class="line">        if (StrUtil.isBlank(token)) &#123;&#x2F;&#x2F; header中不存在token</span><br><span class="line">            token &#x3D; request.getParameter(Constant.TOKEN_NAME);</span><br><span class="line">            if (StrUtil.isBlank(token)) &#123;&#x2F;&#x2F; parameter中也不存在token</span><br><span class="line">                thrownewServiceException(Constant.ResponseCode.ILLEGAL_ARGUMENT, 100);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        if (!redisService.exists(token)) &#123;</span><br><span class="line">            thrownewServiceException(Constant.ResponseCode.REPETITIVE_OPERATION, 200);</span><br><span class="line">        &#125;</span><br><span class="line">        boolean remove &#x3D; redisService.remove(token);</span><br><span class="line">        if (!remove) &#123;</span><br><span class="line">            thrownewServiceException(Constant.ResponseCode.REPETITIVE_OPERATION, 200);</span><br><span class="line">        &#125;</span><br><span class="line">        returntrue;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="四、拦截器的配置"><a href="#四、拦截器的配置" class="headerlink" title="四、拦截器的配置"></a>四、拦截器的配置</h3><ul>
+<li>1、web配置类，实现WebMvcConfigurerAdapter，主要作用就是添加AutoIdempotentInterceptor到配置类中，这样我们到拦截器才能生效，注意使用@Configuration注解，这样在容器启动是时候就可以添加进入context中</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">@Configuration</span><br><span class="line">public class WebConfiguration extends WebMvcConfigurerAdapter&#123;</span><br><span class="line"> @Resource</span><br><span class="line"> private AutoIdempotentInterceptor autoIdempotentInterceptor;</span><br><span class="line"> &#x2F;\*\*</span><br><span class="line"> \* 添加拦截器</span><br><span class="line"> \* @param registry</span><br><span class="line"> \*&#x2F;</span><br><span class="line"> @Override</span><br><span class="line"> publicvoid addInterceptors(InterceptorRegistry registry) &#123;</span><br><span class="line">        registry.addInterceptor(autoIdempotentInterceptor);</span><br><span class="line"> super.addInterceptors(registry);</span><br><span class="line">    &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>2、拦截处理器：主要的功能是拦截扫描到AutoIdempotent到注解到方法,然后调用tokenService的checkToken()方法校验token是否正确，如果捕捉到异常就将异常信息渲染成json返回给前端</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;\*\*</span><br><span class="line"> \* 拦截器</span><br><span class="line"> \*&#x2F;</span><br><span class="line">@Component</span><br><span class="line">public class AutoIdempotentInterceptor implements HandlerInterceptor&#123;</span><br><span class="line"> @Autowired</span><br><span class="line"> privateTokenService tokenService;</span><br><span class="line"> &#x2F;\*\*</span><br><span class="line"> \* 预处理</span><br><span class="line"> \*</span><br><span class="line"> \* @param request</span><br><span class="line"> \* @param response</span><br><span class="line"> \* @param handler</span><br><span class="line"> \* @return</span><br><span class="line"> \* @throws Exception</span><br><span class="line"> \*&#x2F;</span><br><span class="line"> @Override</span><br><span class="line"> public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throwsException&#123;</span><br><span class="line"> if(!(handler instanceofHandlerMethod)) &#123;</span><br><span class="line"> returntrue;</span><br><span class="line">        &#125;</span><br><span class="line"> HandlerMethod handlerMethod &#x3D; (HandlerMethod) handler;</span><br><span class="line"> Method method &#x3D; handlerMethod.getMethod();</span><br><span class="line"> &#x2F;&#x2F;被ApiIdempotment标记的扫描</span><br><span class="line"> AutoIdempotent methodAnnotation &#x3D; method.getAnnotation(AutoIdempotent.class);</span><br><span class="line"> if(methodAnnotation !&#x3D; null) &#123;</span><br><span class="line"> try&#123;</span><br><span class="line"> return tokenService.checkToken(request);&#x2F;&#x2F; 幂等性校验, 校验通过则放行, 校验失败则抛出异常, 并通过统一异常处理返回友好提示</span><br><span class="line">            &#125;catch(Exception ex)&#123;</span><br><span class="line"> ResultVo failedResult &#x3D; ResultVo.getFailedResult(101, ex.getMessage());</span><br><span class="line">                writeReturnJson(response, JSONUtil.toJsonStr(failedResult));</span><br><span class="line"> throw ex;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"> &#x2F;&#x2F;必须返回true,否则会被拦截一切请求</span><br><span class="line"> returntrue;</span><br><span class="line">    &#125;</span><br><span class="line"> @Override</span><br><span class="line"> public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throwsException&#123;</span><br><span class="line">    &#125;</span><br><span class="line"> @Override</span><br><span class="line"> publicvoid afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throwsException&#123;</span><br><span class="line">    &#125;</span><br><span class="line"> &#x2F;\*\*</span><br><span class="line"> \* 返回的json值</span><br><span class="line"> \* @param response</span><br><span class="line"> \* @param json</span><br><span class="line"> \* @throws Exception</span><br><span class="line"> \*&#x2F;</span><br><span class="line"> privatevoid writeReturnJson(HttpServletResponse response, String json) throwsException&#123;</span><br><span class="line"> PrintWriter writer &#x3D; null;</span><br><span class="line">        response.setCharacterEncoding(&quot;UTF-8&quot;);</span><br><span class="line">        response.setContentType(&quot;text&#x2F;html; charset&#x3D;utf-8&quot;);</span><br><span class="line"> try&#123;</span><br><span class="line">            writer &#x3D; response.getWriter();</span><br><span class="line">            writer.print(json);</span><br><span class="line">        &#125; catch(IOException e) &#123;</span><br><span class="line">        &#125; finally&#123;</span><br><span class="line"> if(writer !&#x3D; null)</span><br><span class="line">                writer.close();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="五、测试用例"><a href="#五、测试用例" class="headerlink" title="五、测试用例"></a>五、测试用例</h3><h4 id="1、模拟业务请求类"><a href="#1、模拟业务请求类" class="headerlink" title="1、模拟业务请求类"></a>1、模拟业务请求类</h4><p>首先我们需要通过/get/token路径通过getToken()方法去获取具体的token，然后我们调用testIdempotence方法，这个方法上面注解了<code>@AutoIdempotent</code>，拦截器会拦截所有的请求，当判断到处理的方法上面有该注解的时候，就会调用TokenService中的checkToken()方法，如果捕获到异常会将异常抛出调用者，下面我们来模拟请求一下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">@RestController</span><br><span class="line">public class BusinessController &#123;</span><br><span class="line">    @Resource</span><br><span class="line">    privateTokenService tokenService;</span><br><span class="line">    @Resource</span><br><span class="line">    private TestService testService;</span><br><span class="line"></span><br><span class="line">    @PostMapping(&quot;&#x2F;get&#x2F;token&quot;)</span><br><span class="line">    publicString getToken() &#123;</span><br><span class="line">        String token &#x3D; tokenService.createToken();</span><br><span class="line">        if (StrUtil.isNotEmpty(token)) &#123;</span><br><span class="line">            ResultVo resultVo &#x3D; newResultVo();</span><br><span class="line">            resultVo.setCode(Constant.code_success);</span><br><span class="line">            resultVo.setMessage(Constant.SUCCESS);</span><br><span class="line">            resultVo.setData(token);</span><br><span class="line">            returnJSONUtil.toJsonStr(resultVo);</span><br><span class="line">        &#125;</span><br><span class="line">        returnStrUtil.EMPTY;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @AutoIdempotent</span><br><span class="line">    @PostMapping(&quot;&#x2F;test&#x2F;Idempotence&quot;)</span><br><span class="line">    public String testIdempotence() &#123;</span><br><span class="line">        String businessResult &#x3D; testService.testIdempotence();</span><br><span class="line">        if (StrUtil.isNotEmpty(businessResult)) &#123;</span><br><span class="line">            ResultVo successResult &#x3D; ResultVo.getSuccessResult(businessResult);</span><br><span class="line">            returnJSONUtil.toJsonStr(successResult);</span><br><span class="line">        &#125;</span><br><span class="line">        returnStrUtil.EMPTY;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="2、使用postman请求"><a href="#2、使用postman请求" class="headerlink" title="2、使用postman请求"></a>2、使用postman请求</h4><p>首先访问get/token路径获取到具体到token：</p>
+<p><img src="/Oops/resources/31C3DE2A53AEA3293E34823A0B451758.png" alt></p>
+<p>利用获取到到token,然后放到具体请求到header中,可以看到第一次请求成功，接着我们请求第二次：</p>
+<p><img src="/Oops/resources/917912C4097B46398F6CE2BBE1860284.png" alt></p>
+<p>第二次请求，返回到是重复性操作，可见重复性验证通过，再多次请求到时候我们只让其第一次成功，第二次就是失败：</p>
+<p><img src="/Oops/resources/1AC93C57319F7B7859BDCC482FD28A0D.png" alt></p>
+<h3 id="六、总结"><a href="#六、总结" class="headerlink" title="六、总结"></a>六、总结</h3><p>本篇介绍了使用 SpringBoot 和拦截器、Redis 来优雅的实现接口幂等，对于幂等在实际的开发过程中是十分重要的，因为一个接口可能会被无数的客户端调用，如何保证其不影响后台的业务处理，如何保证其只影响数据一次是非常重要的，它可以防止产生脏数据或者乱数据，也可以减少并发量，实乃十分有益的一件事。而传统的做法是每次判断数据，这种做法不够智能化和自动化，比较麻烦。而今天的这种自动化处理也可以提升程序的伸缩性。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/oops/uploads/wechat-qcode.jpg" alt="架构组 wechat" style="width: 200px; max-width: 100%;"/>
+    <div>欢迎您扫一扫上面的微信二维码，订阅我的公众号</div>
+</div>
+
+      </div>
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E5%A6%82%E4%BD%95%E5%9F%BA%E4%BA%8ECanal%20%E5%92%8C%20Kafka%EF%BC%8C%E5%AE%9E%E7%8E%B0%20MySQL%20%E7%9A%84%20Binlog%20%E8%BF%91%E5%AE%9E%E6%97%B6%E5%90%8C%E6%AD%A5%EF%BC%9F/" rel="next" title="如何基于Canal 和 Kafka，实现 MySQL 的 Binlog 近实时同步？">
+                <i class="fa fa-chevron-left"></i> 如何基于Canal 和 Kafka，实现 MySQL 的 Binlog 近实时同步？
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E5%9B%BE%E6%96%87%EF%BC%9A%E5%85%B3%E4%BA%8E%E8%BF%9B%E7%A8%8B%E4%B8%8E%E7%BA%BF%E7%A8%8B%EF%BC%8C%E6%88%91%E7%9C%8B%E8%BF%87%E6%9C%80%E9%80%9A%E4%BF%97%E7%9A%84%E8%A7%A3%E9%87%8A!/" rel="prev" title="图文：关于进程与线程，我看过最通俗的解释!">
+                图文：关于进程与线程，我看过最通俗的解释! <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner" style="text-align:center;">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      本站访客数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人次
+    </span>
+  
+
+  
+    <span class="site-pv">
+      本站总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/oops/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/oops/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/oops/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/oops/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/oops/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

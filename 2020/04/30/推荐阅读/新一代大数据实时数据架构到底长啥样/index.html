@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/oops/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/oops/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/oops/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/oops/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/oops/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/oops/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/oops/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="以下文章来源于Flink 中文社区 ，作者刘大龙@唯品会 [  Flink 中文社区 Apache Flink 官微，Flink PMC 维护 ](https:&#x2F;&#x2F;mp.weixin.qq.com&#x2F;s?__biz&#x3D;MzIxMTE0ODU5NQ&#x3D;&#x3D;&amp;mid&#x3D;2650239383&amp;idx&#x3D;1&amp;sn&#x3D;10933a52ddf0d7da1f8714076721c93a&amp;chk">
+<meta property="og:type" content="article">
+<meta property="og:title" content="新一代大数据实时数据架构到底长啥样">
+<meta property="og:url" content="https://smartlink-tech.gitee.cn/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E6%96%B0%E4%B8%80%E4%BB%A3%E5%A4%A7%E6%95%B0%E6%8D%AE%E5%AE%9E%E6%97%B6%E6%95%B0%E6%8D%AE%E6%9E%B6%E6%9E%84%E5%88%B0%E5%BA%95%E9%95%BF%E5%95%A5%E6%A0%B7/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="以下文章来源于Flink 中文社区 ，作者刘大龙@唯品会 [  Flink 中文社区 Apache Flink 官微，Flink PMC 维护 ](https:&#x2F;&#x2F;mp.weixin.qq.com&#x2F;s?__biz&#x3D;MzIxMTE0ODU5NQ&#x3D;&#x3D;&amp;mid&#x3D;2650239383&amp;idx&#x3D;1&amp;sn&#x3D;10933a52ddf0d7da1f8714076721c93a&amp;chk">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/226B2493FA9617293468039D6B14FAFF.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/0F621E7B3076AECF3D01382E513597FF.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/939569A7ABD9F122854FE471396156F2.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/C306613B2B12558154F0CFBA06F212D9.png">
+<meta property="article:published_time" content="2020-04-30T03:23:00.000Z">
+<meta property="article:modified_time" content="2020-04-30T08:17:04.066Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://smartlink-tech.gitee.cn/Oops/resources/226B2493FA9617293468039D6B14FAFF.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/Oops',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"remove","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://smartlink-tech.gitee.cn/oops/2020/04/30/推荐阅读/新一代大数据实时数据架构到底长啥样/"/>
+
+
+
+
+
+  <title>新一代大数据实时数据架构到底长啥样 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/oops/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/oops/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/oops/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/oops/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/oops/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://smartlink-tech.gitee.cn/oops/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E6%96%B0%E4%B8%80%E4%BB%A3%E5%A4%A7%E6%95%B0%E6%8D%AE%E5%AE%9E%E6%97%B6%E6%95%B0%E6%8D%AE%E6%9E%B6%E6%9E%84%E5%88%B0%E5%BA%95%E9%95%BF%E5%95%A5%E6%A0%B7/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="架构组">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/oops/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">新一代大数据实时数据架构到底长啥样</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-04-30T11:23:00+08:00">
+                2020-04-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/oops/categories/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/" itemprop="url" rel="index">
+                    <span itemprop="name">推荐阅读</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv">本文总阅读量
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>以下文章来源于Flink 中文社区 ，作者刘大龙@唯品会</p>
+<p>[</p>
+<p><img src="/Oops/resources/226B2493FA9617293468039D6B14FAFF.jpg" alt="Flink 中文社区"></p>
+<p>Flink 中文社区</p>
+<p>Apache Flink 官微，Flink PMC 维护</p>
+<p>](<a href="https://mp.weixin.qq.com/s?__biz=MzIxMTE0ODU5NQ==&amp;mid=2650239383&amp;idx=1&amp;sn=10933a52ddf0d7da1f8714076721c93a&amp;chksm=8f5a1bcbb82d92dd6fac7130b8de1505d6333619f7f47fc85fda53825191a24f88b8ccc922b2&amp;mpshare=1&amp;scene=24&amp;srcid=&amp;sharer_sharetime=1588200175239&amp;sharer_shareid=c160acc94f88b548659851d0c076f848&amp;key=40ff362e82ee7cc508124f09efb0318a626cae9dc2eb0c0c292e55f0c6538667140a58417dd3fa3626472e61ffecf035fe0d6b476382de3d1bced26f712e25893f3b788dff3d2b92777aff13590120e9&amp;ascene=0&amp;uin=ODg4MTg5OTU%253D&amp;devicetype=iMac+MacBookPro11%252C4+OSX+OSX+10.15.4+build(19E287)&amp;version=12031d11&amp;nettype=WIFI&amp;lang=zh_CN&amp;fontScale=100&amp;exportkey=ASTaV8sehw1IUW4bf2suKl8%253D&amp;pass_ticket=6Uk%252FL70PHmhyEfsGvmtGjHfRs1BoRzNc9lwVCUejU6U%253D#" target="_blank" rel="noopener">https://mp.weixin.qq.com/s?__biz=MzIxMTE0ODU5NQ==&amp;mid=2650239383&amp;idx=1&amp;sn=10933a52ddf0d7da1f8714076721c93a&amp;chksm=8f5a1bcbb82d92dd6fac7130b8de1505d6333619f7f47fc85fda53825191a24f88b8ccc922b2&amp;mpshare=1&amp;scene=24&amp;srcid=&amp;sharer_sharetime=1588200175239&amp;sharer_shareid=c160acc94f88b548659851d0c076f848&amp;key=40ff362e82ee7cc508124f09efb0318a626cae9dc2eb0c0c292e55f0c6538667140a58417dd3fa3626472e61ffecf035fe0d6b476382de3d1bced26f712e25893f3b788dff3d2b92777aff13590120e9&amp;ascene=0&amp;uin=ODg4MTg5OTU%253D&amp;devicetype=iMac+MacBookPro11%252C4+OSX+OSX+10.15.4+build(19E287)&amp;version=12031d11&amp;nettype=WIFI&amp;lang=zh_CN&amp;fontScale=100&amp;exportkey=ASTaV8sehw1IUW4bf2suKl8%253D&amp;pass_ticket=6Uk%252FL70PHmhyEfsGvmtGjHfRs1BoRzNc9lwVCUejU6U%253D#</a>)</p>
+<p>随着互联网的发展进入下半场，数据的时效性对企业的精细化运营越来越重要， 商场如战场，在每天产生的海量数据中，如何能实时有效的挖掘出有价值的信息， 对企业的决策运营策略调整有很大帮助。此外，随着 5G 技术的成熟、广泛应用， 对于工业互联网、物联网等数据时效性要求非常高的行业，企业就更需要一套完整成熟的实时数据体系来提高自身的行业竞争力。</p>
+<p>本文从上述现状及实时数据需求出发，结合工业界案例、笔者的实时数据开发经验， 梳理总结了实时数据体系建设的总体方案，本文主要分为三个部分：</p>
+<ol>
+<li>第一部分主要介绍了当下在工业界比较火热的实时计算引擎 Flink 在实时数据体系建设过程中主要的应用场景及对应解决方案；</li>
+<li>第二部分从实时数据体系架构、实时数据模型分层、实时数据体系建设方式、流批一体实时数据架构发展等四个方面思考了实时数据体系的建设方案；</li>
+<li>第三部分则以一个具体案例介绍如何使用 Flink SQL 完成实时数据统计类需求。</li>
+</ol>
+<p><strong>一、Flink 实时应用场景</strong></p>
+<p>目前看来，Flink 在实时计算领域内的主要应用场景主要可分为四类场景， 分别是实时数据同步、流式 ETL、实时数据分析和复杂事件处理，具体的业务场景和对应的解决方案可详细研究下图， 文字层面不再详述。</p>
+<p><img src="/Oops/resources/0F621E7B3076AECF3D01382E513597FF.png" alt></p>
+<p><strong>二、实时数据体系架构</strong></p>
+<p>实时数据体系大致分为三类场景：流量类、业务类和特征类，这三种场景各有不同。</p>
+<ul>
+<li>在数据模型上，流量类是扁平化的宽表，业务数仓更多是基于范式的建模，特征数据是 KV 存储；</li>
+<li>从数据来源区分，流量数仓的数据来源一般是日志数据，业务数仓的数据来源是业务 binlog 数据，特征数仓的数据来源则多种多样;</li>
+<li>从数据量而言，流量和特征数仓都是海量数据，每天十亿级以上，而业务数仓的数据量一般每天百万到千万级；</li>
+<li>从数据更新频率而言，流量数据极少更新，则业务和特征数据更新较多，流量数据一般关注时序和趋势，业务数据和特征数据关注状态变更；</li>
+<li>在数据准确性上，流量数据要求较低，而业务数据和特征数据要求较高。</li>
+</ul>
+<p><strong>2.1 实时数据体系整体架构</strong></p>
+<p><img src="/Oops/resources/939569A7ABD9F122854FE471396156F2.jpg" alt></p>
+<p>整个实时数据体系架构分为五层，分别是接入层，存储层，计算层、平台层和应用层，上图只是整体架构的概要图，每一层具体要做的事情，接下来通过文字来详述。</p>
+<ul>
+<li><strong>接入层</strong>：该层利用各种数据接入工具收集各个系统的数据，包括 binlog 日志、埋点日志、以及后端服务日志，数据会被收集到 Kafka 中；这些数据不只是参与实时计算，也会参与离线计算，保证实时和离线的原始数据是统一的；</li>
+<li><strong>存储层</strong>：该层对原始数据、清洗关联后的明细数据进行存储，基于统一的实时数据模型分层理念，将不同应用场景的数据分别存储在 Kafka、HDFS、Kudu、 Clickhouse、Hbase、Redis、Mysql 等存储引擎中，各种存储引擎存放的具体的数据类型在实时数据模型分层部分会详细介绍；</li>
+<li><strong>计算层</strong>：计算层主要使用 Flink、Spark、Presto 以及 ClickHouse 自带的计算能力等四种计算引擎，Flink 计算引擎主要用于实时数据同步、 流式 ETL、关键系统秒级实时指标计算场景，Spark SQL 主要用于复杂多维分析的准实时指标计算需求场景，Presto 和 ClickHouse 主要满足多维自助分析、对查询响应时间要求不太高的场景；</li>
+<li><strong>平台层</strong>：在平台层主要做三个方面的工作，分别是对外提供统一查询服务、元数据及指标管理、数据质量及血缘；</li>
+<li><strong>应用层</strong>：以统一查询服务对各个业务线数据场景进行支持，业务主要包括实时大屏、实时数据产品、实时 OLAP、实时特征等。</li>
+</ul>
+<p>其中，平台层详细工作如下：</p>
+<ol>
+<li>统一查询服务支持从底层明细数据到聚合层数据的查询，支持以SQL化方式查询Redis、Hbase等KV存储中的数据；</li>
+<li>元数据及指标管理：主要对实时的Kafka表、Kudu表、Clickhouse表、Hive表等进行统一管理，以数仓模型中表的命名方式规范表的命名，明确每张表的字段含义、使用方，指标管理则是尽量通过指标管理系统将所有的实时指标统一管理起来，明确计算口径，提供给不同的业务方使用；</li>
+<li>数据质量及血缘分析：数据质量分为平台监控和数据监控两个部分，血缘分析则主要是对实时数据依赖关系、实时任务的依赖关系进行分析。</li>
+</ol>
+<p>平台监控部分一是对任务运行状态进行监控，对异常的任务进行报警并根据设定的参数对任务进行自动拉起与恢复，二是针对 Flink 任务要对 Kafka 消费处理延迟进行监控并实时报警。</p>
+<p>数据据监控则分为两个部分，首先流式 ETL 是整个实时数据流转过程中重要的一环，ETL 的过程中会关联各种维表，实时关联时，定时对没有关联上的记录上报异常日志到监控平台，当数量达到一定阈值时触发报警， 其次，部分关键实时指标采用了 lambda 架构，因此需要对历史的实时指标与离线 hive 计算的数据定时做对比，提供实时数据的数据质量监控，对超过阈值的指标数据进行报警。</p>
+<p>为了配合数据监控，需要做实时数据血缘，主要是梳理实时数据体系中数据依赖关系，以及实时任务的依赖关系，从底层ODS 到 DW 再到 DM，以及 DM 层被哪些模型用到， 将整个链条串联起来，这样做在数据/任务主动调整时可以通知关联的下游，指标异常时借助血缘定位问题，同时基于血缘关系的分析，我们也能评估数据的应用价值，核算数据的计算成本。</p>
+<hr>
+<p><strong>2.2 实时数据模型分层</strong></p>
+<p><img src="/Oops/resources/C306613B2B12558154F0CFBA06F212D9.png" alt></p>
+<p>离线数仓考虑到效率问题，一般会采取空间换时间的方式，层级划分会比较多；实时数仓考虑到实时性问题，分层则越少越好，另外也减少了中间流程出错的可能性，因此将其分为四层。</p>
+<p>**<br>**</p>
+<p><strong>■ ODS 层：</strong></p>
+<p>操作数据层，保存原始数据，对非结构化的数据进行结构化处理，轻度清洗，几乎不删除原始数据；</p>
+<p>该层的数据主要来自业务数据库的 binlog 日志、埋点日志和应用程序日志；</p>
+<p>对于 binlog 日志通过 canal 监听，写到消息队列 Kafka 中，对应于埋点和应用程序日志，则通过 Filebeat 采集 nginx 和 tomcat 日志，上报到Kafka 中；</p>
+<p>除了存储在 Kafka 中，同时也会对业务数据库的 binlog 日志通过 Flink 写入 HDFS、Kudu 等存储引擎，落地到 5min Hive 表，供查询明细数据，同时也提供给离线数仓，做为其原始数据；另外，对于埋点日志数据，由于 ODS 层是非结构化的，则没有必要落地。</p>
+<p>**<br>**</p>
+<p><strong>*<em>■ *</em>DWD 层：</strong></p>
+<p>实时明细数据层，以业务过程作为建模驱动，基于每个具体的业务过程特点，构建最细粒度的明细层事实表；可以结合企业的数据使用特点，将明细事实表的某些重要维度属性字段做适当冗余，也即宽表化处理；</p>
+<p>该层的数据来源于 ODS 层，通过简单的 Streaming ETL 后得到，对于 binlog 日志的处理主要进行简单的数据清洗、处理数据漂移，以及可能对多个 ODS 层的表进行 Streaming Join，对流量日志主要是做一些通用ETL 处理，将非结构化的数据结构化，关联通用的维度字段；</p>
+<p>该层的数据存储在消息队列 Kafka 中，同时也会用 Flink 实时写入 Hive 5min 表，供查询明细数据，同时要提供给离线数仓，做为其原始数据。</p>
+<p>**<br>**</p>
+<p><strong>**</strong>■ <strong>**DIM 层：</strong></p>
+<ul>
+<li>公共维度层，基于维度建模理念思想，建立整个业务过程的一致性维度，降低数据计算口径和算法不统一风险；</li>
+<li>DIM 层数据来源于两部分：一部分是Flink程序实时处理ODS层数据得到，另外一部分是通过离线任务出仓得到；</li>
+<li>DIM 层维度数据主要使用 MySQL、Hbase、Redis 三种存储引擎，对于维表数据比较少的情况可以使用 MySQL，对于单条数据大小比较小，查询 QPS 比较高的情况，可以使用 Redis 存储，降低机器内存资源占用，对于数据量比较大，对维表数据变化不是特别敏感的场景，可以使用HBase 存储。</li>
+</ul>
+<p><strong>****</strong>■ <strong>**</strong>DM 层：**</p>
+<p><strong>（1）数据集市层</strong></p>
+<p>以数据域+业务域的理念建设公共汇总层，对于DM层比较复杂，需要综合考虑对于数据落地的要求以及具体的查询引擎来选择不同的存储方式，分为轻度汇总层和高度汇总层，同时产出，高度汇总层数据用于前端比较简单的KV查询， 提升查询性能，比如实时大屏，实时报表等，数据的时效性要求为秒级，轻度汇总层Kafka中宽表实时写入OLAP存储引擎，用于前端产品复杂的OLAP查询场景，满足自助分析和产出复杂报表的需求，对数据的时效性要求可容忍到分钟级；</p>
+<p><strong>（2）</strong>轻度汇总层</p>
+<p>**<br>**</p>
+<ul>
+<li>轻度汇总层由明细层通过Streaming ETL得到，主要以宽表的形式存在，业务明细汇总是由业务事实明细表和维度表join得到，流量明细汇总是由流量日志按业务线拆分和维度表join得到；</li>
+<li>轻度汇总层数据存储比较多样化，首先利用Flink实时消费DWD层Kafka中明细数据join业务过程需要的维表，实时打宽后写入该层的Kafka中，以Json或PB格式存储；</li>
+<li>同时对多维业务明细汇总数据通过Flink实时写入Kudu，用于查询明细数据和更复杂的多维数据分析需求，对于流量数据通过Flink分别写入HDFS和ClickHouse用于复杂的多维数据分析， 实时特征数据则通过Flink join维表后实时写入HDFS，用于下游的离线ETL消费；</li>
+<li>对于落地Kudu和HDFS的宽表数据，可用Spark SQL做分钟级的预计算，满足业务方复杂数据分析需求，提供分钟级延迟的数据，从而加速离线ETL过程的延迟， 另外随着Flink SQL与Hive生态集成的不断完善，可尝试用Flink SQL做离线ETL和OLAP计算任务(Flink流计算基于内存计算的特性，和presto非常类似，这使其也可以成为一个OLAP计算引擎)，用一套计算引擎解决实时离线需求，从而实现批流统一；</li>
+<li>对于Kudu中的业务明细数据、ClickHouse中的流量明细数据，也可以满足业务方的个性化数据分析需求，利用强大的OLAP计算引擎，实时查询明细数据，在10s量级的响应时间内给出结果，这类需求也即是实时OLAP需求，灵活性比较高。</li>
+</ul>
+<p><strong>**（3）</strong>高度汇总层**</p>
+<ul>
+<li>高度汇总层由明细数据层或轻度汇总层通过聚合计算后写入到存储引擎中，产出一部分实时数据指标需求，灵活性比较差；</li>
+<li>计算引擎使用Flink Datastream API和Flink SQL，指标存储引擎根据不同的需求，对于常见的简单指标汇总模型可直接放在MySQL里面，维度比较多的、写入更新比较大的模型会放在HBase里面， 还有一种是需要做排序、对查询QPS、响应时间要求非常高、且不需要持久化存储如大促活动期间在线TopN商品等直接存储在Redis里面；</li>
+<li>在秒级指标需求中，需要混用Lambda和Kappa架构，大部分实时指标使用Kappa架构完成计算，少量关键指标（如金额相关）使用Lambda架构用批处理重新处理计算，增加一次校对过程。</li>
+</ul>
+<p>总体来说 DM 层对外提供三种时效性的数据：</p>
+<p>首先是 Flink 等实时计算引擎预计算好的秒级实时指标，这种需求对数据的时效性要求非常高，用于实时大屏、计算维度不复杂的实时报表需求。</p>
+<p>其次是 Spark SQL 预计算的延迟在分钟级的准实时指标， 该类指标满足一些比较复杂但对数据时效性要求不太高的数据分析场景，可能会涉及到多个事实表的join，如销售归因等需求。</p>
+<p>最后一种则是不需要预计算，ad-hoc查询的复杂多维数据分析场景，此类需求比较个性化，灵活性比较高，如果 OLAP 计算引擎性能足够强大，也可完全满足秒级计算需求的场景; 对外提供的秒级实时数据和另外两种准实时数据的比例大致为 3：7，绝大多数的业务需求都优先考虑准实时计算或 ad-hoc 方式，可以降低资源使用、提升数据准确性，以更灵活的方式满足复杂的业务场景。</p>
+<p><strong>2.3 实时数据体系建设方式</strong></p>
+<p>整个实时数据体系分为两种建设方式，即实时和准实时(它们的实现方式分别是基于流计算引擎和 ETL、OLAP 引擎，数据时效性则分别是秒级和分钟级。</p>
+<ul>
+<li>在<strong>调度开销</strong>方面，准实时数据是批处理过程，因此仍然需要调度系统支持，调度频率较高，而实时数据却没有调度开销；</li>
+<li>在<strong>业务灵活性</strong>方面，因为准实时数据是基于 ETL 或 OLAP 引擎实现，灵活性优于基于流计算的方式；</li>
+<li>在对<strong>数据晚到的容忍度</strong>方面，因为准实时数据可以基于一个周期内的数据进行全量计算，因此对于数据晚到的容忍度也是比较高的，而实时数据使用的是增量计算，对于数据晚到的容忍度更低一些；</li>
+<li>在<strong>适用场景</strong>方面，准实时数据主要用于有实时性要求但不太高、涉及多表关联和业务变更频繁的场景，如交易类型的实时分析，实时数据则更适用于实时性要求高、数据量大的场景，如实时特征、流量类型实时分析等场景。</li>
+</ul>
+<p><strong>2.4 流批一体实时数据架构发展</strong></p>
+<p>从1990年 Inmon 提出数据仓库概念到今天，大数据架构经历了从最初的离线大数据架构、Lambda 架构、Kappa 架构以及 Flink 的火热带出的流批一体架构，数据架构技术不断演进，本质是在往流批一体的方向发展，让用户能以最自然、最小的成本完成实时计算。</p>
+<ul>
+<li><strong>离线大数据架构</strong>：数据源通过离线的方式导入到离线数仓中，下游应用根据业务需求选择直接读取 DM 或加一层数据服务，比如 MySQL 或 Redis，数据存储引擎是 HDFS/Hive，ETL 工具可以是 MapReduce 脚本或 HiveSQL。数据仓库从模型层面分为操作数据层 ODS、数据仓库明细层 DWD、数据集市层 DM；</li>
+<li><strong>Lambda 架构</strong>：随着大数据应用的发展，人们逐渐对系统的实时性提出了要求，为了计算一些实时指标，就在原来离线数仓的基础上增加了一个实时计算的链路，并对数据源做流式改造（即把数据发送到消息队列），实时计算去订阅消息队列，直接完成指标增量的计算，推送到下游的数据服务中去，由数据服务层完成离线&amp;实时结果的合并；</li>
+<li><strong>Kappa 架构</strong>：Lambda 架构虽然满足了实时的需求，但带来了更多的开发与运维工作，其架构背景是流处理引擎还不完善，流处理的结果只作为临时的、近似的值提供参考。后来随着 Flink 等流处理引擎的出现，流处理技术成熟起来，这时为了解决两套代码的问题，LickedIn 的 Jay Kreps 提出了 Kappa 架构；</li>
+<li><strong>流批一体架构</strong>：流批一体架构比较完美的实现方式是采用流计算 + 交互式分析双引擎架构，在这个架构中，流计算负责的是基础数据，而交互式分析引擎是中心，流计算引擎对数据进行实时 ETL 工作，与离线相比，降低了 ETL 过程的 latency，交互式分析引擎则自带存储，通过计算存储的协同优化， 实现高写入 TPS、高查询 QPS 和低查询 latency ，从而做到全链路的实时化和 SQL 化，这样就可以用批的方式实现实时分析和按需分析，并能快速的响应业务的变化，两者配合，实现 1 + 1 &gt; 2 的效果； 该架构对交互式分析引擎的要求非常高，也许是未来大数据库技术发展的一个重点和方向。</li>
+</ul>
+<p>为了应对业务方更复杂的多维实时数据分析需求，笔者目前在数据开发中引入 Kudu这个 OLAP 存储引擎，对订单等业务数据使用 Presto + Kudu 的计算方案也是在探索流批一体架构在实时数据分析领域的可行性。此外，目前比较热的数据湖技术，如 Delta lake、Hudi 等支持在 HDFS 上进行 upsert 更新，随着其流式写入、SQL 引擎支持的成熟，未来可以用一套存储引擎解决实时、离线数据需求，从而减少多引擎运维开发成本。</p>
+<p><strong>三、Flink SQL 实时计算 UV 指标</strong></p>
+<p>上一部分从宏观层面介绍了如何建设实时数据体系，非常不接地气，可能大家需要的只是一个具体的 case 来了解一下该怎么做，那么接下来用一个接地气的案例来介绍如何实时计算 UV 数据。大家都知道，在 ToC 的互联网公司，UV 是一个很重要的指标，对于老板、商务、运营的及时决策会产生很大的影响，笔者在电商公司，目前主要的工作就是计算 UV、销售等各类实时数据，体验就特别深刻， 因此就用一个简单demo 演示如何用 Flink SQL 消费 Kafka 中的 PV 数据，实时计算出 UV 指标后写入 Hbase。</p>
+<p><strong>3.1 Kafka 源数据解析</strong></p>
+<p>PV 数据来源于埋点数据经 FileBeat 上报清洗后，以 ProtoBuffer 格式写入下游 Kafka，消费时第一步要先反序列化 PB 格式的数据为 Flink 能识别的 Row 类型，因此也就需要自定义实现 DeserializationSchema 接口，具体如下代码， 这里只抽取计算用到的 PV 的 mid、事件时间 time_local，并从其解析得到 log_date 字段：</p>
+<pre><code>* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public class PageViewDeserializationSchema implements DeserializationSchema\&lt;Row\&gt; &#123;</span><br><span class="line"> public static final Logger LOG &#x3D; LoggerFactory.getLogger(PageViewDeserializationSchema.class); protected SimpleDateFormat dayFormatter;</span><br><span class="line"> private final RowTypeInfo rowTypeInfo;</span><br><span class="line"> public PageViewDeserializationSchema(RowTypeInfo rowTypeInfo)&#123; dayFormatter &#x3D; new SimpleDateFormat(&quot;yyyyMMdd&quot;, Locale.UK); this.rowTypeInfo &#x3D; rowTypeInfo; &#125; @Override public Row deserialize(byte[] message) throws IOException &#123; Row row &#x3D; new Row(rowTypeInfo.getArity()); MobilePage mobilePage &#x3D; null; try &#123; mobilePage &#x3D; MobilePage.parseFrom(message); String mid &#x3D; mobilePage.getMid(); row.setField(0, mid); Long timeLocal &#x3D; mobilePage.getTimeLocal(); String logDate &#x3D; dayFormatter.format(timeLocal); row.setField(1, logDate); row.setField(2, timeLocal); &#125;catch (Exception e)&#123; String mobilePageError &#x3D; (mobilePage !&#x3D; null) ? mobilePage.toString() : &quot;&quot;; LOG.error(&quot;error parse bytes payload is &#123;&#125;, pageview error is &#123;&#125;&quot;, message.toString(), mobilePageError, e); &#125; return null; &#125;</span><br></pre></td></tr></table></figure></code></pre><p><strong>3.2 编写 Flink Job 主程序</strong></p>
+<p>将 PV 数据解析为 Flink 的 Row 类型后，接下来就很简单了，编写主函数，写 SQL 就能统计 UV 指标了，代码如下：</p>
+<pre><code>* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public class RealtimeUV &#123;</span><br><span class="line"> public static void main(String[] args) throws Exception &#123; &#x2F;&#x2F;step1 从properties配置文件中解析出需要的Kakfa、Hbase配置信息、checkpoint参数信息 Map\&lt;String, String\&gt; config &#x3D; PropertiesUtil.loadConfFromFile(args[0]); String topic &#x3D; config.get(&quot;source.kafka.topic&quot;); String groupId &#x3D; config.get(&quot;source.group.id&quot;); String sourceBootStrapServers &#x3D; config.get(&quot;source.bootstrap.servers&quot;); String hbaseTable &#x3D; config.get(&quot;hbase.table.name&quot;); String hbaseZkQuorum &#x3D; config.get(&quot;hbase.zk.quorum&quot;); String hbaseZkParent &#x3D; config.get(&quot;hbase.zk.parent&quot;); int checkPointPeriod &#x3D; Integer.parseInt(config.get(&quot;checkpoint.period&quot;)); int checkPointTimeout &#x3D; Integer.parseInt(config.get(&quot;checkpoint.timeout&quot;));</span><br><span class="line"> StreamExecutionEnvironment sEnv &#x3D; StreamExecutionEnvironment.getExecutionEnvironment(); &#x2F;&#x2F;step2 设置Checkpoint相关参数，用于Failover容错 sEnv.getConfig().registerTypeWithKryoSerializer(MobilePage.class, ProtobufSerializer.class); sEnv.getCheckpointConfig().setFailOnCheckpointingErrors(false); sEnv.getCheckpointConfig().setMaxConcurrentCheckpoints(1); sEnv.enableCheckpointing(checkPointPeriod, CheckpointingMode.EXACTLY\_ONCE); sEnv.getCheckpointConfig().setCheckpointTimeout(checkPointTimeout); sEnv.getCheckpointConfig().enableExternalizedCheckpoints( CheckpointConfig.ExternalizedCheckpointCleanup.RETAIN\_ON\_CANCELLATION);</span><br><span class="line"> &#x2F;&#x2F;step3 使用Blink planner、创建TableEnvironment,并且设置状态过期时间，避免Job OOM EnvironmentSettings environmentSettings &#x3D; EnvironmentSettings.newInstance() .useBlinkPlanner() .inStreamingMode() .build(); StreamTableEnvironment tEnv &#x3D; StreamTableEnvironment.create(sEnv, environmentSettings); tEnv.getConfig().setIdleStateRetentionTime(Time.days(1), Time.days(2));</span><br><span class="line"> Properties sourceProperties &#x3D; new Properties(); sourceProperties.setProperty(&quot;bootstrap.servers&quot;, sourceBootStrapServers); sourceProperties.setProperty(&quot;auto.commit.interval.ms&quot;, &quot;3000&quot;); sourceProperties.setProperty(&quot;group.id&quot;, groupId);</span><br><span class="line"> &#x2F;&#x2F;step4 初始化KafkaTableSource的Schema信息，笔者这里使用register TableSource的方式将源表注册到Flink中，而没有用register DataStream方式，也是因为想熟悉一下如何注册KafkaTableSource到Flink中 TableSchema schema &#x3D; TableSchemaUtil.getAppPageViewTableSchema(); Optional\&lt;String\&gt; proctimeAttribute &#x3D; Optional.empty(); List\&lt;RowtimeAttributeDescriptor\&gt; rowtimeAttributeDescriptors &#x3D; Collections.emptyList(); Map\&lt;String, String\&gt; fieldMapping &#x3D; new HashMap\&lt;\&gt;(); List\&lt;String\&gt; columnNames &#x3D; new ArrayList\&lt;\&gt;(); RowTypeInfo rowTypeInfo &#x3D; new RowTypeInfo(schema.getFieldTypes(), schema.getFieldNames()); columnNames.addAll(Arrays.asList(schema.getFieldNames())); columnNames.forEach(name -\&gt; fieldMapping.put(name, name)); PageViewDeserializationSchema deserializationSchema &#x3D; new PageViewDeserializationSchema( rowTypeInfo); Map\&lt;KafkaTopicPartition, Long\&gt; specificOffsets &#x3D; new HashMap\&lt;\&gt;(); Kafka011TableSource kafkaTableSource &#x3D; new Kafka011TableSource( schema, proctimeAttribute, rowtimeAttributeDescriptors, Optional.of(fieldMapping), topic, sourceProperties, deserializationSchema, StartupMode.EARLIEST, specificOffsets); tEnv.registerTableSource(&quot;pageview&quot;, kafkaTableSource);</span><br><span class="line"> &#x2F;&#x2F;step5 初始化Hbase TableSchema、写入参数，并将其注册到Flink中 HBaseTableSchema hBaseTableSchema &#x3D; new HBaseTableSchema(); hBaseTableSchema.setRowKey(&quot;log\_date&quot;, String.class); hBaseTableSchema.addColumn(&quot;f&quot;, &quot;UV&quot;, Long.class); HBaseOptions hBaseOptions &#x3D; HBaseOptions.builder() .setTableName(hbaseTable) .setZkQuorum(hbaseZkQuorum) .setZkNodeParent(hbaseZkParent) .build(); HBaseWriteOptions hBaseWriteOptions &#x3D; HBaseWriteOptions.builder() .setBufferFlushMaxRows(1000) .setBufferFlushIntervalMillis(1000) .build(); HBaseUpsertTableSink hBaseSink &#x3D; new HBaseUpsertTableSink(hBaseTableSchema, hBaseOptions, hBaseWriteOptions); tEnv.registerTableSink(&quot;uv\_index&quot;, hBaseSink);</span><br><span class="line"> &#x2F;&#x2F;step6 实时计算当天UV指标sql, 这里使用最简单的group by agg，没有使用minibatch或窗口，在大数据量优化时最好使用后两种方式 String uvQuery &#x3D; &quot;insert into uv\_index &quot; + &quot;select log\_date,\\n&quot; + &quot;ROW(count(distinct mid) as UV)\\n&quot; + &quot;from pageview\\n&quot; + &quot;group by log\_date&quot;; tEnv.sqlUpdate(uvQuery); &#x2F;&#x2F;step7 执行Job sEnv.execute(&quot;UV Job&quot;); &#125;&#125;</span><br></pre></td></tr></table></figure></code></pre><p>以上就是一个简单的使用 Flink SQL 统计 UV 的 case, 代码非常简单，只需要理清楚如何解析 Kafka 中数据，如何初始化 Table Schema，以及如何将表注册到 Flink中，即可使用 Flink SQL 完成各种复杂的实时数据统计类的业务需求，学习成本比API 的方式低很多。说明一下，笔者这个 demo 是基于目前业务场景而开发的，在生产环境中可以真实运行起来，可能不能拆箱即用，你需要结合自己的业务场景自定义相应的 kafka 数据解析类。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/oops/uploads/wechat-qcode.jpg" alt="架构组 wechat" style="width: 200px; max-width: 100%;"/>
+    <div>欢迎您扫一扫上面的微信二维码，订阅我的公众号</div>
+</div>
+
+      </div>
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E6%89%8B%E6%8A%8A%E6%89%8B%E6%95%99%E4%BD%A0%E5%AE%9E%E7%8E%B0%20MySQL%20%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB%20+%20%E6%95%85%E9%9A%9C%E8%BD%AC%E7%A7%BB/" rel="next" title="手把手教你实现 MySQL 读写分离 + 故障转移">
+                <i class="fa fa-chevron-left"></i> 手把手教你实现 MySQL 读写分离 + 故障转移
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E6%8E%90%E6%8C%87%E7%AE%97%E7%AE%97%20%20%E4%BD%A0%E7%9A%84CDN%E5%A4%9A%E8%8A%B1%E4%BA%86%E5%87%A0%E7%99%BE%E4%B8%87/" rel="prev" title="掐指算算  你的CDN多花了几百万">
+                掐指算算  你的CDN多花了几百万 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner" style="text-align:center;">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      本站访客数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人次
+    </span>
+  
+
+  
+    <span class="site-pv">
+      本站总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/oops/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/oops/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/oops/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/oops/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/oops/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

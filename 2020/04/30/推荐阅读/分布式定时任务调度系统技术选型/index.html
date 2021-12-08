@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/oops/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/oops/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/oops/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/oops/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/oops/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/oops/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/oops/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="来自：csdn（作者：sharedCode） 原文链接： https:&#x2F;&#x2F;blog.csdn.net&#x2F;u012394095&#x2F;article&#x2F;details&#x2F;79470904  1. 什么是分布式定时任务 2. 常见开源方案 elastic-job xxl-job quartz Saturn opencron antares   3. 比较   1. 什么是分布式定时任务把分散的，可靠性差的计划任务">
+<meta property="og:type" content="article">
+<meta property="og:title" content="分布式定时任务调度系统技术选型">
+<meta property="og:url" content="https://smartlink-tech.gitee.cn/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E5%88%86%E5%B8%83%E5%BC%8F%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6%E7%B3%BB%E7%BB%9F%E6%8A%80%E6%9C%AF%E9%80%89%E5%9E%8B/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="来自：csdn（作者：sharedCode） 原文链接： https:&#x2F;&#x2F;blog.csdn.net&#x2F;u012394095&#x2F;article&#x2F;details&#x2F;79470904  1. 什么是分布式定时任务 2. 常见开源方案 elastic-job xxl-job quartz Saturn opencron antares   3. 比较   1. 什么是分布式定时任务把分散的，可靠性差的计划任务">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/E8D66DF845912F84201F62329E31BC74.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/985130522BE4601F0170DAAED553DE62.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/EF201989FC05CA2E88205B0B2DE12894.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/F3E43BBA2AE19B7F31375182A0E6473B.png">
+<meta property="article:published_time" content="2020-04-30T03:23:00.000Z">
+<meta property="article:modified_time" content="2020-04-30T08:17:04.064Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://smartlink-tech.gitee.cn/Oops/resources/E8D66DF845912F84201F62329E31BC74.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/Oops',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"remove","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://smartlink-tech.gitee.cn/oops/2020/04/30/推荐阅读/分布式定时任务调度系统技术选型/"/>
+
+
+
+
+
+  <title>分布式定时任务调度系统技术选型 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/oops/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/oops/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/oops/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/oops/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/oops/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://smartlink-tech.gitee.cn/oops/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E5%88%86%E5%B8%83%E5%BC%8F%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6%E7%B3%BB%E7%BB%9F%E6%8A%80%E6%9C%AF%E9%80%89%E5%9E%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="架构组">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/oops/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">分布式定时任务调度系统技术选型</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-04-30T11:23:00+08:00">
+                2020-04-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/oops/categories/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/" itemprop="url" rel="index">
+                    <span itemprop="name">推荐阅读</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv">本文总阅读量
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>来自：csdn（作者：sharedCode）</p>
+<p>原文链接：</p>
+<p><a href="https://blog.csdn.net/u012394095/article/details/79470904" target="_blank" rel="noopener">https://blog.csdn.net/u012394095/article/details/79470904</a></p>
+<ul>
+<li>1. 什么是分布式定时任务</li>
+<li>2. 常见开源方案<ul>
+<li>elastic-job</li>
+<li>xxl-job</li>
+<li>quartz</li>
+<li>Saturn</li>
+<li>opencron</li>
+<li>antares</li>
+</ul>
+</li>
+<li>3. 比较</li>
+</ul>
+<hr>
+<h1 id="1-什么是分布式定时任务"><a href="#1-什么是分布式定时任务" class="headerlink" title="1. 什么是分布式定时任务"></a>1. 什么是分布式定时任务</h1><p>把分散的，可靠性差的计划任务纳入统一的平台，并实现集群管理调度和分布式部署的一种定时任务的管理方式。叫做分布式定时任务。</p>
+<h1 id="2-常见开源方案"><a href="#2-常见开源方案" class="headerlink" title="2. 常见开源方案"></a>2. 常见开源方案</h1><ul>
+<li>elastic-job</li>
+<li>xxl-job</li>
+<li>quartz</li>
+<li>saturn</li>
+<li>opencron</li>
+<li>antares</li>
+</ul>
+<h2 id="elastic-job"><a href="#elastic-job" class="headerlink" title="elastic-job"></a>elastic-job</h2><p>elastic-job 是由当当网基于quartz 二次开发之后的分布式调度解决方案 ， 由两个相对独立的子项目Elastic-Job-Lite和Elastic-Job-Cloud组成 。</p>
+<p>Elastic-Job-Lite定位为轻量级无中心化解决方案，使用jar包的形式提供分布式任务的协调服务。</p>
+<p>Elastic-Job-Cloud使用Mesos + Docker(TBD)的解决方案，额外提供资源治理、应用分发以及进程隔离等服务</p>
+<p>亮点：</p>
+<ol>
+<li>基于quartz 定时任务框架为基础的，因此具备quartz的大部分功能</li>
+<li>使用zookeeper做协调，调度中心，更加轻量级</li>
+<li>支持任务的分片</li>
+<li>支持弹性扩容 ， 可以水平扩展 ， 当任务再次运行时，会检查当前的服务器数量，重新分片，分片结束之后才会继续执行任务</li>
+<li>失效转移，容错处理，当一台调度服务器宕机或者跟zookeeper断开连接之后，会立即停止作业，然后再去寻找其他空闲的调度服务器，来运行剩余的任务</li>
+<li>提供运维界面，可以管理作业和注册中心。</li>
+</ol>
+<p>elastic-job结合了quartz非常优秀的时间调度功能，并且利用ZooKeeper实现了灵活的分片策略。除此之外，还加入了大量实用的监控和管理功能，</p>
+<p>以及其开源社区活跃、文档齐全、代码优雅等优点，是分布式任务调度框架的推荐选择。</p>
+<p>由于elastic-job-lite 不支持动态添加作业，此处仅贴上elastic-job-Cloud架构图</p>
+<p><img src="/Oops/resources/E8D66DF845912F84201F62329E31BC74.png" alt></p>
+<h2 id="xxl-job"><a href="#xxl-job" class="headerlink" title="xxl-job"></a>xxl-job</h2><p>由个人开源的一个轻量级分布式任务调度框架 ，主要分为 调度中心和执行器两部分 ， 调度中心在启动初始化的时候，会默认生成执行器的RPC代理</p>
+<p>对象（http协议调用）， 执行器项目启动之后， 调度中心在触发定时器之后通过jobHandle 来调用执行器项目里面的代码，核心功能和elastic-job差不多</p>
+<p>，同时技术文档比较完善</p>
+<p>系统架构图：</p>
+<p><img src="/Oops/resources/985130522BE4601F0170DAAED553DE62.jpg" alt></p>
+<h2 id="quartz"><a href="#quartz" class="headerlink" title="quartz"></a>quartz</h2><p>quartz 的常见集群方案如下，通过在数据库中配置定时器信息， 以数据库悲观锁的方式达到同一个任务始终只有一个节点在运行，</p>
+<p>优点：</p>
+<ol>
+<li>保证节点高可用 （HA）， 如果某一个几点挂了， 其他节点可以顶上</li>
+</ol>
+<p>缺点：</p>
+<ol>
+<li>同一个任务只能有一个节点运行，其他节点将不执行任务，性能低，资源浪费</li>
+<li>当碰到大量短任务时，各个节点频繁的竞争数据库锁，节点越多这种情况越严重。性能会很低下</li>
+<li>quartz 的分布式仅解决了集群高可用的问题，并没有解决任务分片的问题，不能实现水平扩展</li>
+</ol>
+<p><strong><img src="/Oops/resources/EF201989FC05CA2E88205B0B2DE12894.png" alt></strong></p>
+<h2 id="Saturn"><a href="#Saturn" class="headerlink" title="Saturn"></a>Saturn</h2><p>Saturn是唯品会在github开源的一款分布式任务调度产品。它是基于当当elastic-job 1.0版本来开发的，其上完善了一些功能和添加了一些新的feature。</p>
+<p>亮点：</p>
+<ol>
+<li>支持多语言开发 python、Go、Shell、Java、Php。</li>
+<li>管理控制台和数据统计分析更加完善</li>
+</ol>
+<p>缺点：</p>
+<ol>
+<li>技术文档较少 ， 该框架是2016年由唯品会的研发团队基于elastic-job开发而来的</li>
+</ol>
+<h2 id="opencron"><a href="#opencron" class="headerlink" title="opencron"></a>opencron</h2><p>一个功能完善真正通用的linux定时任务调度定系统,满足多种场景下各种复杂的定时任务调度,同时集成了linux实时监控,webssh,提供一个方便管理定时任务的平台</p>
+<p>缺点：仅支持 kill任务， 现场执行，查询任务运行状态 等， 主要功能是着重于任务的修改和查询上。不能动态的添加任务以及任务分片。</p>
+<h2 id="antares"><a href="#antares" class="headerlink" title="antares"></a>antares</h2><p>优点：</p>
+<ol>
+<li>一个任务仅会被服务器集群中的某个节点调度，调度机制基于成熟的 quartz</li>
+<li>并行执行 ， 用户可通过对任务预分片，有效提升任务执行效率</li>
+<li>失效转移</li>
+<li>弹性扩容，在任务运行时，可以动态的加机器</li>
+<li>友好的管理控制台</li>
+</ol>
+<p>缺点：</p>
+<ol>
+<li>不能动态的添加任务，仅能在控制台对任务进行触发，暂停，删除等操作</li>
+<li>文档不多，开源社区不够活跃</li>
+</ol>
+<p>系统架构图如下：</p>
+<p><img src="/Oops/resources/F3E43BBA2AE19B7F31375182A0E6473B.png" alt></p>
+<h1 id="3-比较"><a href="#3-比较" class="headerlink" title="3. 比较"></a>3. 比较</h1><p>此处列出了几个代表性的开源产品</p>
+<p>featurequartzelastic-job-cloudxxl-jobantaresopencron依赖mysqljdk1.7+, zookeeper 3.4.6+ ,maven3.0.4+ ,mesosmysql ,jdk1.7+ , maven3.0+jdk 1.7+ , redis , zookeeperjdk1.7+ , Tomcat8.0+HA多节点部署，通过竞争数据库锁来保证只有一个节点执行任务通过zookeeper的注册与发现，可以动态的添加服务器。支持水平扩容集群部署集群部署—任务分片—支持支持支持—文档完善完善完善完善文档略少文档略少管理界面无支持支持支持支持难易程度简单较复杂简单一般一般公司OpenSymphony当当网个人个人个人高级功能—弹性扩容，多种作业模式，失效转移，运行状态收集，多线程处理数据，幂等性，容错处理，spring命名空间支持弹性扩容，分片广播，故障转移，Rolling实时日志，GLUE（支持在线编辑代码，免发布）,任务进度监控，任务依赖，数据加密，邮件报警，运行报表，国际化任务分片， 失效转移，弹性扩容 ，时间规则支持quartz和crontab ，kill任务， 现场执行，查询任务运行状态缺点没有管理界面，以及不支持任务分片等。不适用于分布式场景需要引入zookeeper , mesos, 增加系统复杂度, 学习成本较高调度中心通过获取 DB锁来保证集群中执行任务的唯一性， 如果短任务很多，随着调度中心集群数量增加，那么数据库的锁竞争会比较厉害，性能不好。不支持动态添加任务不适用于分布式场景使用企业大众化产品，对分布式调度要求不高的公司大面积使用36氪，当当网，国美，金柚网，联想，唯品会，亚信，平安，猪八戒大众点评，运满满，优信二手车，拍拍贷——</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/oops/uploads/wechat-qcode.jpg" alt="架构组 wechat" style="width: 200px; max-width: 100%;"/>
+    <div>欢迎您扫一扫上面的微信二维码，订阅我的公众号</div>
+</div>
+
+      </div>
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E5%88%86%E4%BA%AB%E4%B8%80%E4%B8%AA%E5%BE%88%E5%A4%9A%E5%9B%A2%E9%98%9F%E4%B8%8D%E7%9F%A5%E9%81%93%E7%9A%84%E6%96%B9%E6%B3%95%EF%BC%9A%E5%9B%9E%E6%94%B6%E4%B8%8D%E5%81%A5%E5%BA%B7JVM%E6%8F%90%E5%8D%87%E5%8F%AF%E7%94%A8%E6%80%A7/" rel="next" title="分享一个很多团队不知道的方法：回收不健康JVM提升可用性">
+                <i class="fa fa-chevron-left"></i> 分享一个很多团队不知道的方法：回收不健康JVM提升可用性
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E4%BB%8E%E6%95%B0%E4%BB%93%E5%88%B0%E6%95%B0%E6%8D%AE%E4%B8%AD%E5%8F%B0%EF%BC%8C%E8%B0%88%E6%8A%80%E6%9C%AF%E9%80%89%E5%9E%8B%E6%9C%80%E4%BC%98%E8%A7%A3/" rel="prev" title="从数仓到数据中台，谈技术选型最优解">
+                从数仓到数据中台，谈技术选型最优解 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner" style="text-align:center;">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      本站访客数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人次
+    </span>
+  
+
+  
+    <span class="site-pv">
+      本站总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/oops/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/oops/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/oops/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/oops/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/oops/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/oops/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/oops/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/oops/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/oops/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/oops/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/oops/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/oops/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="最近有朋友在知识星球提问：沈老师，有一个Java服务出现了OOM(Out Of Memory)问题，定位了好久不得其法，请问有什么好的思路么？OOM的问题，印象中之前写过，这里再总结一些相对通用的方案，希望能帮助到Java技术栈的同学。 某Java服务（假设PID&#x3D;10765）出现了OOM，最常见的原因为：  有可能是内存分配确实过小，而正常业务使用了大量内存 某一个对象被频繁申请，却没有释放，内">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java服务，内存OOM问题如何快速定位？">
+<meta property="og:url" content="https://smartlink-tech.gitee.cn/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/Java%E6%9C%8D%E5%8A%A1%EF%BC%8C%E5%86%85%E5%AD%98OOM%E9%97%AE%E9%A2%98%E5%A6%82%E4%BD%95%E5%BF%AB%E9%80%9F%E5%AE%9A%E4%BD%8D%EF%BC%9F/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="最近有朋友在知识星球提问：沈老师，有一个Java服务出现了OOM(Out Of Memory)问题，定位了好久不得其法，请问有什么好的思路么？OOM的问题，印象中之前写过，这里再总结一些相对通用的方案，希望能帮助到Java技术栈的同学。 某Java服务（假设PID&#x3D;10765）出现了OOM，最常见的原因为：  有可能是内存分配确实过小，而正常业务使用了大量内存 某一个对象被频繁申请，却没有释放，内">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/50411737AC3C4FB314D22551D888B8E8.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/E7FA21CBD09A5B5A9C6CB35128E29441.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/07E7CA918993E109E987E2D9B7F04BA2.jpg">
+<meta property="article:published_time" content="2020-04-30T03:23:00.000Z">
+<meta property="article:modified_time" content="2020-04-30T08:17:04.062Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://smartlink-tech.gitee.cn/Oops/resources/50411737AC3C4FB314D22551D888B8E8.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/Oops',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"remove","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://smartlink-tech.gitee.cn/oops/2020/04/30/推荐阅读/Java服务，内存OOM问题如何快速定位？/"/>
+
+
+
+
+
+  <title>Java服务，内存OOM问题如何快速定位？ | Hexo</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/oops/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/oops/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/oops/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/oops/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/oops/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://smartlink-tech.gitee.cn/oops/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/Java%E6%9C%8D%E5%8A%A1%EF%BC%8C%E5%86%85%E5%AD%98OOM%E9%97%AE%E9%A2%98%E5%A6%82%E4%BD%95%E5%BF%AB%E9%80%9F%E5%AE%9A%E4%BD%8D%EF%BC%9F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="架构组">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/oops/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Java服务，内存OOM问题如何快速定位？</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-04-30T11:23:00+08:00">
+                2020-04-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/oops/categories/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/" itemprop="url" rel="index">
+                    <span itemprop="name">推荐阅读</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv">本文总阅读量
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>最近有朋友在知识星球提问：<br>沈老师，有一个Java服务出现了OOM(Out Of Memory)问题，定位了好久不得其法，请问有什么好的思路么？<br>OOM的问题，印象中之前写过，这里再总结一些相对通用的方案，希望能帮助到Java技术栈的同学。</p>
+<p>某Java服务（假设PID=10765）出现了OOM，最常见的原因为：</p>
+<ul>
+<li>有可能是内存分配确实过小，而正常业务使用了大量内存</li>
+<li>某一个对象被频繁申请，却没有释放，内存不断泄漏，导致内存耗尽</li>
+<li>某一个资源被频繁申请，系统资源耗尽，例如：不断创建线程，不断发起网络连接</li>
+</ul>
+<p>画外音：无非“本身资源不够”“申请资源太多”“资源耗尽”几个原因。</p>
+<p>更具体的，可以使用以下工具逐一排查。</p>
+<p><strong>一、确认是不是内存本身就分配过小</strong></p>
+<p>方法：jmap -heap 10765</p>
+<p><img src="/Oops/resources/50411737AC3C4FB314D22551D888B8E8.jpg" alt></p>
+<p>如上图，可以查看新生代，老生代堆内存的分配大小以及使用情况，看是否本身分配过小。</p>
+<p><strong>二、找到最耗内存的对象</strong></p>
+<p>方法：jmap -histo:live 10765 | more</p>
+<p><img src="/Oops/resources/E7FA21CBD09A5B5A9C6CB35128E29441.jpg" alt></p>
+<p>如上图，输入命令后，会以表格的形式显示存活对象的信息，并按照所占内存大小排序：</p>
+<ul>
+<li><strong>实例数</strong></li>
+<li><strong>所占内存大小</strong></li>
+<li><strong>类名</strong></li>
+</ul>
+<p>是不是很直观？对于实例数较多，占用内存大小较多的实例/类，相关的代码就要针对性review了。</p>
+<p>上图中占内存最多的对象是RingBufferLogEvent，共占用内存18M，属于正常使用范围。</p>
+<p>如果发现某类对象占用内存很大（例如几个G），很可能是类对象创建太多，且一直未释放。例如：</p>
+<ul>
+<li>申请完资源后，未调用close()或dispose()释放资源</li>
+<li>消费者消费速度慢（或停止消费了），而生产者不断往队列中投递任务，导致队列中任务累积过多</li>
+</ul>
+<p>画外音：线上执行该命令会强制执行一次fgc。另外还可以dump内存进行分析。</p>
+<p><strong>三、确认是否是资源耗尽</strong></p>
+<p>工具：</p>
+<ul>
+<li>pstree</li>
+<li>netstat</li>
+</ul>
+<p>查看进程创建的线程数，以及网络连接数，如果资源耗尽，也可能出现OOM。</p>
+<p>这里介绍另一种方法，通过</p>
+<ul>
+<li>/proc/${PID}/fd</li>
+<li>/proc/${PID}/task</li>
+</ul>
+<p>可以分别查看句柄详情和线程数。</p>
+<p>例如，某一台线上服务器的sshd进程PID是9339，查看</p>
+<ul>
+<li>ll /proc/9339/fd</li>
+<li>ll /proc/9339/task</li>
+</ul>
+<p><img src="/Oops/resources/07E7CA918993E109E987E2D9B7F04BA2.jpg" alt></p>
+<p>如上图，sshd共占用了四个句柄</p>
+<ul>
+<li>0 -&gt; 标准输入</li>
+<li>1 -&gt; 标准输出</li>
+<li>2 -&gt; 标准错误输出</li>
+<li>3 -&gt; socket（容易想到是监听端口）</li>
+</ul>
+<p>sshd只有一个主线程PID为9339，并没有多线程。</p>
+<p>所以，只要</p>
+<ul>
+<li>ll /proc/${PID}/fd | wc -l</li>
+<li>ll /proc/${PID}/task | wc -l （效果等同pstree -p | wc -l）</li>
+</ul>
+<p>就能知道进程打开的句柄数和线程数。</p>
+<p>希望这1分钟能帮到这位星球水友。</p>
+<p>你遇到过奇葩的OOM问题么？是怎么定位的？欢迎分享。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/oops/uploads/wechat-qcode.jpg" alt="架构组 wechat" style="width: 200px; max-width: 100%;"/>
+    <div>欢迎您扫一扫上面的微信二维码，订阅我的公众号</div>
+</div>
+
+      </div>
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/Kafka%E5%A6%82%E4%BD%95%E9%80%9A%E8%BF%87%E7%BB%8F%E5%85%B8%E7%9A%84%E5%86%85%E5%AD%98%E7%BC%93%E5%86%B2%E6%B1%A0%E8%AE%BE%E8%AE%A1%E6%9D%A5%E4%BC%98%E5%8C%96JVM%20GC%E9%97%AE%E9%A2%98%EF%BC%9F/" rel="next" title="Kafka如何通过经典的内存缓冲池设计来优化JVM GC问题？">
+                <i class="fa fa-chevron-left"></i> Kafka如何通过经典的内存缓冲池设计来优化JVM GC问题？
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/Java%20%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98%E6%96%B9%E6%A1%88%EF%BC%9A35%20%E4%B8%AA%E5%B0%8F%E7%BB%86%E8%8A%82%EF%BC%8C%E8%AE%A9%E4%BD%A0%E6%8F%90%E5%8D%87%20java%20%E4%BB%A3%E7%A0%81%E7%9A%84%E8%BF%90%E8%A1%8C%E6%95%88%E7%8E%87/" rel="prev" title="Java 性能调优方案：35 个小细节，让你提升 java 代码的运行效率">
+                Java 性能调优方案：35 个小细节，让你提升 java 代码的运行效率 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner" style="text-align:center;">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      本站访客数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人次
+    </span>
+  
+
+  
+    <span class="site-pv">
+      本站总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/oops/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/oops/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/oops/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/oops/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/oops/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

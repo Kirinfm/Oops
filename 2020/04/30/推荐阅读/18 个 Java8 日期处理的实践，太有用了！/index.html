@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/oops/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/oops/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/oops/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/oops/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/oops/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/oops/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/oops/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="示例1:Java 8中获取今天的日期 示例2:Java 8中获取年、月、日信息 示例3:Java 8中处理特定日期 示例4:Java 8中判断两个日期是否相等 示例5:Java 8中检查像生日这种周期性事件 示例6:Java 8中获取当前时间 示例7:Java 8中获取当前时间 示例8:Java 8如何计算一周后的日期 示例9:Java 8计算一年前或一年后的日期 示例10:Java 8的Clo">
+<meta property="og:type" content="article">
+<meta property="og:title" content="18 个 Java8 日期处理的实践，太有用了！">
+<meta property="og:url" content="https://smartlink-tech.gitee.cn/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/18%20%E4%B8%AA%20Java8%20%E6%97%A5%E6%9C%9F%E5%A4%84%E7%90%86%E7%9A%84%E5%AE%9E%E8%B7%B5%EF%BC%8C%E5%A4%AA%E6%9C%89%E7%94%A8%E4%BA%86%EF%BC%81/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="示例1:Java 8中获取今天的日期 示例2:Java 8中获取年、月、日信息 示例3:Java 8中处理特定日期 示例4:Java 8中判断两个日期是否相等 示例5:Java 8中检查像生日这种周期性事件 示例6:Java 8中获取当前时间 示例7:Java 8中获取当前时间 示例8:Java 8如何计算一周后的日期 示例9:Java 8计算一年前或一年后的日期 示例10:Java 8的Clo">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-04-30T03:23:00.000Z">
+<meta property="article:modified_time" content="2020-04-30T08:17:04.061Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/Oops',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"remove","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://smartlink-tech.gitee.cn/oops/2020/04/30/推荐阅读/18 个 Java8 日期处理的实践，太有用了！/"/>
+
+
+
+
+
+  <title>18 个 Java8 日期处理的实践，太有用了！ | Hexo</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/oops/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/oops/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/oops/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/oops/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/oops/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://smartlink-tech.gitee.cn/oops/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/18%20%E4%B8%AA%20Java8%20%E6%97%A5%E6%9C%9F%E5%A4%84%E7%90%86%E7%9A%84%E5%AE%9E%E8%B7%B5%EF%BC%8C%E5%A4%AA%E6%9C%89%E7%94%A8%E4%BA%86%EF%BC%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="架构组">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/oops/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">18 个 Java8 日期处理的实践，太有用了！</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-04-30T11:23:00+08:00">
+                2020-04-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/oops/categories/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/" itemprop="url" rel="index">
+                    <span itemprop="name">推荐阅读</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv">本文总阅读量
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <ul>
+<li>示例1:Java 8中获取今天的日期</li>
+<li>示例2:Java 8中获取年、月、日信息</li>
+<li>示例3:Java 8中处理特定日期</li>
+<li>示例4:Java 8中判断两个日期是否相等</li>
+<li>示例5:Java 8中检查像生日这种周期性事件</li>
+<li>示例6:Java 8中获取当前时间</li>
+<li>示例7:Java 8中获取当前时间</li>
+<li>示例8:Java 8如何计算一周后的日期</li>
+<li>示例9:Java 8计算一年前或一年后的日期</li>
+<li>示例10:Java 8的Clock时钟类</li>
+<li>示例11:如何用Java判断日期是早于还是晚于另一个日期</li>
+<li>示例12:Java 8中处理时区</li>
+<li>示例13:如何表示信用卡到期这类固定日期，答案就在YearMonth</li>
+<li>示例14:如何在Java 8中检查闰年</li>
+<li>示例15:计算两个日期之间的天数和月数</li>
+<li>示例16:在Java 8中获取当前的时间戳</li>
+<li>示例17:Java 8中如何使用预定义的格式化工具去解析或格式化日期</li>
+<li>示例18:字符串互转日期类型</li>
+</ul>
+<hr>
+<p><strong>Java 8 日期处理</strong></p>
+<p>Java 8 推出了全新的日期时间API，在教程中我们将通过一些简单的实例来学习如何使用新API。</p>
+<p>Java处理日期、日历和时间的方式一直为社区所诟病，将 java.util.Date设定为可变类型，以及SimpleDateFormat的非线程安全使其应用非常受限。</p>
+<p>新API基于ISO标准日历系统，java.time包下的所有类都是不可变类型而且线程安全。</p>
+<p>编号类的名称描述1Instant时间戳2Duration持续时间，时间差3LocalDate只包含日期，比如：2018-02-054LocalTime只包含时间，比如：23:12:105LocalDateTime包含日期和时间，比如：2018-02-05 23:14:216Period时间段7ZoneOffset时区偏移量，比如：+8:008ZonedDateTime带时区的时间9Clock时钟，比如获取目前美国纽约的时间10java.time.format.DateTimeFormatter时间格式化</p>
+<h1 id="示例1-Java-8中获取今天的日期"><a href="#示例1-Java-8中获取今天的日期" class="headerlink" title="示例1:Java 8中获取今天的日期"></a>示例1:Java 8中获取今天的日期</h1><p>Java 8 中的 LocalDate 用于表示当天日期。和java.util.Date不同，它只有日期，不包含时间。当你仅需要表示日期时就用这个类。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">package com.shxt.demo02;</span><br><span class="line"></span><br><span class="line">import java.time.LocalDate;</span><br><span class="line"></span><br><span class="line">publicclass Demo01 &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        LocalDate today &#x3D; LocalDate.now();</span><br><span class="line">        System.out.println(&quot;今天的日期:&quot;+today);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;\*</span><br><span class="line"> 运行结果:</span><br><span class="line"> 今天的日期:2018-02-05</span><br><span class="line">\*&#x2F;</span><br></pre></td></tr></table></figure>
+
+<h1 id="示例2-Java-8中获取年、月、日信息"><a href="#示例2-Java-8中获取年、月、日信息" class="headerlink" title="示例2:Java 8中获取年、月、日信息"></a>示例2:Java 8中获取年、月、日信息</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">package com.shxt.demo02;</span><br><span class="line"></span><br><span class="line">import java.time.LocalDate;</span><br><span class="line"></span><br><span class="line">publicclass Demo02 &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        LocalDate today &#x3D; LocalDate.now();</span><br><span class="line">        int year &#x3D; today.getYear();</span><br><span class="line">        int month &#x3D; today.getMonthValue();</span><br><span class="line">        int day &#x3D; today.getDayOfMonth();</span><br><span class="line"></span><br><span class="line">        System.out.println(&quot;year:&quot;+year);</span><br><span class="line">        System.out.println(&quot;month:&quot;+month);</span><br><span class="line">        System.out.println(&quot;day:&quot;+day);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="示例3-Java-8中处理特定日期"><a href="#示例3-Java-8中处理特定日期" class="headerlink" title="示例3:Java 8中处理特定日期"></a>示例3:Java 8中处理特定日期</h1><p>我们通过静态工厂方法now()非常容易地创建了当天日期，你还可以调用另一个有用的工厂方法LocalDate.of()创建任意日期， 该方法需要传入年、月、日做参数，返回对应的LocalDate实例。这个方法的好处是没再犯老API的设计错误，比如年度起始于1900，月份是从0开 始等等。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">package com.shxt.demo02;</span><br><span class="line"></span><br><span class="line">import java.time.LocalDate;</span><br><span class="line"></span><br><span class="line">publicclass Demo03 &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        LocalDate date &#x3D; LocalDate.of(2018,2,6);</span><br><span class="line">        System.out.println(&quot;自定义日期:&quot;+date);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="示例4-Java-8中判断两个日期是否相等"><a href="#示例4-Java-8中判断两个日期是否相等" class="headerlink" title="示例4:Java 8中判断两个日期是否相等"></a>示例4:Java 8中判断两个日期是否相等</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">package com.shxt.demo02;</span><br><span class="line"></span><br><span class="line">import java.time.LocalDate;</span><br><span class="line"></span><br><span class="line">publicclass Demo04 &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        LocalDate date1 &#x3D; LocalDate.now();</span><br><span class="line"></span><br><span class="line">        LocalDate date2 &#x3D; LocalDate.of(2018,2,5);</span><br><span class="line"></span><br><span class="line">        if(date1.equals(date2))&#123;</span><br><span class="line">            System.out.println(&quot;时间相等&quot;);</span><br><span class="line">        &#125;else&#123;</span><br><span class="line">            System.out.println(&quot;时间不等&quot;);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="示例5-Java-8中检查像生日这种周期性事件"><a href="#示例5-Java-8中检查像生日这种周期性事件" class="headerlink" title="示例5:Java 8中检查像生日这种周期性事件"></a>示例5:Java 8中检查像生日这种周期性事件</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">package com.shxt.demo02;</span><br><span class="line"></span><br><span class="line">import java.time.LocalDate;</span><br><span class="line">import java.time.MonthDay;</span><br><span class="line"></span><br><span class="line">publicclass Demo05 &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        LocalDate date1 &#x3D; LocalDate.now();</span><br><span class="line"></span><br><span class="line">        LocalDate date2 &#x3D; LocalDate.of(2018,2,6);</span><br><span class="line">        MonthDay birthday &#x3D; MonthDay.of(date2.getMonth(),date2.getDayOfMonth());</span><br><span class="line">        MonthDay currentMonthDay &#x3D; MonthDay.from(date1);</span><br><span class="line"></span><br><span class="line">        if(currentMonthDay.equals(birthday))&#123;</span><br><span class="line">            System.out.println(&quot;是你的生日&quot;);</span><br><span class="line">        &#125;else&#123;</span><br><span class="line">            System.out.println(&quot;你的生日还没有到&quot;);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>只要当天的日期和生日匹配，无论是哪一年都会打印出祝贺信息。你可以把程序整合进系统时钟，看看生日时是否会受到提醒，或者写一个单元测试来检测代码是否运行正确。</p>
+</blockquote>
+<h1 id="示例6-Java-8中获取当前时间"><a href="#示例6-Java-8中获取当前时间" class="headerlink" title="示例6:Java 8中获取当前时间"></a>示例6:Java 8中获取当前时间</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">package com.shxt.demo02;</span><br><span class="line"></span><br><span class="line">import java.time.LocalTime;</span><br><span class="line"></span><br><span class="line">publicclass Demo06 &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        LocalTime time &#x3D; LocalTime.now();</span><br><span class="line">        System.out.println(&quot;获取当前的时间,不含有日期:&quot;+time);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到当前时间就只包含时间信息，没有日期</p>
+<h1 id="示例7-Java-8中获取当前时间"><a href="#示例7-Java-8中获取当前时间" class="headerlink" title="示例7:Java 8中获取当前时间"></a>示例7:Java 8中获取当前时间</h1><p>通过增加小时、分、秒来计算将来的时间很常见。Java 8除了不变类型和线程安全的好处之外，还提供了更好的plusHours()方法替换add()，并且是兼容的。注意，这些方法返回一个全新的LocalTime实例，由于其不可变性，返回后一定要用变量赋值。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">package com.shxt.demo02;</span><br><span class="line"></span><br><span class="line">import java.time.LocalTime;</span><br><span class="line"></span><br><span class="line">publicclass Demo07 &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        LocalTime time &#x3D; LocalTime.now();</span><br><span class="line">        LocalTime newTime &#x3D; time.plusHours(3);</span><br><span class="line">        System.out.println(&quot;三个小时后的时间为:&quot;+newTime);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="示例8-Java-8如何计算一周后的日期"><a href="#示例8-Java-8如何计算一周后的日期" class="headerlink" title="示例8:Java 8如何计算一周后的日期"></a>示例8:Java 8如何计算一周后的日期</h1><p>和上个例子计算3小时以后的时间类似，这个例子会计算一周后的日期。LocalDate日期不包含时间信息，它的plus()方法用来增加天、周、月，ChronoUnit类声明了这些时间单位。由于LocalDate也是不变类型，返回后一定要用变量赋值。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">package com.shxt.demo02;</span><br><span class="line"></span><br><span class="line">import java.time.LocalDate;</span><br><span class="line">import java.time.temporal.ChronoUnit;</span><br><span class="line"></span><br><span class="line">publicclass Demo08 &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        LocalDate today &#x3D; LocalDate.now();</span><br><span class="line">        System.out.println(&quot;今天的日期为:&quot;+today);</span><br><span class="line">        LocalDate nextWeek &#x3D; today.plus(1, ChronoUnit.WEEKS);</span><br><span class="line">        System.out.println(&quot;一周后的日期为:&quot;+nextWeek);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到新日期离当天日期是7天，也就是一周。你可以用同样的方法增加1个月、1年、1小时、1分钟甚至一个世纪，更多选项可以查看Java 8 API中的ChronoUnit类</p>
+<h1 id="示例9-Java-8计算一年前或一年后的日期"><a href="#示例9-Java-8计算一年前或一年后的日期" class="headerlink" title="示例9:Java 8计算一年前或一年后的日期"></a>示例9:Java 8计算一年前或一年后的日期</h1><p>利用minus()方法计算一年前的日期</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">package com.shxt.demo02;</span><br><span class="line"></span><br><span class="line">import java.time.LocalDate;</span><br><span class="line">import java.time.temporal.ChronoUnit;</span><br><span class="line"></span><br><span class="line">publicclass Demo09 &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        LocalDate today &#x3D; LocalDate.now();</span><br><span class="line"></span><br><span class="line">        LocalDate previousYear &#x3D; today.minus(1, ChronoUnit.YEARS);</span><br><span class="line">        System.out.println(&quot;一年前的日期 : &quot; + previousYear);</span><br><span class="line"></span><br><span class="line">        LocalDate nextYear &#x3D; today.plus(1, ChronoUnit.YEARS);</span><br><span class="line">        System.out.println(&quot;一年后的日期:&quot;+nextYear);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="示例10-Java-8的Clock时钟类"><a href="#示例10-Java-8的Clock时钟类" class="headerlink" title="示例10:Java 8的Clock时钟类"></a>示例10:Java 8的Clock时钟类</h1><p>Java 8增加了一个Clock时钟类用于获取当时的时间戳，或当前时区下的日期时间信息。以前用到System.currentTimeInMillis()和TimeZone.getDefault()的地方都可用Clock替换。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">package com.shxt.demo02;</span><br><span class="line"></span><br><span class="line">import java.time.Clock;</span><br><span class="line"></span><br><span class="line">publicclass Demo10 &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        &#x2F;&#x2F; Returns the current time based on your system clock and set to UTC.</span><br><span class="line">        Clock clock &#x3D; Clock.systemUTC();</span><br><span class="line">        System.out.println(&quot;Clock : &quot; + clock.millis());</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F; Returns time based on system clock zone</span><br><span class="line">        Clock defaultClock &#x3D; Clock.systemDefaultZone();</span><br><span class="line">        System.out.println(&quot;Clock : &quot; + defaultClock.millis());</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="示例11-如何用Java判断日期是早于还是晚于另一个日期"><a href="#示例11-如何用Java判断日期是早于还是晚于另一个日期" class="headerlink" title="示例11:如何用Java判断日期是早于还是晚于另一个日期"></a>示例11:如何用Java判断日期是早于还是晚于另一个日期</h1><p>另一个工作中常见的操作就是如何判断给定的一个日期是大于某天还是小于某天？在Java 8中，LocalDate类有两类方法isBefore()和isAfter()用于比较日期。</p>
+<p>调用isBefore()方法时，如果给定日期小于当前日期则返回true。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">package com.shxt.demo02;</span><br><span class="line"></span><br><span class="line">import java.time.LocalDate;</span><br><span class="line">import java.time.temporal.ChronoUnit;</span><br><span class="line"></span><br><span class="line">publicclass Demo11 &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        LocalDate today &#x3D; LocalDate.now();</span><br><span class="line"></span><br><span class="line">        LocalDate tomorrow &#x3D; LocalDate.of(2018,2,6);</span><br><span class="line">        if(tomorrow.isAfter(today))&#123;</span><br><span class="line">            System.out.println(&quot;之后的日期:&quot;+tomorrow);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        LocalDate yesterday &#x3D; today.minus(1, ChronoUnit.DAYS);</span><br><span class="line">        if(yesterday.isBefore(today))&#123;</span><br><span class="line">            System.out.println(&quot;之前的日期:&quot;+yesterday);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="示例12-Java-8中处理时区"><a href="#示例12-Java-8中处理时区" class="headerlink" title="示例12:Java 8中处理时区"></a>示例12:Java 8中处理时区</h1><p>Java 8不仅分离了日期和时间，也把时区分离出来了。现在有一系列单独的类如ZoneId来处理特定时区，ZoneDateTime类来表示某时区下的时间。这在Java 8以前都是 GregorianCalendar类来做的。下面这个例子展示了如何把本时区的时间转换成另一个时区的时间。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">package com.shxt.demo02;</span><br><span class="line"></span><br><span class="line">import java.time.LocalDateTime;</span><br><span class="line">import java.time.ZoneId;</span><br><span class="line">import java.time.ZonedDateTime;</span><br><span class="line"></span><br><span class="line">publicclass Demo12 &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        &#x2F;&#x2F; Date and time with timezone in Java 8</span><br><span class="line">        ZoneId america &#x3D; ZoneId.of(&quot;America&#x2F;New\_York&quot;);</span><br><span class="line">        LocalDateTime localtDateAndTime &#x3D; LocalDateTime.now();</span><br><span class="line">        ZonedDateTime dateAndTimeInNewYork  &#x3D; ZonedDateTime.of(localtDateAndTime, america );</span><br><span class="line">        System.out.println(&quot;Current date and time in a particular timezone : &quot; + dateAndTimeInNewYork);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="示例13-如何表示信用卡到期这类固定日期，答案就在YearMonth"><a href="#示例13-如何表示信用卡到期这类固定日期，答案就在YearMonth" class="headerlink" title="示例13:如何表示信用卡到期这类固定日期，答案就在YearMonth"></a>示例13:如何表示信用卡到期这类固定日期，答案就在YearMonth</h1><p>与 MonthDay检查重复事件的例子相似，YearMonth是另一个组合类，用于表示信用卡到期日、FD到期日、期货期权到期日等。还可以用这个类得到 当月共有多少天，YearMonth实例的lengthOfMonth()方法可以返回当月的天数，在判断2月有28天还是29天时非常有用。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">package com.shxt.demo02;</span><br><span class="line"></span><br><span class="line">import java.time.*;</span><br><span class="line"></span><br><span class="line">publicclass Demo13 &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        YearMonth currentYearMonth &#x3D; YearMonth.now();</span><br><span class="line">        System.out.printf(&quot;Days in month year %s: %d%n&quot;, currentYearMonth, currentYearMonth.lengthOfMonth());</span><br><span class="line">        YearMonth creditCardExpiry &#x3D; YearMonth.of(2019, Month.FEBRUARY);</span><br><span class="line">        System.out.printf(&quot;Your credit card expires on %s %n&quot;, creditCardExpiry);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="示例14-如何在Java-8中检查闰年"><a href="#示例14-如何在Java-8中检查闰年" class="headerlink" title="示例14:如何在Java 8中检查闰年"></a>示例14:如何在Java 8中检查闰年</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">package com.shxt.demo02;</span><br><span class="line"></span><br><span class="line">import java.time.LocalDate;</span><br><span class="line"></span><br><span class="line">publicclass Demo14 &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        LocalDate today &#x3D; LocalDate.now();</span><br><span class="line">        if(today.isLeapYear())&#123;</span><br><span class="line">            System.out.println(&quot;This year is Leap year&quot;);</span><br><span class="line">        &#125;else &#123;</span><br><span class="line">            System.out.println(&quot;2018 is not a Leap year&quot;);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="示例15-计算两个日期之间的天数和月数"><a href="#示例15-计算两个日期之间的天数和月数" class="headerlink" title="示例15:计算两个日期之间的天数和月数"></a>示例15:计算两个日期之间的天数和月数</h1><p>有一个常见日期操作是计算两个日期之间的天数、周数或月数。在Java 8中可以用java.time.Period类来做计算。下面这个例子中，我们计算了当天和将来某一天之间的月数。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">package com.shxt.demo02;</span><br><span class="line"></span><br><span class="line">import java.time.LocalDate;</span><br><span class="line">import java.time.Period;</span><br><span class="line"></span><br><span class="line">publicclass Demo15 &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        LocalDate today &#x3D; LocalDate.now();</span><br><span class="line"></span><br><span class="line">        LocalDate java8Release &#x3D; LocalDate.of(2018, 12, 14);</span><br><span class="line"></span><br><span class="line">        Period periodToNextJavaRelease &#x3D; Period.between(today, java8Release);</span><br><span class="line">        System.out.println(&quot;Months left between today and Java 8 release : &quot;</span><br><span class="line">                + periodToNextJavaRelease.getMonths() );</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="示例16-在Java-8中获取当前的时间戳"><a href="#示例16-在Java-8中获取当前的时间戳" class="headerlink" title="示例16:在Java 8中获取当前的时间戳"></a>示例16:在Java 8中获取当前的时间戳</h1><p>Instant类有一个静态工厂方法now()会返回当前的时间戳，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">package com.shxt.demo02;</span><br><span class="line"></span><br><span class="line">import java.time.Instant;</span><br><span class="line"></span><br><span class="line">publicclass Demo16 &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        Instant timestamp &#x3D; Instant.now();</span><br><span class="line">        System.out.println(&quot;What is value of this instant &quot; + timestamp.toEpochMilli());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>时间戳信息里同时包含了日期和时间，这和java.util.Date很像。实际上Instant类确实等同于 Java 8之前的Date类，你可以使用Date类和Instant类各自的转换方法互相转换</p>
+<p>例如：Date.from(Instant) 将Instant转换成java.util.Date，Date.toInstant()则是将Date类转换成Instant类。</p>
+<h1 id="示例17-Java-8中如何使用预定义的格式化工具去解析或格式化日期"><a href="#示例17-Java-8中如何使用预定义的格式化工具去解析或格式化日期" class="headerlink" title="示例17:Java 8中如何使用预定义的格式化工具去解析或格式化日期"></a>示例17:Java 8中如何使用预定义的格式化工具去解析或格式化日期</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">package com.shxt.demo02;</span><br><span class="line"></span><br><span class="line">import java.time.LocalDate;</span><br><span class="line">import java.time.format.DateTimeFormatter;</span><br><span class="line"></span><br><span class="line">publicclass Demo17 &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        String dayAfterTommorrow &#x3D; &quot;20180205&quot;;</span><br><span class="line">        LocalDate formatted &#x3D; LocalDate.parse(dayAfterTommorrow,</span><br><span class="line">                DateTimeFormatter.BASIC_ISO_DATE);</span><br><span class="line">        System.out.println(dayAfterTommorrow+&quot; 格式化后的日期为: &quot;+formatted);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="示例18-字符串互转日期类型"><a href="#示例18-字符串互转日期类型" class="headerlink" title="示例18:字符串互转日期类型"></a>示例18:字符串互转日期类型</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">package com.shxt.demo02;</span><br><span class="line"></span><br><span class="line">import java.time.LocalDate;</span><br><span class="line">import java.time.LocalDateTime;</span><br><span class="line">import java.time.format.DateTimeFormatter;</span><br><span class="line"></span><br><span class="line">publicclass Demo18 &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        LocalDateTime date &#x3D; LocalDateTime.now();</span><br><span class="line"></span><br><span class="line">        DateTimeFormatter format1 &#x3D; DateTimeFormatter.ofPattern(&quot;yyyy&#x2F;MM&#x2F;dd HH:mm:ss&quot;);</span><br><span class="line">		&#x2F;&#x2F;日期转字符串</span><br><span class="line">        String str &#x3D; date.format(format1);</span><br><span class="line"></span><br><span class="line">        System.out.println(&quot;日期转换为字符串:&quot;+str);</span><br><span class="line"></span><br><span class="line">        DateTimeFormatter format2 &#x3D; DateTimeFormatter.ofPattern(&quot;yyyy&#x2F;MM&#x2F;dd HH:mm:ss&quot;);</span><br><span class="line">		&#x2F;&#x2F;字符串转日期</span><br><span class="line">        LocalDate date2 &#x3D; LocalDate.parse(str,format2);</span><br><span class="line">        System.out.println(&quot;日期类型:&quot;+date2);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/oops/uploads/wechat-qcode.jpg" alt="架构组 wechat" style="width: 200px; max-width: 100%;"/>
+    <div>欢迎您扫一扫上面的微信二维码，订阅我的公众号</div>
+</div>
+
+      </div>
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/Java%20%E5%B9%B6%E5%8F%91%E9%AB%98%E9%A2%91%E9%9D%A2%E8%AF%95%E9%A2%98%EF%BC%9A%E8%81%8A%E8%81%8A%E4%BD%A0%E5%AF%B9%20AQS%20%E7%9A%84%E7%90%86%E8%A7%A3%EF%BC%9F/" rel="next" title="Java 并发高频面试题：聊聊你对 AQS 的理解？">
+                <i class="fa fa-chevron-left"></i> Java 并发高频面试题：聊聊你对 AQS 的理解？
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/20M%20%E6%96%87%E4%BB%B6%E7%94%A8%20Java%20%E5%8E%8B%E7%BC%A9%E4%BB%8E30%E7%A7%92%E5%88%B01%E7%A7%92%E7%9A%84%E4%BC%98%E5%8C%96%E8%BF%87%E7%A8%8B/" rel="prev" title="20M 文件用 Java 压缩从30秒到1秒的优化过程">
+                20M 文件用 Java 压缩从30秒到1秒的优化过程 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner" style="text-align:center;">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      本站访客数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人次
+    </span>
+  
+
+  
+    <span class="site-pv">
+      本站总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/oops/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/oops/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/oops/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/oops/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/oops/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/oops/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/oops/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/oops/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/oops/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/oops/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/oops/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/oops/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="近段时间，业务系统架构基本完备，数据层面的建设比较薄弱，因为笔者目前工作重心在于搭建一个小型的数据平台。优先级比较高的一个任务就是需要近实时同步业务系统的数据（包括保存、更新或者软删除）到一个另一个数据源，持久化之前需要清洗数据并且构建一个相对合理的便于后续业务数据统计、标签系统构建等扩展功能的数据模型。基于当前团队的资源和能力，优先调研了Alibaba开源中间件Canal的使用。  这篇文章简单">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何基于Canal 和 Kafka，实现 MySQL 的 Binlog 近实时同步？">
+<meta property="og:url" content="https://smartlink-tech.gitee.cn/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E5%A6%82%E4%BD%95%E5%9F%BA%E4%BA%8ECanal%20%E5%92%8C%20Kafka%EF%BC%8C%E5%AE%9E%E7%8E%B0%20MySQL%20%E7%9A%84%20Binlog%20%E8%BF%91%E5%AE%9E%E6%97%B6%E5%90%8C%E6%AD%A5%EF%BC%9F/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="近段时间，业务系统架构基本完备，数据层面的建设比较薄弱，因为笔者目前工作重心在于搭建一个小型的数据平台。优先级比较高的一个任务就是需要近实时同步业务系统的数据（包括保存、更新或者软删除）到一个另一个数据源，持久化之前需要清洗数据并且构建一个相对合理的便于后续业务数据统计、标签系统构建等扩展功能的数据模型。基于当前团队的资源和能力，优先调研了Alibaba开源中间件Canal的使用。  这篇文章简单">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/E818183B1B58588B9CEE8619D83AD25C.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/60B54DDCD46B6F73DB259AF86CD045D7.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/91BF2748561CBBCCDEAD530470F07FF3.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/CE3EE922EC35508ADAAB53C4A3888BD9.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/B7BFD50F0AB99E57A9A28D8C4F87C363.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/8F869AEDA90802F3C5BB0C2BDD55A29D.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/073DD7CE764BAA52C85F77D74809469B.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/3D4D4879A3C69499F1E5B9CD4C06DFCB.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/6AB389A9EBABC837945C5F22481EE1ED.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/62D83295E3E512BF316CABB246E3023F.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/CAEDD28CF8D9041494E028F3C1DB1869.png">
+<meta property="article:published_time" content="2020-04-30T03:23:00.000Z">
+<meta property="article:modified_time" content="2020-04-30T08:17:04.065Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://smartlink-tech.gitee.cn/Oops/resources/E818183B1B58588B9CEE8619D83AD25C.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/Oops',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"remove","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://smartlink-tech.gitee.cn/oops/2020/04/30/推荐阅读/如何基于Canal 和 Kafka，实现 MySQL 的 Binlog 近实时同步？/"/>
+
+
+
+
+
+  <title>如何基于Canal 和 Kafka，实现 MySQL 的 Binlog 近实时同步？ | Hexo</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/oops/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/oops/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/oops/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/oops/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/oops/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://smartlink-tech.gitee.cn/oops/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E5%A6%82%E4%BD%95%E5%9F%BA%E4%BA%8ECanal%20%E5%92%8C%20Kafka%EF%BC%8C%E5%AE%9E%E7%8E%B0%20MySQL%20%E7%9A%84%20Binlog%20%E8%BF%91%E5%AE%9E%E6%97%B6%E5%90%8C%E6%AD%A5%EF%BC%9F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="架构组">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/oops/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">如何基于Canal 和 Kafka，实现 MySQL 的 Binlog 近实时同步？</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-04-30T11:23:00+08:00">
+                2020-04-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/oops/categories/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/" itemprop="url" rel="index">
+                    <span itemprop="name">推荐阅读</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv">本文总阅读量
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>近段时间，业务系统架构基本完备，数据层面的建设比较薄弱，因为笔者目前工作重心在于搭建一个小型的数据平台。优先级比较高的一个任务就是需要近实时同步业务系统的数据（包括保存、更新或者软删除）到一个另一个数据源，持久化之前需要清洗数据并且构建一个相对合理的便于后续业务数据统计、标签系统构建等扩展功能的数据模型。基于当前团队的资源和能力，优先调研了Alibaba开源中间件Canal的使用。</p>
+<p><img src="/Oops/resources/E818183B1B58588B9CEE8619D83AD25C.png" alt></p>
+<p>这篇文章简单介绍一下如何快速地搭建一套<code>Canal</code>相关的组件。</p>
+<h3 id="关于Canal"><a href="#关于Canal" class="headerlink" title="关于Canal"></a>关于Canal</h3><p>下面的简介和下一节的原理均来自于Canal项目的README：</p>
+<p><img src="/Oops/resources/60B54DDCD46B6F73DB259AF86CD045D7.jpg" alt></p>
+<p><code>Canal[kə&#39;næl]</code>，译意为水道/管道/沟渠，主要用途是基于MySQL数据库增量日志解析，提供增量数据订阅和消费。</p>
+<p>早期阿里巴巴因为杭州和美国双机房部署，存在跨机房同步的业务需求，实现方式主要是基于<code>业务trigger</code>获取增量变更。从 2010 年开始，业务逐步尝试数据库日志解析获取增量变更进行同步，由此衍生出了大量的数据库增量订阅和消费业务。</p>
+<p>基于日志增量订阅和消费的业务包括：</p>
+<ul>
+<li>数据库镜像</li>
+<li>数据库实时备份</li>
+<li>索引构建和实时维护（拆分异构索引、倒排索引等）</li>
+<li>业务Cache刷新</li>
+<li>带业务逻辑的增量数据处理</li>
+</ul>
+<h4 id="Canal-的工作原理"><a href="#Canal-的工作原理" class="headerlink" title="Canal 的工作原理"></a>Canal 的工作原理</h4><p>MySQL主备复制原理：</p>
+<p><img src="/Oops/resources/91BF2748561CBBCCDEAD530470F07FF3.png" alt></p>
+<ul>
+<li>MySQL的Master实例将数据变更写入二进制日志（binary log，其中记录叫做二进制日志事件binary log events，可以通过show binlog events进行查看）</li>
+<li>MySQL的Slave实例将master的binary log events拷贝到它的中继日志（relay log）</li>
+<li>MySQL的Slave实例重放relay log中的事件，将数据变更反映它到自身的数据</li>
+</ul>
+<p>Canal的工作原理如下：</p>
+<ul>
+<li>Canal模拟MySQL Slave的交互协议，伪装自己为MySQL Slave，向MySQL Master发送dump协议</li>
+<li>MySQL Master收到dump请求，开始推送binary log给Slave（即Canal）</li>
+<li>Canal解析binary log对象（原始为byte流），并且可以通过连接器发送到对应的消息队列等中间件中</li>
+</ul>
+<h4 id="关于Canal的版本和部件"><a href="#关于Canal的版本和部件" class="headerlink" title="关于Canal的版本和部件"></a>关于Canal的版本和部件</h4><p>截止笔者开始编写本文的时候（2020-03-05），Canal的最新发布版本是v1.1.5-alpha-1（2019-10-09发布的），最新的正式版是v1.1.4（2019-09-02发布的）。</p>
+<p>其中，v1.1.4主要添加了鉴权、监控的功能，并且做了一些列的性能优化，此版本集成的连接器是Tcp、Kafka和RockerMQ。而v1.1.5-alpha-1版本已经新增了RabbitMQ连接器，但是此版本的RabbitMQ连接器暂时不能定义连接RabbitMQ的端口号，不过此问题已经在master分支中修复（具体可以参看源码中的CanalRabbitMQProducer类的提交记录）。</p>
+<p>换言之，v1.1.4版本中目前能使用的内置连接器只有Tcp、Kafka和RockerMQ三种，如果想尝鲜使用RabbitMQ连接器，可以选用下面的两种方式之一：</p>
+<ul>
+<li>选用v1.1.5-alpha-1版本，但是无法修改RabbitMQ的port属性，默认为5672。</li>
+<li>基于master分支自行构建Canal。</li>
+</ul>
+<p>目前，Canal项目的活跃度比较高，但是考虑到功能的稳定性问题，笔者建议选用稳定版本在生产环境中实施，当前可以选用v1.1.4版本，本文的例子用选用的就是v1.1.4版本，配合Kafka连接器使用。Canal主要包括三个核心部件：</p>
+<ul>
+<li>canal-admin：后台管理模块，提供面向WebUI的Canal管理能力。</li>
+<li>canal-adapter：适配器，增加客户端数据落地的适配及启动功能，包括REST、日志适配器、关系型数据库的数据同步（表对表同步）、HBase数据同步、ES数据同步等等。</li>
+<li>canal-deployer：发布器，核心功能所在，包括binlog解析、转换和发送报文到连接器中等等功能都由此模块提供。</li>
+</ul>
+<p>一般情况下，canal-deployer部件是必须的，其他两个部件按需选用即可。</p>
+<h3 id="部署所需的中间件"><a href="#部署所需的中间件" class="headerlink" title="部署所需的中间件"></a>部署所需的中间件</h3><p>搭建一套可以用的组件需要部署MySQL、Zookeeper、Kafka和Canal四个中间件的实例，下面简单分析一下部署过程。选用的虚拟机系统是CentOS7。</p>
+<h4 id="安装MySQL"><a href="#安装MySQL" class="headerlink" title="安装MySQL"></a>安装MySQL</h4><p>为了简单起见，选用yum源安装（官方链接是<a href="https://dev.mysql.com/downloads/repo/yum）：" target="_blank" rel="noopener">https://dev.mysql.com/downloads/repo/yum）：</a></p>
+<p><img src="/Oops/resources/CE3EE922EC35508ADAAB53C4A3888BD9.png" alt></p>
+<blockquote>
+<p>mysql80-community-release-el7-3虽然包名带了mysql80关键字，其实已经集成了MySQL主流版本5.6、5.7和8.x等等的最新安装包仓库</p>
+</blockquote>
+<p>选用的是最新版的MySQL8.x社区版，下载CentOS7适用的rpm包：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">cd &#x2F;data&#x2F;mysql</span><br><span class="line">wget https:&#x2F;&#x2F;dev.mysql.com&#x2F;get&#x2F;mysql80-community-release-el7-3.noarch.rpm</span><br><span class="line">&#x2F;&#x2F; 下载完毕之后</span><br><span class="line">sudo rpm -Uvh mysql80-community-release-el7-3.noarch.rpm</span><br></pre></td></tr></table></figure>
+
+<p>此时列举一下yum仓库里面的MySQL相关的包：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost mysql]\# yum repolist all | grep mysql</span><br><span class="line">mysql-cluster-7.5-community&#x2F;x86_64 MySQL Cluster 7.5 Community   disabled</span><br><span class="line">mysql-cluster-7.5-community-source MySQL Cluster 7.5 Community - disabled</span><br><span class="line">mysql-cluster-7.6-community&#x2F;x86_64 MySQL Cluster 7.6 Community   disabled</span><br><span class="line">mysql-cluster-7.6-community-source MySQL Cluster 7.6 Community - disabled</span><br><span class="line">mysql-cluster-8.0-community&#x2F;x86_64 MySQL Cluster 8.0 Community   disabled</span><br><span class="line">mysql-cluster-8.0-community-source MySQL Cluster 8.0 Community - disabled</span><br><span class="line">mysql-connectors-community&#x2F;x86_64  MySQL Connectors Community    enabled:    141</span><br><span class="line">mysql-connectors-community-source  MySQL Connectors Community -  disabled</span><br><span class="line">mysql-tools-community&#x2F;x86_64       MySQL Tools Community         enabled:    105</span><br><span class="line">mysql-tools-community-source       MySQL Tools Community - Sourc disabled</span><br><span class="line">mysql-tools-preview&#x2F;x86_64         MySQL Tools Preview           disabled</span><br><span class="line">mysql-tools-preview-source         MySQL Tools Preview - Source  disabled</span><br><span class="line">mysql55-community&#x2F;x86_64           MySQL 5.5 Community Server    disabled</span><br><span class="line">mysql55-community-source           MySQL 5.5 Community Server -  disabled</span><br><span class="line">mysql56-community&#x2F;x86_64           MySQL 5.6 Community Server    disabled</span><br><span class="line">mysql56-community-source           MySQL 5.6 Community Server -  disabled</span><br><span class="line">mysql57-community&#x2F;x86_64           MySQL 5.7 Community Server    disabled</span><br><span class="line">mysql57-community-source           MySQL 5.7 Community Server -  disabled</span><br><span class="line">mysql80-community&#x2F;x86_64           MySQL 8.0 Community Server    enabled:    161</span><br><span class="line">mysql80-community-source           MySQL 8.0 Community Server -  disabled</span><br></pre></td></tr></table></figure>
+
+<p>编辑/etc/yum.repos.d/mysql-community.repo文件（[mysql80-community]块中enabled设置为1，其实默认就是这样子，不用改，如果要选用5.x版本则需要修改对应的块）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[mysql80-community]</span><br><span class="line">name&#x3D;MySQL 8.0 Community Server</span><br><span class="line">baseurl&#x3D;http:&#x2F;&#x2F;repo.mysql.com&#x2F;yum&#x2F;mysql-8.0-community&#x2F;el&#x2F;7&#x2F;$basearch&#x2F;</span><br><span class="line">enabled&#x3D;1</span><br><span class="line">gpgcheck&#x3D;1</span><br><span class="line">gpgkey&#x3D;file:&#x2F;&#x2F;&#x2F;etc&#x2F;pki&#x2F;rpm-gpg&#x2F;RPM-GPG-KEY-mysql</span><br></pre></td></tr></table></figure>
+
+<p>然后安装MySQL服务：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo yum install mysql-community-server</span><br></pre></td></tr></table></figure>
+
+<p>这个过程比较漫长，因为需要下载和安装5个rpm安装包（或者是所有安装包组合的压缩包mysql-8.0.18-1.el7.x86_64.rpm-bundle.tar）。如果网络比较差，也可以直接从官网手动下载后安装：</p>
+<p><img src="/Oops/resources/B7BFD50F0AB99E57A9A28D8C4F87C363.jpg" alt></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 下载下面5个rpm包 common --\&gt; libs --\&gt; libs-compat --\&gt; client --\&gt; server</span><br><span class="line">mysql-community-common</span><br><span class="line">mysql-community-libs</span><br><span class="line">mysql-community-libs-compat</span><br><span class="line">mysql-community-client</span><br><span class="line">mysql-community-server</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 强制安装</span><br><span class="line">rpm -ivh mysql-community-common-8.0.18-1.el7.x86_64.rpm --force --nodeps</span><br><span class="line">rpm -ivh mysql-community-libs-8.0.18-1.el7.x86_64.rpm --force --nodeps</span><br><span class="line">rpm -ivh mysql-community-libs-compat-8.0.18-1.el7.x86_64.rpm --force --nodeps</span><br><span class="line">rpm -ivh mysql-community-client-8.0.18-1.el7.x86_64.rpm --force --nodeps</span><br><span class="line">rpm -ivh mysql-community-server-8.0.18-1.el7.x86_64.rpm --force --nodeps</span><br></pre></td></tr></table></figure>
+
+<p>安装完毕之后，启动MySQL服务，然后搜索MySQL服务的root账号的临时密码用于首次登陆（mysql -u root -p）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 启动服务，关闭服务就是service mysqld stop</span><br><span class="line">service mysqld start</span><br><span class="line">&#x2F;&#x2F; 查看临时密码 cat &#x2F;var&#x2F;log&#x2F;mysqld.log</span><br><span class="line">[root@localhost log]\# cat &#x2F;var&#x2F;log&#x2F;mysqld.log </span><br><span class="line">2020-03-02T06:03:53.996423Z 0 [System] [MY-013169] [Server] &#x2F;usr&#x2F;sbin&#x2F;mysqld (mysqld 8.0.18) initializing of server in progress as process 22780</span><br><span class="line">2020-03-02T06:03:57.321447Z 5 [Note] [MY-010454] [Server] A temporary password is generated for root@localhost: &gt;kjYaXENK6li</span><br><span class="line">2020-03-02T06:04:00.123845Z 0 [System] [MY-010116] [Server] &#x2F;usr&#x2F;sbin&#x2F;mysqld (mysqld 8.0.18) starting as process 22834</span><br><span class="line">&#x2F;&#x2F; 登录临时root用户，使用临时密码</span><br><span class="line">[root@localhost log]\# mysql -u root -p</span><br></pre></td></tr></table></figure>
+
+<p>接下来做下面的操作：</p>
+<ul>
+<li>修改root用户的密码：<code>ALTER USER &#39;root&#39;@&#39;localhost&#39; IDENTIFIED BY &#39;QWqw12!@&#39;;</code>（注意密码规则必须包含大小写字母、数字和特殊字符）</li>
+<li>更新root的host，切换数据库use mysql;，指定host为%以便可以让其他服务器远程访问<code>UPDATE USER SET HOST = &#39;%&#39; WHERE USER = &#39;root&#39;;</code></li>
+<li>赋予‘root’@’%’用户，所有权限，执行GRANT ALL PRIVILEGES ON . TO ‘root’@’%’;</li>
+<li>改变root’@’%用户的密码校验规则以便可以使用Navicat等工具访问：ALTER USER ‘root’@’%’ IDENTIFIED WITH mysql_native_password BY ‘QWqw12!@’;</li>
+</ul>
+<p><img src="/Oops/resources/8F869AEDA90802F3C5BB0C2BDD55A29D.png" alt></p>
+<p>操作完成之后，就可以使用root用户远程访问此虚拟机上的MySQL服务。最后确认是否开启了binlog（注意一点是MySQL8.x默认开启binlog）SHOW VARIABLES LIKE ‘%bin%’;：</p>
+<p><img src="/Oops/resources/073DD7CE764BAA52C85F77D74809469B.png" alt></p>
+<p>最后在MySQL的Shell执行下面的命令，新建一个用户名canal密码为QWqw12!@的新用户，赋予REPLICATION SLAVE和 REPLICATION CLIENT权限：</p>
+<pre><code>CREATE USER canal IDENTIFIED BY &apos;QWqw12!@&apos;;
+GRANT SELECT, REPLICATION SLAVE, REPLICATION CLIENT ON \*.\* TO &apos;canal&apos;@&apos;%&apos;;
+FLUSH PRIVILEGES;
+ALTER USER &apos;canal&apos;@&apos;%&apos; IDENTIFIED WITH mysql\_native\_password BY &apos;QWqw12!@&apos;;</code></pre><p>切换回去root用户，创建一个数据库test：</p>
+<pre><code>CREATE DATABASE `test` CHARSET `utf8mb4` COLLATE `utf8mb4\_unicode\_ci`;</code></pre><h4 id="安装Zookeeper"><a href="#安装Zookeeper" class="headerlink" title="安装Zookeeper"></a>安装Zookeeper</h4><p>Canal和Kafka集群都依赖于Zookeeper做服务协调，为了方便管理，一般会独立部署Zookeeper服务或者Zookeeper集群。笔者这里选用2020-03-04发布的3.6.0版本：</p>
+<pre><code>midkr /data/zk
+\# 创建数据目录
+midkr /data/zk/data
+cd /data/zk
+wget http://mirror.bit.edu.cn/apache/zookeeper/zookeeper-3.6.0/apache-zookeeper-3.6.0-bin.tar.gz
+tar -zxvf apache-zookeeper-3.6.0-bin.tar.gz
+cd apache-zookeeper-3.6.0-bin/conf
+cp zoo\_sample.cfg zoo.cfg &amp;&amp; vim zoo.cfg</code></pre><p>把zoo.cfg文件中的dataDir设置为/data/zk/data，然后启动Zookeeper：</p>
+<pre><code>[root@localhost conf]\# sh /data/zk/apache-zookeeper-3.6.0-bin/bin/zkServer.sh start
+/usr/bin/java
+ZooKeeper JMX enabled by default
+Using config: /data/zk/apache-zookeeper-3.6.0-bin/bin/../conf/zoo.cfg
+Starting zookeeper ... STARTED</code></pre><p>这里注意一点，要启动此版本的Zookeeper服务必须本地安装好JDK8+，这一点需要自行处理。启动的默认端口是2181，启动成功后的日志如下：</p>
+<p><img src="/Oops/resources/3D4D4879A3C69499F1E5B9CD4C06DFCB.png" alt></p>
+<h4 id="安装Kafka"><a href="#安装Kafka" class="headerlink" title="安装Kafka"></a>安装Kafka</h4><p>Kafka是一个高性能分布式消息队列中间件，它的部署依赖于Zookeeper。笔者在此选用2.4.0并且Scala版本为2.13的安装包：</p>
+<pre><code>mkdir /data/kafka
+mkdir /data/kafka/data
+wget http://mirrors.tuna.tsinghua.edu.cn/apache/kafka/2.4.0/kafka\_2.13-2.4.0.tgz
+tar -zxvf kafka\_2.13-2.4.0.tgz</code></pre><p>由于解压后/data/kafka/kafka_2.13-2.4.0/config/server.properties配置中对应的zookeeper.connect=localhost:2181已经符合需要，不必修改，需要修改日志文件的目录log.dirs为/data/kafka/data。然后启动Kafka服务：</p>
+<pre><code>sh /data/kafka/kafka\_2.13-2.4.0/bin/kafka-server-start.sh /data/kafka/kafka\_2.13-2.4.0/config/server.properties</code></pre><p><img src="/Oops/resources/6AB389A9EBABC837945C5F22481EE1ED.png" alt></p>
+<p>这样启动一旦退出控制台就会结束Kafka进程，可以添加-daemon参数用于控制Kafka进程后台不挂断运行。</p>
+<pre><code>sh /data/kafka/kafka\_2.13-2.4.0/bin/kafka-server-start.sh -daemon /data/kafka/kafka\_2.13-2.4.0/config/server.properties</code></pre><h4 id="安装和使用Canal"><a href="#安装和使用Canal" class="headerlink" title="安装和使用Canal"></a>安装和使用Canal</h4><p>终于到了主角登场，这里选用Canal的v1.1.4稳定发布版，只需要下载deployer模块：</p>
+<pre><code>mkdir /data/canal
+cd /data/canal
+\# 这里注意一点，Github在国内被墙，下载速度极慢，可以先用其他下载工具下载完再上传到服务器中
+wget https://github.com/alibaba/canal/releases/download/canal-1.1.4/canal.deployer-1.1.4.tar.gz
+tar -zxvf canal.deployer-1.1.4.tar.gz</code></pre><p>解压后的目录如下：</p>
+<pre><code>- bin \# 运维脚本
+- conf \# 配置文件
+ canal\_local.properties \# canal本地配置，一般不需要动
+ canal.properties \# canal服务配置
+ logback.xml \# logback日志配置
+ metrics \# 度量统计配置
+ spring \# spring-实例配置，主要和binlog位置计算、一些策略配置相关，可以在canal.properties选用其中的任意一个配置文件
+ example \# 实例配置文件夹，一般认为单个数据库对应一个独立的实例配置文件夹
+ instance.properties \# 实例配置，一般指单个数据库的配置
+- lib \# 服务依赖包
+- logs \# 日志文件输出目录</code></pre><p>在开发和测试环境建议把logback.xml的日志级别修改为DEBUG方便定位问题。这里需要关注canal.properties和instance.properties两个配置文件。canal.properties文件中，需要修改：</p>
+<ul>
+<li>去掉canal.instance.parser.parallelThreadSize = 16这个配置项的注释，也就是启用此配置项，和实例解析器的线程数相关，不配置会表现为阻塞或者不进行解析。</li>
+<li>canal.serverMode配置项指定为kafka，可选值有tcp、kafka和rocketmq（master分支或者最新的的v1.1.5-alpha-1版本，可以选用rabbitmq），默认是kafka。</li>
+<li>canal.mq.servers配置需要指定为Kafka服务或者集群Broker的地址，这里配置为127.0.0.1:9092。</li>
+</ul>
+<blockquote>
+<p>canal.mq.servers在不同的canal.serverMode有不同的意义。<br>kafka模式下，指Kafka服务或者集群Broker的地址，也就是bootstrap.servers<br>rocketmq模式下，指NameServer列表<br>rabbitmq模式下，指RabbitMQ服务的Host和Port</p>
+</blockquote>
+<p>其他配置项可以参考下面两个官方Wiki的链接：</p>
+<ul>
+<li>Canal-Kafka-RocketMQ-QuickStart</li>
+<li>AdminGuide</li>
+</ul>
+<p>instance.properties一般指一个数据库实例的配置，Canal架构支持一个Canal服务实例，处理多个数据库实例的binlog异步解析。instance.properties需要修改的配置项主要包括：</p>
+<ul>
+<li>canal.instance.mysql.slaveId需要配置一个和Master节点的服务ID完全不同的值，这里笔者配置为654321。</li>
+<li>配置数据源实例，包括地址、用户、密码和目标数据库：<ul>
+<li>canal.instance.master.address，这里指定为127.0.0.1:3306。</li>
+<li>canal.instance.dbUsername，这里指定为canal。</li>
+<li>canal.instance.dbPassword，这里指定为QWqw12!@。</li>
+<li>新增canal.instance.defaultDatabaseName，这里指定为test（需要在MySQL中建立一个test数据库，见前面的流程）。</li>
+</ul>
+</li>
+<li>Kafka相关配置，这里暂时使用静态topic和单个partition：<ul>
+<li>canal.mq.topic，这里指定为test，也就是解析完的binlog结构化数据会发送到Kafka的命名为test的topic中。</li>
+<li>canal.mq.partition，这里指定为0。</li>
+</ul>
+</li>
+</ul>
+<p>配置工作做好之后，可以启动Canal服务：</p>
+<pre><code>sh /data/canal/bin/startup.sh 
+\# 查看服务日志
+tail -100f /data/canal/logs/canal/canal
+\# 查看实例日志 -- 一般情况下，关注实例日志即可
+tail -100f /data/canal/logs/example/example.log</code></pre><p>启动正常后，见实例日志如下：</p>
+<p><img src="/Oops/resources/62D83295E3E512BF316CABB246E3023F.png" alt></p>
+<p>在test数据库创建一个订单表，并且执行几个简单的DML：</p>
+<pre><code>use `test`;
+
+CREATE TABLE `order`
+(
+ id BIGINT UNIQUE PRIMARY KEY AUTO\_INCREMENT COMMENT &apos;主键&apos;,
+ order\_id VARCHAR(64) NOT NULL COMMENT &apos;订单ID&apos;,
+ amount DECIMAL(10, 2) NOT NULL DEFAULT 0 COMMENT &apos;订单金额&apos;,
+ create\_time DATETIME NOT NULL DEFAULT CURRENT\_TIMESTAMP COMMENT &apos;创建时间&apos;,
+ UNIQUE uniq\_order\_id (`order\_id`)
+) COMMENT &apos;订单表&apos;;
+
+INSERT INTO `order`(order\_id, amount) VALUES (&apos;10086&apos;, 999);
+UPDATE `order` SET amount = 10087 WHERE order\_id = &apos;10086&apos;;
+DELETE FROM `order` WHERE order\_id = &apos;10086&apos;;</code></pre><p>这个时候，可以利用Kafka的kafka-console-consumer或者Kafka Tools查看test这个topic的数据：</p>
+<pre><code>sh /data/kafka/kafka\_2.13-2.4.0/bin/kafka-console-consumer.sh --bootstrap-server 127.0.0.1:9092 --from-beginning --topic test</code></pre><p><img src="/Oops/resources/CAEDD28CF8D9041494E028F3C1DB1869.png" alt></p>
+<p>具体的数据如下：</p>
+<pre><code>// test数据库建库脚本
+{&quot;data&quot;:null,&quot;database&quot;:&quot;`test`&quot;,&quot;es&quot;:1583143732000,&quot;id&quot;:1,&quot;isDdl&quot;:false,&quot;mysqlType&quot;:null,&quot;old&quot;:null,&quot;pkNames&quot;:null,&quot;sql&quot;:&quot;CREATE DATABASE `test` CHARSET `utf8mb4` COLLATE `utf8mb4\_unicode\_ci`&quot;,&quot;sqlType&quot;:null,&quot;table&quot;:&quot;&quot;,&quot;ts&quot;:1583143930177,&quot;type&quot;:&quot;QUERY&quot;}
+
+// order表建表DDL
+{&quot;data&quot;:null,&quot;database&quot;:&quot;test&quot;,&quot;es&quot;:1583143957000,&quot;id&quot;:2,&quot;isDdl&quot;:true,&quot;mysqlType&quot;:null,&quot;old&quot;:null,&quot;pkNames&quot;:null,&quot;sql&quot;:&quot;CREATE TABLE `order`\\n(\\n id BIGINT UNIQUE PRIMARY KEY AUTO\_INCREMENT COMMENT &apos;主键&apos;,\\n order\_id VARCHAR(64) NOT NULL COMMENT &apos;订单ID&apos;,\\n amount DECIMAL(10, 2) NOT NULL DEFAULT 0 COMMENT &apos;订单金额&apos;,\\n create\_time DATETIME NOT NULL DEFAULT CURRENT\_TIMESTAMP COMMENT &apos;创建时间&apos;,\\n UNIQUE uniq\_order\_id (`order\_id`)\\n) COMMENT &apos;订单表&apos;&quot;,&quot;sqlType&quot;:null,&quot;table&quot;:&quot;order&quot;,&quot;ts&quot;:1583143958045,&quot;type&quot;:&quot;CREATE&quot;}
+
+// INSERT
+{&quot;data&quot;:[{&quot;id&quot;:&quot;1&quot;,&quot;order\_id&quot;:&quot;10086&quot;,&quot;amount&quot;:&quot;999.0&quot;,&quot;create\_time&quot;:&quot;2020-03-02 05:12:49&quot;}],&quot;database&quot;:&quot;test&quot;,&quot;es&quot;:1583143969000,&quot;id&quot;:3,&quot;isDdl&quot;:false,&quot;mysqlType&quot;:{&quot;id&quot;:&quot;BIGINT&quot;,&quot;order\_id&quot;:&quot;VARCHAR(64)&quot;,&quot;amount&quot;:&quot;DECIMAL(10,2)&quot;,&quot;create\_time&quot;:&quot;DATETIME&quot;},&quot;old&quot;:null,&quot;pkNames&quot;:[&quot;id&quot;],&quot;sql&quot;:&quot;&quot;,&quot;sqlType&quot;:{&quot;id&quot;:-5,&quot;order\_id&quot;:12,&quot;amount&quot;:3,&quot;create\_time&quot;:93},&quot;table&quot;:&quot;order&quot;,&quot;ts&quot;:1583143969460,&quot;type&quot;:&quot;INSERT&quot;}
+
+// UPDATE
+{&quot;data&quot;:[{&quot;id&quot;:&quot;1&quot;,&quot;order\_id&quot;:&quot;10086&quot;,&quot;amount&quot;:&quot;10087.0&quot;,&quot;create\_time&quot;:&quot;2020-03-02 05:12:49&quot;}],&quot;database&quot;:&quot;test&quot;,&quot;es&quot;:1583143974000,&quot;id&quot;:4,&quot;isDdl&quot;:false,&quot;mysqlType&quot;:{&quot;id&quot;:&quot;BIGINT&quot;,&quot;order\_id&quot;:&quot;VARCHAR(64)&quot;,&quot;amount&quot;:&quot;DECIMAL(10,2)&quot;,&quot;create\_time&quot;:&quot;DATETIME&quot;},&quot;old&quot;:[{&quot;amount&quot;:&quot;999.0&quot;}],&quot;pkNames&quot;:[&quot;id&quot;],&quot;sql&quot;:&quot;&quot;,&quot;sqlType&quot;:{&quot;id&quot;:-5,&quot;order\_id&quot;:12,&quot;amount&quot;:3,&quot;create\_time&quot;:93},&quot;table&quot;:&quot;order&quot;,&quot;ts&quot;:1583143974870,&quot;type&quot;:&quot;UPDATE&quot;}
+
+// DELETE
+{&quot;data&quot;:[{&quot;id&quot;:&quot;1&quot;,&quot;order\_id&quot;:&quot;10086&quot;,&quot;amount&quot;:&quot;10087.0&quot;,&quot;create\_time&quot;:&quot;2020-03-02 05:12:49&quot;}],&quot;database&quot;:&quot;test&quot;,&quot;es&quot;:1583143980000,&quot;id&quot;:5,&quot;isDdl&quot;:false,&quot;mysqlType&quot;:{&quot;id&quot;:&quot;BIGINT&quot;,&quot;order\_id&quot;:&quot;VARCHAR(64)&quot;,&quot;amount&quot;:&quot;DECIMAL(10,2)&quot;,&quot;create\_time&quot;:&quot;DATETIME&quot;},&quot;old&quot;:null,&quot;pkNames&quot;:[&quot;id&quot;],&quot;sql&quot;:&quot;&quot;,&quot;sqlType&quot;:{&quot;id&quot;:-5,&quot;order\_id&quot;:12,&quot;amount&quot;:3,&quot;create\_time&quot;:93},&quot;table&quot;:&quot;order&quot;,&quot;ts&quot;:1583143981091,&quot;type&quot;:&quot;DELETE&quot;}</code></pre><p>可见Kafka的名为test的topic已经写入了对应的结构化binlog事件数据，可以编写消费者监听Kafka对应的topic然后对获取到的数据进行后续处理。</p>
+<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p>这篇文章大部分篇幅用于介绍其他中间件是怎么部署的，这个问题侧面说明了Canal本身部署并不复杂，它的配置文件属性项比较多，但是实际上需要自定义和改动的配置项是比较少的，也就是说明了它的运维成本和学习成本并不高。后面会分析基于结构化binlog事件做ELT和持久化相关工作以及Canal的生产环境可用级别HA集群的搭建。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/oops/uploads/wechat-qcode.jpg" alt="架构组 wechat" style="width: 200px; max-width: 100%;"/>
+    <div>欢迎您扫一扫上面的微信二维码，订阅我的公众号</div>
+</div>
+
+      </div>
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E5%A6%82%E4%BD%95%E5%BF%AB%E9%80%9F%E5%AE%9A%E4%BD%8D%20Redis%20%E7%83%AD%20key/" rel="next" title="如何快速定位 Redis 热 key">
+                <i class="fa fa-chevron-left"></i> 如何快速定位 Redis 热 key
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8%20SpringBoot%20+%20Redis%20%E4%BC%98%E9%9B%85%E7%9A%84%E8%A7%A3%E5%86%B3%E6%8E%A5%E5%8F%A3%E5%B9%82%E7%AD%89%E6%80%A7%E9%97%AE%E9%A2%98/" rel="prev" title="如何使用 SpringBoot + Redis 优雅的解决接口幂等性问题">
+                如何使用 SpringBoot + Redis 优雅的解决接口幂等性问题 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner" style="text-align:center;">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      本站访客数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人次
+    </span>
+  
+
+  
+    <span class="site-pv">
+      本站总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/oops/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/oops/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/oops/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/oops/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/oops/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/oops/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/oops/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/oops/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/oops/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/oops/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/oops/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/oops/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="MySQL,SQL," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="表设计  表结构  引擎、字符集 1NF：字段不可再分 2NF：一个表必须有主键，即每行数据都能被唯一的区分 3NF：表中的列都和主键直接相关，拆分间接关系 反范式：通过增加冗余或重复的数据来提高数据库的读性能，减少关联查询时间，join表的次数 需求&gt;性能&gt;表结构  表字段  单表1G体积500W⾏  单⾏不超过200Byte  单表不超过50个INT字段  单表不超过20个CHAR">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL表设计的那些事">
+<meta property="og:url" content="https://smartlink-tech.gitee.cn/oops/2019/12/18/MySQL%E8%A1%A8%E8%AE%BE%E8%AE%A1%E7%9A%84%E9%82%A3%E4%BA%9B%E4%BA%8B/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="表设计  表结构  引擎、字符集 1NF：字段不可再分 2NF：一个表必须有主键，即每行数据都能被唯一的区分 3NF：表中的列都和主键直接相关，拆分间接关系 反范式：通过增加冗余或重复的数据来提高数据库的读性能，减少关联查询时间，join表的次数 需求&gt;性能&gt;表结构  表字段  单表1G体积500W⾏  单⾏不超过200Byte  单表不超过50个INT字段  单表不超过20个CHAR">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/34F4C6FB9F558607B25EC01C1505FC59.jpg">
+<meta property="article:published_time" content="2019-12-17T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-03-12T09:11:46.419Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="MySQL">
+<meta property="article:tag" content="SQL">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://smartlink-tech.gitee.cn/Oops/resources/34F4C6FB9F558607B25EC01C1505FC59.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/Oops',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"remove","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://smartlink-tech.gitee.cn/oops/2019/12/18/MySQL表设计的那些事/"/>
+
+
+
+
+
+  <title>MySQL表设计的那些事 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/oops/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/oops/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/oops/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/oops/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/oops/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://smartlink-tech.gitee.cn/oops/oops/2019/12/18/MySQL%E8%A1%A8%E8%AE%BE%E8%AE%A1%E7%9A%84%E9%82%A3%E4%BA%9B%E4%BA%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="架构组">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/oops/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">MySQL表设计的那些事</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-user"></i>
+              </span>
+              <span class="post-meta-item-text">葱</span>
+              <span class="post-meta-divider">|</span>
+            
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-12-18T00:00:00+08:00">
+                2019-12-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/oops/categories/MySQL/" itemprop="url" rel="index">
+                    <span itemprop="name">MySQL</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv">本文总阅读量
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>表设计</p>
+<hr>
+<p>表结构</p>
+<ul>
+<li>引擎、字符集</li>
+<li>1NF：字段不可再分</li>
+<li>2NF：一个表必须有主键，即每行数据都能被唯一的区分</li>
+<li>3NF：表中的列都和主键直接相关，拆分间接关系</li>
+<li>反范式：通过增加冗余或重复的数据来提高数据库的读性能，减少关联查询时间，join表的次数</li>
+<li>需求&gt;性能&gt;表结构</li>
+</ul>
+<p>表字段</p>
+<ul>
+<li><p>单表1G体积500W⾏</p>
+</li>
+<li><p>单⾏不超过200Byte</p>
+</li>
+<li><p>单表不超过50个INT字段</p>
+</li>
+<li><p>单表不超过20个CHAR(10)字段</p>
+</li>
+<li><p>建议单表字段数控制在20个以内</p>
+</li>
+</ul>
+<p>主/外键</p>
+<ul>
+<li>要有主键</li>
+<li>唯一、非空、有序</li>
+<li>主键不建议有业务含义（任何有业务含义的列都有改变的可能性，主键一旦带上了业务含义，那么主键就有可能发生变更；带有业务含义的主键，不一定是顺序自增的）</li>
+<li>不使用varchar类型作主键，如UUID，可读性差、无序、性能差。多主，ID生成中间件，主从，自增无符号Bigint(20)（innodb 中的主键是聚簇索引。如果主键是自增的，那么每次插入新的记录，记录就会顺序添加到当前索引节点的后续位置，当一页写满，就会自动开辟一个新的页。如果不是自增主键，那么可能会在中间插入，就会引发页的分裂，产生很多表碎片，插入时间更长，而且占用空间更大）</li>
+<li>主外键数据类型一致，防止隐式类型转换不走索引（需要多表 join的字段，数据类型保持绝对一致）</li>
+<li>不在数据表中追加外键约束，在应用层维持外键关系</li>
+</ul>
+<p>选择合适的类型</p>
+<ul>
+<li>尽量选择小，简单的数据类型。 如boolean类型使用tinyint，邮政编码用char(6)，用整型来存IP</li>
+<li>字段长度不要比实际业务过大，字段长度越大，索引在B-Tree树上遍历会越耗费时间，查询的时间会越久，VARCHAR的长度只分配真正需要的空间</li>
+<li>尽量避免Null而是not null default ‘’，索引性能不好，查询会出现一些不可预料的结果，如count(col)</li>
+<li>尽量使用timestamp（4字节带时区）而非datetime（8字节时间绝对值）</li>
+<li>尽量避免使用text或blob数据类型，非有不可，建议垂直拆分，查询效率太慢</li>
+<li>整型定义中不添加长度， 比如使用int， 而不不是int(4)。（在添加了zerofill描述符后的显示宽度，即预存储宽度，所以在不添加zerofill描述符的时候，int(1) 和int(10) int(100) 都没什么区别）</li>
+<li>存储精度数值使用decimal，float和double是以二进制存储的，有一定的误差，容易失精度</li>
+<li>不存储任何资源文件，比如照片/视频/网站等，可以用文件路径/外链来代替，这样可以通过路径，链接等来进行索引</li>
+<li>频繁修改的字段（一般是指状态类字段）最好用独立的数字或者单个字母去表示，不用使用汉字或者英文</li>
+</ul>
+<p>优化设计</p>
+<ul>
+<li>做好静态表和动态表的分离</li>
+<li>2张表的多对多的表关系，最好设计成3张表，即增加一张中间表，之前的两张表和中间表的关系是一对多的关系</li>
+<li>计算列允许冗余，提高查询统计的速度</li>
+</ul>
+<p>添加逻辑删除&amp;创建时间&amp;修改时间</p>
+<ul>
+<li>物理删除一旦删除，即不可恢复，逻辑删除数据可用数据分析</li>
+<li>为每个表中设计create_time和update_time，保存系统当前时间</li>
+</ul>
+<p>添加注释</p>
+<ul>
+<li>表注释，字段注释</li>
+</ul>
+<p>索引</p>
+<hr>
+<p>不加索引</p>
+<ul>
+<li>慢查询</li>
+<li>服务超时</li>
+<li>数据库服务器CPU 100%</li>
+<li>一条SQL语句可以干爆一台DB</li>
+</ul>
+<p>区分度</p>
+<ul>
+<li>字段去重后的总数与全表总记录数的商 select count(distinct col))/count(*) from table;</li>
+<li>区分度越大，索引效果越明显</li>
+<li>在区分度较小的字段上新建索引，基本无效，还会增加大量的索引文件</li>
+</ul>
+<p>添加合适的索引</p>
+<ul>
+<li>在经常需要搜索的列上加索引，可以加快搜索的速度</li>
+<li>在创建时间上加索引，加快范围搜索的速度</li>
+<li>在外键字段上加索引，加快多表JOIN的关联查询的速度</li>
+<li>在SELECT、UPDATE、DELETE语句的WHERE条件中的列上加索引，加快条件的判断速度</li>
+<li>在包含ORDER BY、GROUP BY、DISTINCT中的字段上加索引，利用索引的排序，加快排序查询时间</li>
+<li>值分布很稀少的字段不适合建索引，例如”性别”这种只有两三个值的字段</li>
+<li>对较长的字符数据类型的字段，可以考虑创建前缀索引，加快索引速度：ALTER TABLE mytable ADD INDEX name_city_age (name(10),city,age);</li>
+</ul>
+<p>对于联合索引，</p>
+<ul>
+<li>区分度较高的字段放联合索引的最左侧</li>
+<li>字段长度小的列放在联合索引的最左侧</li>
+<li>使用频繁的列放在联合索引的最左侧</li>
+<li>联合索引的顺序根据最左前缀原则区分</li>
+</ul>
+<p>索引越多越好？</p>
+<ul>
+<li>要根据查询有针对性的创建，考虑在WHERE和ORDER BY命令上涉及的列建立索引，可根据EXPLAIN来查看是否用了索引还是全表扫描</li>
+<li>索引可以增加查询效率，同样会降低插入和更新的效率</li>
+<li>建议单表5个索引</li>
+<li>考虑联合索引，删除不必要的单列索引，避免冗余索引和重复索引</li>
+<li>扩展优先，不要新建索引，尽量在已有索引中修改</li>
+</ul>
+<p>不走索引</p>
+<ul>
+<li>应尽量避免在where子句中使用!=或&lt;&gt;操作符，否则引擎将放弃使用该字段索引而进行全表扫描</li>
+<li>对于联合索引，不是使用的第一部分，则不会使用索引（即不符合最左前缀原则）</li>
+<li>最左前缀匹配，向右匹配直到遇到范围查询(&gt;、&gt;=、&lt;=、&lt;、between、like)就停止匹配</li>
+<li>隐式类型转换，不走索引（如列类型是字符串，那一定要在条件中将数据使用引号引用起来,否则不使用索引）</li>
+<li>在索引列上进行函数或表达式运算，该列索引会失效，在建有索引的字段上尽量不要使用函数进行操作</li>
+<li>查询条件中有or，即使其中有条件带索引也不会使用。要想使用or，又想让索引生效，只能将or条件中的每个列都加上索引</li>
+<li>like查询以%开头</li>
+</ul>
+<p>SQL</p>
+<hr>
+<p>EXPLAIN</p>
+<ul>
+<li>在写完SQL后，一定要查看执行计划，尽量避免全表扫描</li>
+<li>开启慢查询日志，设置阈值分析慢SQL并进行优化</li>
+</ul>
+<p>隐式类型转换</p>
+<ul>
+<li>在相同类型的字段间进行比较的操作，检查参数类型与数据库字段类型一致，如果参数不一致,要使用CAST等函数显示转换成一致，否则可能会将索引字段类型转化成=号右边的类型，造成隐式类型转换，不走索引</li>
+</ul>
+<p>如：explain select * from t_base_user where telephone=12345678901</p>
+<p><img src="/Oops/resources/34F4C6FB9F558607B25EC01C1505FC59.jpg" alt></p>
+<p>SQL规约</p>
+<ul>
+<li>SQL语句尽量简单，不在数据库做复杂运算，尽量不用存储过程、函数（避免将业务逻辑和DB耦合在一起，数据库存储数据为主，业务逻辑尽量通过应用层实现）</li>
+<li>少用子查询和复杂查询</li>
+<li>少用复杂JOIN，并注意JOIN中的驱动表是否最优</li>
+<li>使用同类型进行比较，比如用”123”和”123”比，123和123比，防止隐式类型转换</li>
+<li>不要使用COUNT(列名)或COUNT(常量)来替代COUNT(*)，COUNT(*)就是SQL92定义的标准统计行数的语法</li>
+<li>使用ISNULL()或IS NULL来判断是否为NULL值，不要用=、&lt;&gt;。NULL与任何值的直接比较都为NULL</li>
+<li>通常情况下，OR的查询效率要低于IN，所以对于影响性能的OR，考虑IN或UNION替代</li>
+<li>IN操作能避免则避免，若实在避免不了，需要仔细评估IN后边的集合元素数量，控制在1000个之内</li>
+<li>对于连续数值，使用BETWEEN不用IN：SELECT id FROM t WHERE num BETWEEN 1 AND 5</li>
+<li>LIKE只能使用前缀索引，因此避免%xxx式前缀模糊查询，例如LIKE”%abc%”，允许”abc%”</li>
+<li>尽量避免在WHERE子句中使用!=或&lt;&gt;操作符，否则将引擎放弃使用索引而进行全表扫描</li>
+<li>不用SELECT *，只获取需要的字段 ，减少网络带宽消耗，还有可能利用到覆盖索引</li>
+<li>不使用INSERT INTO table_name VALUES()，要显式的指定插入列</li>
+<li>不做列运算，如SELECT id WHERE age + 1 = 10，任何对列的操作都将导致表扫描，包括数据库函数、计算表达式等等</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/oops/uploads/wechat-qcode.jpg" alt="架构组 wechat" style="width: 200px; max-width: 100%;"/>
+    <div>欢迎您扫一扫上面的微信二维码，订阅我的公众号</div>
+</div>
+
+      </div>
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/oops/tags/MySQL/" rel="tag"># MySQL</a>
+          
+            <a href="/oops/tags/SQL/" rel="tag"># SQL</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/oops/2019/10/19/Zuul%201%20%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8/" rel="next" title="Zuul1 如何使用">
+                <i class="fa fa-chevron-left"></i> Zuul1 如何使用
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/oops/2019/12/19/Spring%20Web%E9%9B%86%E6%88%90Docker/" rel="prev" title="Spring Web集成Docker">
+                Spring Web集成Docker <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner" style="text-align:center;">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      本站访客数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人次
+    </span>
+  
+
+  
+    <span class="site-pv">
+      本站总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/oops/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/oops/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/oops/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/oops/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/oops/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

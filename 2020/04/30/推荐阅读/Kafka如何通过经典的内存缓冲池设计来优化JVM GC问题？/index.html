@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/oops/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/oops/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/oops/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/oops/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/oops/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/oops/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/oops/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="大家都知道Kafka是一个高吞吐的消息队列，是大数据场景首选的消息队列，这种场景就意味着发送单位时间消息的量会特别的大，那么Kafka如何做到能支持能同时发送大量消息的呢？ 答案是Kafka通过批量压缩和发送做到的。 我们知道消息肯定是放在内存中的，大数据场景消息的不断发送，内存中不断存在大量的消息，很容易引起GC 频繁的GC特别是full gc是会造成“stop the world”，也就是其他">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kafka如何通过经典的内存缓冲池设计来优化JVM GC问题？">
+<meta property="og:url" content="https://smartlink-tech.gitee.cn/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/Kafka%E5%A6%82%E4%BD%95%E9%80%9A%E8%BF%87%E7%BB%8F%E5%85%B8%E7%9A%84%E5%86%85%E5%AD%98%E7%BC%93%E5%86%B2%E6%B1%A0%E8%AE%BE%E8%AE%A1%E6%9D%A5%E4%BC%98%E5%8C%96JVM%20GC%E9%97%AE%E9%A2%98%EF%BC%9F/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="大家都知道Kafka是一个高吞吐的消息队列，是大数据场景首选的消息队列，这种场景就意味着发送单位时间消息的量会特别的大，那么Kafka如何做到能支持能同时发送大量消息的呢？ 答案是Kafka通过批量压缩和发送做到的。 我们知道消息肯定是放在内存中的，大数据场景消息的不断发送，内存中不断存在大量的消息，很容易引起GC 频繁的GC特别是full gc是会造成“stop the world”，也就是其他">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/663B9064B726EEAED4DCA3BE44C4C606.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/C0D2C76B4715FBBDD155DB05AD5AED1E.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/317F2EF0A4D6093491F09BBD03F68D74.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/097CEE100F716DC0D266F8D993B2789C.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/55480197D771FCD00B838578909196F5.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/995F10DF482B0E29F0A3EF4A6DFE022C.jpg">
+<meta property="article:published_time" content="2020-04-30T03:23:00.000Z">
+<meta property="article:modified_time" content="2020-04-30T08:17:04.062Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://smartlink-tech.gitee.cn/Oops/resources/663B9064B726EEAED4DCA3BE44C4C606.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/Oops',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"remove","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://smartlink-tech.gitee.cn/oops/2020/04/30/推荐阅读/Kafka如何通过经典的内存缓冲池设计来优化JVM GC问题？/"/>
+
+
+
+
+
+  <title>Kafka如何通过经典的内存缓冲池设计来优化JVM GC问题？ | Hexo</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/oops/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/oops/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/oops/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/oops/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/oops/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://smartlink-tech.gitee.cn/oops/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/Kafka%E5%A6%82%E4%BD%95%E9%80%9A%E8%BF%87%E7%BB%8F%E5%85%B8%E7%9A%84%E5%86%85%E5%AD%98%E7%BC%93%E5%86%B2%E6%B1%A0%E8%AE%BE%E8%AE%A1%E6%9D%A5%E4%BC%98%E5%8C%96JVM%20GC%E9%97%AE%E9%A2%98%EF%BC%9F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="架构组">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/oops/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Kafka如何通过经典的内存缓冲池设计来优化JVM GC问题？</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-04-30T11:23:00+08:00">
+                2020-04-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/oops/categories/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/" itemprop="url" rel="index">
+                    <span itemprop="name">推荐阅读</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv">本文总阅读量
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>大家都知道Kafka是一个高吞吐的消息队列，是大数据场景首选的消息队列，这种场景就意味着发送单位时间消息的量会特别的大，那么Kafka如何做到能支持能同时发送大量消息的呢？</p>
+<p>答案是Kafka通过批量压缩和发送做到的。</p>
+<p>我们知道消息肯定是放在内存中的，大数据场景消息的不断发送，内存中不断存在大量的消息，很容易引起GC</p>
+<p>频繁的GC特别是full gc是会造成“stop the world”，也就是其他线程停止工作等待垃圾回收线程执行，继而进一步影响发送的速度影响吞吐量，那么Kafka是如何做到优化JVM的GC问题的呢？看完本篇文章你会get到。</p>
+<h2 id="Kafka的内存池"><a href="#Kafka的内存池" class="headerlink" title="Kafka的内存池"></a>Kafka的内存池</h2><p>下面介绍下Kafka客户端发送的大致过程，如下图：</p>
+<p><img src="/Oops/resources/663B9064B726EEAED4DCA3BE44C4C606.jpg" alt></p>
+<p>Kafka的kafkaProducer对象是线程安全的，每个发送线程在发送消息时候共用一个kafkaProducer对象来调用发送方法，最后发送的数据根据Topic和分区的不同被组装进某一个RecordBatch中。</p>
+<p>发送的数据放入RecordBatch后会被发送线程批量取出组装成ProduceRequest对象发送给Kafka服务端。</p>
+<p>可以看到发送数据线程和取数据线程都要跟内存中的RecordBatch打交道，RecordBatch是存储数据的对象，那么RecordBatch是怎么分配的呢？</p>
+<p>下面我们看下Kafka的缓冲池结构，如下图所示：</p>
+<p><img src="/Oops/resources/C0D2C76B4715FBBDD155DB05AD5AED1E.png" alt></p>
+<blockquote>
+<p><strong>名词解释：</strong>缓冲池：BufferPool（缓冲池）对象，整个KafkaProducer实例中只有一个BufferPool对象。内存池总大小，它是已使用空间和可使用空间的总和，用totalMemory表示(由buffer.memory配置，默认32M)。</p>
+</blockquote>
+<p>可使用的空间：它包含包括两个部分，绿色部分代表未申请未使用的部分，用availableMemory表示</p>
+<p>黄色部分代表已经申请但没有使用的部分，用一个ByteBuffer双端队列(Deque)表示，在BufferPool中这个队列叫free，队列中的每个ByteBuffer的大小用poolableSize表示(由batch.size配置，默认16k)，因为每次free申请内存都是以poolableSize为单位申请的，申请poolableSize大小的bytebuffer后用RecordBatch来包装起来。</p>
+<p>已使用空间：代表缓冲池中已经装了数据的部分。</p>
+<p>根据以上介绍，我们可以知道，总的BufferPool大小=已使用空间+可使用空间；free的大小=free.size * poolableSize（poolsize就是单位batch的size）。</p>
+<p><strong>数据的分配过程</strong> 总的来说是判断需要存储的数据的大小是否free里有合适的recordBatch装得下</p>
+<p>如果装得下则用recordBatch来存储数据，如果free里没有空间但是availableMemory+free的大小比需要存储的数据大（也就是说可使用空间比实际需要申请的空间大），说明可使用空间大小足够，则会用让free一直释放byteBuffer空间直到有空间装得下要存储的数据位置，如果需要申请的空间比实际可使用空间大，则内存申请会阻塞直到申请到足够的内存为止。</p>
+<p>整个申请过程如下图：</p>
+<p><img src="/Oops/resources/317F2EF0A4D6093491F09BBD03F68D74.jpg" alt></p>
+<hr>
+<p><strong>数据的释放过程</strong> 总的来说有2个入口，释放过程如下图：</p>
+<p><img src="/Oops/resources/097CEE100F716DC0D266F8D993B2789C.jpg" alt></p>
+<p>再来看段申请空间代码：</p>
+<pre><code>//判断需要申请空间大小，如果需要申请空间大小比batchSize小，那么申请大小就是batchsize，如果比batchSize大，那么大小以实际申请大小为准
+int size = Math.max(this.batchSize, Records.LOG\_OVERHEAD + Record.recordSize(key, value));
+log.trace(&quot;Allocating a new {} byte message buffer for topic {} partition {}&quot;, size, tp.topic(), tp.partition());
+//这个过程可以参考图3
+ByteBuffer buffer = free.allocate(size, maxTimeToBlock);</code></pre><p>再来段回收的核心代码：</p>
+<pre><code>public void deallocate(ByteBuffer buffer, int size) {
+ lock.lock();
+ try {
+ //只有标准规格（bytebuffer空间大小和poolableSize大小一致的才放入free）
+ if (size == this.poolableSize &amp;&amp; size == buffer.capacity()) {
+ //注意这里的buffer是直接reset了，重新reset后可以重复利用，没有gc问题
+ buffer.clear();
+ //添加进free循环利用
+ this.free.add(buffer);
+ } else {
+ //规格不是poolableSize大小的那么没有进行重制，但是会把availableMemory增加，代表整个可用内存空间增加了，这个时候buffer的回收依赖jvm的gc
+ this.availableMemory += size;
+ }
+ //唤醒排在前面的等待线程
+ Condition moreMem = this.waiters.peekFirst();
+ if (moreMem != null)
+ moreMem.signal();
+ } finally {
+ lock.unlock();
+ }
+}</code></pre><p>通过申请和释放过程流程图以及释放空间代码，我们可以得到一个结论</p>
+<p>就是如果用户申请的数据（发送的消息）大小都是在poolableSize（由batch.size配置，默认16k）以内，并且申请时候free里有空间，那么用户申请的空间是可以循环利用的空间，可以减少gc，但是其他情况也可能存在直接用堆内存申请空间的情况，存在gc的情况。</p>
+<p>如何尽量避免呢，如果批量消息里面单个消息都是超过16k，可以考虑调整batchSize大小。</p>
+<p>如果没有使用缓冲池，那么用户发送的模型是下图5，由于GC特别是Full GC的存在，如果大量发送，就可能会发生频繁的垃圾回收，导致的工作线程的停顿，会对整个发送性能，吞吐量延迟等都有影响。</p>
+<p><img src="/Oops/resources/55480197D771FCD00B838578909196F5.jpg" alt></p>
+<p>使用缓冲池后，整个使用过程可以缩略为下图：</p>
+<p><img src="/Oops/resources/995F10DF482B0E29F0A3EF4A6DFE022C.jpg" alt></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>Kafka通过使用内存缓冲池的设计，让整个发送过程中的存储空间循环利用，有效减少JVM GC造成的影响，从而提高发送性能，提升吞吐量。</p>
+<p>作者简介：黄益明，来自滴滴出行kafka团队，对kafka有一年多的研究实践，负责滴滴内部云平台的架构设计和Kafka特性研发工作</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/oops/uploads/wechat-qcode.jpg" alt="架构组 wechat" style="width: 200px; max-width: 100%;"/>
+    <div>欢迎您扫一扫上面的微信二维码，订阅我的公众号</div>
+</div>
+
+      </div>
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/MySQL%20%E6%AD%BB%E9%94%81%E7%B3%BB%E5%88%97-%20%E9%94%81%E7%9A%84%E7%B1%BB%E5%9E%8B%E4%BB%A5%E5%8F%8A%E5%8A%A0%E9%94%81%E5%8E%9F%E7%90%86%EF%BC%81/" rel="next" title="MySQL 死锁系列- 锁的类型以及加锁原理！">
+                <i class="fa fa-chevron-left"></i> MySQL 死锁系列- 锁的类型以及加锁原理！
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/Java%E6%9C%8D%E5%8A%A1%EF%BC%8C%E5%86%85%E5%AD%98OOM%E9%97%AE%E9%A2%98%E5%A6%82%E4%BD%95%E5%BF%AB%E9%80%9F%E5%AE%9A%E4%BD%8D%EF%BC%9F/" rel="prev" title="Java服务，内存OOM问题如何快速定位？">
+                Java服务，内存OOM问题如何快速定位？ <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner" style="text-align:center;">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      本站访客数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人次
+    </span>
+  
+
+  
+    <span class="site-pv">
+      本站总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/oops/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/oops/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/oops/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/oops/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/oops/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

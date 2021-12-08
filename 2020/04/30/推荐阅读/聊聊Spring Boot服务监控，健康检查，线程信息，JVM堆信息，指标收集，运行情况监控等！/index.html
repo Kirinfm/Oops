@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/oops/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/oops/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/oops/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/oops/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/oops/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/oops/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/oops/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="前言去年我们项目做了微服务1.0的架构转型，但是服务监控这块却没有跟上。这不，最近我就被分配了要将我们核心的微服务应用全部监控起来的任务。我们的微服务应用都是SpringBoot 应用，因此就自然而然的想到了借助Spring Boot 的Actuator 模块。 本篇是我在完成这个工单之后，对Spring Boot Actuator模块 学习应用的总结。在本篇文章中，你可以学习到： 1、Sprin">
+<meta property="og:type" content="article">
+<meta property="og:title" content="聊聊Spring Boot服务监控，健康检查，线程信息，JVM堆信息，指标收集，运行情况监控等！">
+<meta property="og:url" content="https://smartlink-tech.gitee.cn/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E8%81%8A%E8%81%8ASpring%20Boot%E6%9C%8D%E5%8A%A1%E7%9B%91%E6%8E%A7%EF%BC%8C%E5%81%A5%E5%BA%B7%E6%A3%80%E6%9F%A5%EF%BC%8C%E7%BA%BF%E7%A8%8B%E4%BF%A1%E6%81%AF%EF%BC%8CJVM%E5%A0%86%E4%BF%A1%E6%81%AF%EF%BC%8C%E6%8C%87%E6%A0%87%E6%94%B6%E9%9B%86%EF%BC%8C%E8%BF%90%E8%A1%8C%E6%83%85%E5%86%B5%E7%9B%91%E6%8E%A7%E7%AD%89%EF%BC%81/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="前言去年我们项目做了微服务1.0的架构转型，但是服务监控这块却没有跟上。这不，最近我就被分配了要将我们核心的微服务应用全部监控起来的任务。我们的微服务应用都是SpringBoot 应用，因此就自然而然的想到了借助Spring Boot 的Actuator 模块。 本篇是我在完成这个工单之后，对Spring Boot Actuator模块 学习应用的总结。在本篇文章中，你可以学习到： 1、Sprin">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/DF0988B96B4034A84ACA3A9393618B7C.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/C4ED5B7EBA1973CF807D41B458344C61.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/B3AA4A776B06371CB7DA21DBFB80254C.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/E48199A3FB003D5112F7BA3B7FCB08E5.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/44C3DE496F547DE9826EB15C741BBFEB.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/F3D7CA788CBF80A98CC05564B2AD853E.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/8CEA56263C6D3C80A1D7E2E1DE1BC359.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/F3D7CA788CBF80A98CC05564B2AD853E.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/E9FAAC5FE71C6C049EF92B48162B4E30.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/84E2FDAC5988001144F145DD32E1C131.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/45A26F70209077D4D9E543AA2802AE1E.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/D40B4C581B441820DB2F4780C3510CBF.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/678A6E656EF68221B7EEAF8A937E238F.jpg">
+<meta property="article:published_time" content="2020-04-30T03:23:00.000Z">
+<meta property="article:modified_time" content="2020-04-30T08:17:04.067Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://smartlink-tech.gitee.cn/Oops/resources/DF0988B96B4034A84ACA3A9393618B7C.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/Oops',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"remove","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://smartlink-tech.gitee.cn/oops/2020/04/30/推荐阅读/聊聊Spring Boot服务监控，健康检查，线程信息，JVM堆信息，指标收集，运行情况监控等！/"/>
+
+
+
+
+
+  <title>聊聊Spring Boot服务监控，健康检查，线程信息，JVM堆信息，指标收集，运行情况监控等！ | Hexo</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/oops/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/oops/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/oops/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/oops/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/oops/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://smartlink-tech.gitee.cn/oops/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E8%81%8A%E8%81%8ASpring%20Boot%E6%9C%8D%E5%8A%A1%E7%9B%91%E6%8E%A7%EF%BC%8C%E5%81%A5%E5%BA%B7%E6%A3%80%E6%9F%A5%EF%BC%8C%E7%BA%BF%E7%A8%8B%E4%BF%A1%E6%81%AF%EF%BC%8CJVM%E5%A0%86%E4%BF%A1%E6%81%AF%EF%BC%8C%E6%8C%87%E6%A0%87%E6%94%B6%E9%9B%86%EF%BC%8C%E8%BF%90%E8%A1%8C%E6%83%85%E5%86%B5%E7%9B%91%E6%8E%A7%E7%AD%89%EF%BC%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="架构组">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/oops/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">聊聊Spring Boot服务监控，健康检查，线程信息，JVM堆信息，指标收集，运行情况监控等！</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-04-30T11:23:00+08:00">
+                2020-04-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/oops/categories/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/" itemprop="url" rel="index">
+                    <span itemprop="name">推荐阅读</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv">本文总阅读量
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a><strong>前言</strong></h2><p>去年我们项目做了微服务1.0的架构转型，但是服务监控这块却没有跟上。这不，最近我就被分配了要将我们核心的微服务应用全部监控起来的任务。我们的微服务应用都是SpringBoot 应用，因此就自然而然的想到了借助Spring Boot 的Actuator 模块。</p>
+<p>本篇是我在完成这个工单之后，对Spring Boot Actuator模块 学习应用的总结。在本篇文章中，你可以学习到：</p>
+<p><strong>1、</strong>Spring Boot Actuator 的快速使用入门<br><strong>2、</strong>Spring Boot Actuator 的一些重要的endpoints的介绍<br><strong>3、</strong>如何通过Actuator 模块实时查看当前应用的线程 dump信息<br><strong>4、</strong>如何通过Actuator 模块实时查看当前应用的堆信息<br><strong>5、</strong>如何通过Actuator 模块实时修改当前应用的日志打印等级<br><strong>6、</strong>…</p>
+<p>之后我还会介绍：</p>
+<p>TODO：SpringBoot 微服务应用集成Prometheus + Grafana实现监控告警</p>
+<h2 id="一、什么是-Spring-Boot-Actuator"><a href="#一、什么是-Spring-Boot-Actuator" class="headerlink" title="一、什么是 Spring Boot Actuator"></a><strong>一、什么是 Spring Boot Actuator</strong></h2><p>Spring Boot Actuator 模块提供了生产级别的功能，比如健康检查，审计，指标收集，HTTP 跟踪等，帮助我们监控和管理Spring Boot 应用、Bean加载情况、环境变量、日志信息、线程信息，JVM 堆信息等 。这个模块是一个采集应用内部信息暴露给外部的模块，上述的功能都可以通过HTTP 和 JMX 访问。</p>
+<p>因为暴露内部信息的特性，Actuator 也可以和一些外部的应用监控系统整合（Prometheus, Graphite, DataDog, Influx, Wavefront, New Relic等）。这些监控系统提供了出色的仪表板，图形，分析和警报，可帮助你通过一个统一友好的界面，监视和管理你的应用程序。</p>
+<p>Actuator使用Micrometer与这些外部应用程序监视系统集成。这样一来，只需很少的配置即可轻松集成外部的监控系统。</p>
+<blockquote>
+<p>Micrometer 为 Java 平台上的性能数据收集提供了一个通用的 API，应用程序只需要使用 Micrometer 的通用 API 来收集性能指标即可。Micrometer 会负责完成与不同监控系统的适配工作。这就使得切换监控系统变得很容易。</p>
+<p>对比 Slf4j 之于 Java Logger 中的定位。</p>
+</blockquote>
+<h2 id="二、快速开始，创建一个Spring-Boot-Actuator-Demo"><a href="#二、快速开始，创建一个Spring-Boot-Actuator-Demo" class="headerlink" title="二、快速开始，创建一个Spring Boot Actuator Demo"></a><strong>二、快速开始，创建一个Spring Boot Actuator Demo</strong></h2><p>我们先创建一个demo应用。</p>
+<p><strong>你可以通过Spring Boot CLI 创建：</strong></p>
+<pre><code>1. `spring init -d=web,actuator -n=actuator-demo actuator-demo`</code></pre><p><strong>或者通过Spring Initializr 创建：</strong></p>
+<p><img src="/Oops/resources/DF0988B96B4034A84ACA3A9393618B7C.jpg" alt></p>
+<p><strong>对应的maven依赖：</strong></p>
+<pre><code>1. `\&lt;dependencies\&gt;`
+2. ` ...`
+3. `\&lt;dependency\&gt;`
+4. `\&lt;groupId\&gt;org.springframework.boot\&lt;/groupId\&gt;`
+5. `\&lt;artifactId\&gt;spring-boot-starter-actuator\&lt;/artifactId\&gt;`
+6. `\&lt;/dependency\&gt;`
+7. ` ...`
+8. `\&lt;/dependencies\&gt;`</code></pre><p><strong>对应的Gradle 依赖：</strong></p>
+<pre><code>1. `dependencies {`
+2. ` compile(&quot;org.springframework.boot:spring-boot-starter-actuator&quot;)`
+3. `}`</code></pre><h2 id="三、Endpoints-介绍"><a href="#三、Endpoints-介绍" class="headerlink" title="三、Endpoints 介绍"></a><strong>三、Endpoints 介绍</strong></h2><p>Spring Boot 提供了所谓的 endpoints （下文翻译为端点）给外部来与应用程序进行访问和交互。</p>
+<p>打比方来说， <code>/health</code> 端点 提供了关于应用健康情况的一些基础信息。<code>metrics</code> 端点提供了一些有用的应用程序指标（JVM 内存使用、系统CPU使用等）。</p>
+<p>这些 Actuator 模块本来就有的端点我们称之为原生端点。根据端点的作用的话，我们大概可以分为三大类：</p>
+<p><strong>应用配置类：</strong>获取应用程序中加载的应用配置、环境变量、自动化配置报告等与Spring Boot应用密切相关的配置类信息。</p>
+<p><strong>度量指标类：</strong>获取应用程序运行过程中用于监控的度量指标，比如：内存信息、线程池信息、HTTP请求统计等。</p>
+<p><strong>操作控制类：</strong>提供了对应用的关闭等操作类功能。</p>
+<blockquote>
+<p>详细的原生端点介绍，请以官网为准，这里就不赘述徒增篇幅。</p>
+</blockquote>
+<p>需要注意的就是：</p>
+<p><strong>1、</strong>每一个端点都可以通过配置来单独禁用或者启动</p>
+<p><strong>2、</strong>不同于Actuator 1.x，<strong>Actuator 2.x 的大多数端点默认被禁掉</strong>。Actuator 2.x 中的默认端点增加了 <code>/actuator</code>前缀。默认暴露的两个端点为 <code>/actuator/health</code>和 <code>/actuator/info</code></p>
+<h2 id="四、端点暴露配置"><a href="#四、端点暴露配置" class="headerlink" title="四、端点暴露配置"></a><strong>四、端点暴露配置</strong></h2><p>我们可以通过以下配置，来配置通过JMX 和 HTTP 暴露的端点。</p>
+<p>PropertyDefault<code>management.endpoints.jmx.exposure.exclude</code><br><code>management.endpoints.jmx.exposure.include``\*``management.endpoints.web.exposure.exclude</code><br><code>management.endpoints.web.exposure.include``info,healt</code></p>
+<p>可以打开所有的监控点</p>
+<pre><code>1. `management.endpoints.web.exposure.include=\*`</code></pre><p>也可以选择打开部分，”*“ 代表暴露所有的端点，如果指定多个端点，用”,”分开</p>
+<pre><code>1. `management.endpoints.web.exposure.exclude=beans,trace`</code></pre><p>Actuator 默认所有的监控点路径都在 <code>/actuator/\*</code>，当然如果有需要这个路径也支持定制。</p>
+<pre><code>1. `management.endpoints.web.base-path=/minitor`</code></pre><p>设置完重启后，再次访问地址就会变成 <code>/minitor/\*</code>。</p>
+<p><strong>现在我们按照如下配置：</strong></p>
+<pre><code>1. `\# &quot;\*&quot; 代表暴露所有的端点 如果指定多个端点，用&quot;,&quot;分开`
+2. `management.endpoints.web.exposure.include=\*`
+3. `\# 赋值规则同上`
+4. `management.endpoints.web.exposure.exclude=`</code></pre><p>启动DEMO程序，访问 <code>http://localhost:8080/actuator</code>，查看暴露出来的端点：</p>
+<p><img src="/Oops/resources/C4ED5B7EBA1973CF807D41B458344C61.jpg" alt></p>
+<hr>
+<blockquote>
+<p>上面这样显示是因为chrome 浏览器安装了 JSON-handle 插件，实际上就是返回一大段json</p>
+</blockquote>
+<p>下面，我会着重介绍几个比较重要的端点。</p>
+<h2 id="五、重要端点解析"><a href="#五、重要端点解析" class="headerlink" title="五、重要端点解析"></a><strong>五、重要端点解析</strong></h2><h3 id="5-1-health端点"><a href="#5-1-health端点" class="headerlink" title="5.1 /health端点"></a>5.1 <code>/health</code>端点</h3><p><code>/health</code>端点会聚合你程序的健康指标，来检查程序的健康情况。端点公开的应用健康信息取决于：</p>
+<pre><code>1. `management.endpoint.health.show-details=always`</code></pre><p>该属性可以使用以下值之一进行配置：</p>
+<p>NameDescription<code>never</code>不展示详细信息，up或者down的状态，默认配置<code>when-authorized</code>详细信息将会展示给通过认证的用户。授权的角色可以通过 <code>management.endpoint.health.roles</code>配置<code>always</code>对所有用户暴露详细信息</p>
+<p>按照上述配置，配置成 <code>always</code>之后，我们启动项目，访问 <code>http://localhost:8080/actuator/health</code>端口，可以看到这样的信息：</p>
+<p><img src="/Oops/resources/B3AA4A776B06371CB7DA21DBFB80254C.jpg" alt></p>
+<p>是不是感觉好像健康信息有点少？先别急，那是因为我们创建的是一个最基础的Demo项目，没有依赖很多的组件。</p>
+<p><code>/health</code>端点有很多自动配置的健康指示器：如redis、rabbitmq、db等组件。当你的项目有依赖对应组件的时候，这些健康指示器就会被自动装配，继而采集对应的信息。如上面的 diskSpace 节点信息就是 <code>DiskSpaceHealthIndicator</code> 在起作用。</p>
+<p><img src="/Oops/resources/E48199A3FB003D5112F7BA3B7FCB08E5.jpg" alt></p>
+<blockquote>
+<p>上述截图取自官方文档</p>
+</blockquote>
+<p>这是我另一个项目的 <code>/health</code>端点信息。</p>
+<p><img src="/Oops/resources/44C3DE496F547DE9826EB15C741BBFEB.jpg" alt></p>
+<p>当如上的组件有一个状态异常，应用服务的整体状态即为down。我们也可以通过配置禁用某个组件的健康监测。</p>
+<pre><code>1. `management.health.mongo.enabled: false`</code></pre><p><strong>或者禁用所有自动配置的健康指示器：</strong></p>
+<pre><code>1. `management.health.defaults.enabled: false`</code></pre><h4 id="⭐自定义-Health-Indicator"><a href="#⭐自定义-Health-Indicator" class="headerlink" title="⭐自定义 Health Indicator"></a>⭐自定义 Health Indicator</h4><p>当然你也可以自定义一个Health Indicator，只需要实现 <code>HealthIndicator</code> 接口或者继承 <code>AbstractHealthIndicator</code>类。</p>
+<pre><code>1. `/\*\*`
+2. ` \* @author Richard\_yyf`
+3. ` \* @version 1.0 2020/1/16`
+4. ` \*/`
+5. `@Component`
+6. `publicclassCustomHealthIndicatorextendsAbstractHealthIndicator{`
+7. 
+8. `@Override`
+9. `protectedvoid doHealthCheck(Health.Builder builder) throwsException{`
+10. `// 使用 builder 来创建健康状态信息`
+11. `// 如果你throw 了一个 exception，那么status 就会被置为DOWN，异常信息会被记录下来`
+12. ` builder.up()`
+13. `.withDetail(&quot;app&quot;, &quot;这个项目很健康&quot;)`
+14. `.withDetail(&quot;error&quot;, &quot;Nothing, I&apos;m very good&quot;);`
+15. `}`
+16. `}`</code></pre><p><strong>最终效果：</strong></p>
+<p><img src="/Oops/resources/F3D7CA788CBF80A98CC05564B2AD853E.jpg" alt></p>
+<h3 id="5-2-metrics端点"><a href="#5-2-metrics端点" class="headerlink" title="5.2 /metrics端点"></a>5.2 <code>/metrics</code>端点</h3><p><code>/metrics</code>端点用来返回当前应用的各类重要度量指标，比如：内存信息、线程信息、垃圾回收信息、tomcat、数据库连接池等。</p>
+<pre><code>1. `{`
+2. `&quot;names&quot;: [`
+3. `&quot;tomcat.threads.busy&quot;,`
+4. `&quot;jvm.threads.states&quot;,`
+5. `&quot;jdbc.connections.active&quot;,`
+6. `&quot;jvm.gc.memory.promoted&quot;,`
+7. `&quot;http.server.requests&quot;,`
+8. `&quot;hikaricp.connections.max&quot;,`
+9. `&quot;hikaricp.connections.min&quot;,`
+10. `&quot;jvm.memory.used&quot;,`
+11. `&quot;jvm.gc.max.data.size&quot;,`
+12. `&quot;jdbc.connections.max&quot;,`
+13. `....`
+14. `]`
+15. `}`</code></pre><p>不同于1.x，Actuator在这个界面看不到具体的指标信息，只是展示了一个指标列表。为了获取到某个指标的详细信息，我们可以请求具体的指标信息，像这样：</p>
+<pre><code>1. `http://localhost:8080/actuator/metrics/{MetricName}`</code></pre><p>比如我访问 <code>/actuator/metrics/jvm.memory.max</code>，返回信息如下：</p>
+<p><img src="/Oops/resources/8CEA56263C6D3C80A1D7E2E1DE1BC359.jpg" alt></p>
+<p>你也可以用query param的方式查看单独的一块区域。比如你可以访问 <code>/actuator/metrics/jvm.memory.max?tag=id:Metaspace</code>。结果就是：</p>
+<p><img src="/Oops/resources/F3D7CA788CBF80A98CC05564B2AD853E.jpg" alt></p>
+<h3 id="5-3-loggers端点"><a href="#5-3-loggers端点" class="headerlink" title="5.3 /loggers端点"></a>5.3 <code>/loggers</code>端点</h3><p><code>/loggers</code> 端点暴露了我们程序内部配置的所有logger的信息。我们访问 <code>/actuator/loggers</code>可以看到，</p>
+<p><img src="/Oops/resources/E9FAAC5FE71C6C049EF92B48162B4E30.jpg" alt></p>
+<p>你也可以通过下述方式访问单独一个logger，</p>
+<pre><code>1. `http://localhost:8080/actuator/loggers/{name}`</code></pre><p>比如我现在访问 <code>root</code> logger， <code>http://localhost:8080/actuator/loggers/root</code></p>
+<pre><code>1. `{`
+2. `&quot;configuredLevel&quot;: &quot;INFO&quot;,`
+3. `&quot;effectiveLevel&quot;: &quot;INFO&quot;`
+4. `}`</code></pre><h4 id="⭐改变运行时的日志等级"><a href="#⭐改变运行时的日志等级" class="headerlink" title="⭐改变运行时的日志等级"></a>⭐改变运行时的日志等级</h4><h4 id="loggers端点我最想提的就是这个功能，能够动态修改你的日志等级。"><a href="#loggers端点我最想提的就是这个功能，能够动态修改你的日志等级。" class="headerlink" title="/loggers端点我最想提的就是这个功能，能够动态修改你的日志等级。"></a><code>/loggers</code>端点我最想提的就是这个功能，能够动态修改你的日志等级。</h4><p>比如，我们可以通过下述方式来修改 <code>root</code> logger的日志等级。我们只需要发起一个URL 为 <code>http://localhost:8080/actuator/loggers/root</code>的 <code>POST</code>请求，POST报文如下：</p>
+<pre><code>1. `{`
+2. `&quot;configuredLevel&quot;: &quot;DEBUG&quot;`
+3. `}`</code></pre><p><img src="/Oops/resources/84E2FDAC5988001144F145DD32E1C131.png" alt></p>
+<p>仔细想想，这个功能是不是非常有用。<strong>如果在生产环境中，你想要你的应用输出一些Debug信息以便于你诊断一些异常情况，你你只需要按照上述方式就可以修改，而不需要重启应用。</strong></p>
+<blockquote>
+<p>如果想重置成默认值，把value 改成 <code>null</code></p>
+</blockquote>
+<h3 id="5-4-info端点"><a href="#5-4-info端点" class="headerlink" title="5.4 /info端点"></a>5.4 <code>/info</code>端点</h3><p><code>/info</code>端点可以用来展示你程序的信息。我理解过来就是一些程序的基础信息。并且你可以按照自己的需求在配置文件 <code>application.properties</code>中个性化配置（默认情况下，该端点只会返回一个空的json内容。）：</p>
+<pre><code>1. `info.app.name=actuator-test-demo`
+2. `info.app.encoding=UTF-8`
+3. `info.app.java.source=1.8`
+4. `info.app.java.target=1.8`
+5. `\# 在 maven 项目中你可以直接用下列方式引用 maven properties的值`
+6. `\# info.app.encoding=@project.build.sourceEncoding@`
+7. `\# info.app.java.source=@java.version@`
+8. `\# info.app.java.target=@java.version@`</code></pre><p>启动项目，访问 <code>http://localhost:8080/actuator/info</code>：</p>
+<pre><code>1. `{`
+2. `&quot;app&quot;: {`
+3. `&quot;encoding&quot;: &quot;UTF-8&quot;,`
+4. `&quot;java&quot;: {`
+5. `&quot;source&quot;: &quot;1.8.0\_131&quot;,`
+6. `&quot;target&quot;: &quot;1.8.0\_131&quot;`
+7. `},`
+8. `&quot;name&quot;: &quot;actuator-test-demo&quot;`
+9. `}`
+10. `}`</code></pre><h3 id="5-5-beans端点"><a href="#5-5-beans端点" class="headerlink" title="5.5 /beans端点"></a>5.5 <code>/beans</code>端点</h3><p><code>/beans</code>端点会返回Spring 容器中所有bean的别名、类型、是否单例、依赖等信息。</p>
+<p>访问 <code>http://localhost:8080/actuator/beans</code>，返回如下：</p>
+<p><img src="/Oops/resources/45A26F70209077D4D9E543AA2802AE1E.jpg" alt></p>
+<h3 id="5-6-heapdump-端点"><a href="#5-6-heapdump-端点" class="headerlink" title="5.6 /heapdump 端点"></a>5.6 <code>/heapdump</code> 端点</h3><p>访问：<code>http://localhost:8080/actuator/heapdump</code>会自动生成一个 Jvm 的堆文件 heapdump。我们可以使用 JDK 自带的 Jvm 监控工具 VisualVM 打开此文件查看内存快照。</p>
+<p><img src="/Oops/resources/D40B4C581B441820DB2F4780C3510CBF.jpg" alt></p>
+<h3 id="5-7-threaddump-端点"><a href="#5-7-threaddump-端点" class="headerlink" title="5.7 /threaddump 端点"></a>5.7 <code>/threaddump</code> 端点</h3><p>这个端点我个人觉得特别有用，方便我们在日常定位问题的时候查看线程的情况。主要展示了线程名、线程ID、线程的状态、是否等待锁资源、线程堆栈等信息。就是可能查看起来不太直观。访问 <code>http://localhost:8080/actuator/threaddump</code>返回如下：</p>
+<p><img src="/Oops/resources/678A6E656EF68221B7EEAF8A937E238F.jpg" alt></p>
+<h3 id="5-8-shutdown端点"><a href="#5-8-shutdown端点" class="headerlink" title="5.8 /shutdown端点"></a>5.8 <code>/shutdown</code>端点</h3><p>这个端点属于操作控制类端点，可以优雅关闭 Spring Boot 应用。要使用这个功能首先需要在配置文件中开启：</p>
+<pre><code>1. `management.endpoint.shutdown.enabled=true`</code></pre><p>由于 <strong>shutdown 接口默认只支持 POST 请求</strong>，我们启动Demo项目，向 <code>http://localhost:8080/actuator/shutdown</code>发起 <code>POST</code>请求。返回信息：</p>
+<pre><code>1. `{`
+2. `&quot;message&quot;: &quot;Shutting down, bye...&quot;`
+3. `}`</code></pre><p>然后应用程序被关闭。</p>
+<p>由于开放关闭应用的操作本身是一件<strong>非常危险</strong>的事，所以真正在线上使用的时候，我们需要对其加入一定的保护机制，比如：<strong>定制Actuator的端点路径、整合Spring Security进行安全校验</strong>等。（不是特别必要的话，这个端点不用开）</p>
+<h2 id="六、整合Spring-Security-对端点进行安全校验"><a href="#六、整合Spring-Security-对端点进行安全校验" class="headerlink" title="六、整合Spring Security 对端点进行安全校验"></a><strong>六、整合Spring Security 对端点进行安全校验</strong></h2><p>由于端点的信息和产生的交互都是非常敏感的，必须防止未经授权的外部访问。如果您的应用程序中存在<strong>Spring Security</strong>的依赖，则默认情况下使用<strong>基于表单的HTTP身份验证</strong>来保护端点。</p>
+<p>如果没有，只需要增加对应的依赖即可：</p>
+<pre><code>1. `\&lt;dependency\&gt;`
+2. `\&lt;groupId\&gt;org.springframework.boot\&lt;/groupId\&gt;`
+3. `\&lt;artifactId\&gt;spring-boot-starter-security\&lt;/artifactId\&gt;`
+4. `\&lt;/dependency\&gt;`</code></pre><p>添加之后，我们需要定义安全校验规则，来覆盖Spring Security 的默认配置。</p>
+<p>这里我给出了两个版本的模板配置：</p>
+<pre><code>1. `import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;`
+2. `import org.springframework.boot.actuate.context.ShutdownEndpoint;`
+3. `import org.springframework.boot.autoconfigure.security.servlet.PathRequest;`
+4. `import org.springframework.context.annotation.Configuration;`
+5. `import org.springframework.security.config.annotation.web.builders.HttpSecurity;`
+6. `import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;`
+7. 
+8. `/\*\*`
+9. ` \* @author Richard\_yyf`
+10. ` \*/`
+11. `@Configuration`
+12. `publicclassActuatorSecurityConfigextendsWebSecurityConfigurerAdapter{`
+13. 
+14. `/\*`
+15. ` \* version1:`
+16. ` \* 1\. 限制 &apos;/shutdown&apos;端点的访问，只允许ACTUATOR\_ADMIN访问`
+17. ` \* 2\. 允许外部访问其他的端点`
+18. ` \* 3\. 允许外部访问静态资源`
+19. ` \* 4\. 允许外部访问 &apos;/&apos;`
+20. ` \* 5\. 其他的访问需要被校验`
+21. ` \* version2:`
+22. ` \* 1\. 限制所有端点的访问，只允许ACTUATOR\_ADMIN访问`
+23. ` \* 2\. 允许外部访问静态资源`
+24. ` \* 3\. 允许外部访问 &apos;/&apos;`
+25. ` \* 4\. 其他的访问需要被校验`
+26. ` \*/`
+27. 
+28. `@Override`
+29. `protectedvoid configure(HttpSecurity http) throwsException{`
+30. `// version1`
+31. `// http`
+32. `// .authorizeRequests()`
+33. `// .requestMatchers(EndpointRequest.to(ShutdownEndpoint.class))`
+34. `// .hasRole(&quot;ACTUATOR\_ADMIN&quot;)`
+35. `// .requestMatchers(EndpointRequest.toAnyEndpoint())`
+36. `// .permitAll()`
+37. `// .requestMatchers(PathRequest.toStaticResources().atCommonLocations())`
+38. `// .permitAll()`
+39. `// .antMatchers(&quot;/&quot;)`
+40. `// .permitAll()`
+41. `// .antMatchers(&quot;/\*\*&quot;)`
+42. `// .authenticated()`
+43. `// .and()`
+44. `// .httpBasic();`
+45. 
+46. `// version2`
+47. ` http`
+48. `.authorizeRequests()`
+49. `.requestMatchers(EndpointRequest.toAnyEndpoint())`
+50. `.hasRole(&quot;ACTUATOR\_ADMIN&quot;)`
+51. `.requestMatchers(PathRequest.toStaticResources().atCommonLocations())`
+52. `.permitAll()`
+53. `.antMatchers(&quot;/&quot;)`
+54. `.permitAll()`
+55. `.antMatchers(&quot;/\*\*&quot;)`
+56. `.authenticated()`
+57. `.and()`
+58. `.httpBasic();`
+59. `}`
+60. `}`</code></pre><p><code>application.properties</code>的相关配置如下：</p>
+<pre><code>1. `\# Spring Security Default user name and password`
+2. `spring.security.user.name=actuator`
+3. `spring.security.user.password=actuator`
+4. `spring.security.user.roles=ACTUATOR\_ADMIN`</code></pre><h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a><strong>结语</strong></h2><p>本篇文章内容就到这里。</p>
+<p>对应的源码可以Github上看到。</p>
+<p><a href="https://github.com/Richard-yyf/springboot-actuator-prometheus-test" target="_blank" rel="noopener">https://github.com/Richard-yyf/springboot-actuator-prometheus-test</a></p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-features.html" target="_blank" rel="noopener">https://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-features.html</a></p>
+<p><a href="http://www.ityouknow.com/springboot/2018/02/06/spring-boot-actuator.html" target="_blank" rel="noopener">http://www.ityouknow.com/springboot/2018/02/06/spring-boot-actuator.html</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/oops/uploads/wechat-qcode.jpg" alt="架构组 wechat" style="width: 200px; max-width: 100%;"/>
+    <div>欢迎您扫一扫上面的微信二维码，订阅我的公众号</div>
+</div>
+
+      </div>
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E8%AF%A6%E8%A7%A3%E8%BE%B9%E7%BC%98%E8%AE%A1%E7%AE%97%E5%92%8C%E8%BE%B9%E4%BA%91%E5%8D%8F%E5%90%8C%E6%8A%80%E6%9C%AF/" rel="next" title="详解边缘计算和边云协同技术">
+                <i class="fa fa-chevron-left"></i> 详解边缘计算和边云协同技术
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E8%AE%BE%E8%AE%A1%E4%B8%80%E4%B8%AA%E7%99%BE%E4%B8%87%E7%BA%A7%E7%9A%84%E6%B6%88%E6%81%AF%E6%8E%A8%E9%80%81%E7%B3%BB%E7%BB%9F%EF%BC%81/" rel="prev" title="设计一个百万级的消息推送系统！">
+                设计一个百万级的消息推送系统！ <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner" style="text-align:center;">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      本站访客数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人次
+    </span>
+  
+
+  
+    <span class="site-pv">
+      本站总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/oops/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/oops/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/oops/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/oops/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/oops/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

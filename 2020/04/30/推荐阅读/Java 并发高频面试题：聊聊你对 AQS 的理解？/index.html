@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/oops/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/oops/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/oops/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/oops/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/oops/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/oops/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/oops/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="一、**写在前面** 这篇文章，我们来聊聊面试时一个比较有杀伤力的问题：聊聊你对AQS的理解？ 之前有同学反馈，去互联网公司面试，面试官聊到并发时就问到了这个问题。当时那位同学内心估计受到了一万点伤害。。。 因为首先，很多人可能连AQS是什么都不知道。或者仅仅是听说过AQS这个名词，但是可能连全称怎么拼写都不知道。 更有甚者，可能会说：AQS？是不是一种思想？我们平时开发怎么来用AQS？ 总结起来">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java 并发高频面试题：聊聊你对 AQS 的理解？">
+<meta property="og:url" content="https://smartlink-tech.gitee.cn/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/Java%20%E5%B9%B6%E5%8F%91%E9%AB%98%E9%A2%91%E9%9D%A2%E8%AF%95%E9%A2%98%EF%BC%9A%E8%81%8A%E8%81%8A%E4%BD%A0%E5%AF%B9%20AQS%20%E7%9A%84%E7%90%86%E8%A7%A3%EF%BC%9F/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="一、**写在前面** 这篇文章，我们来聊聊面试时一个比较有杀伤力的问题：聊聊你对AQS的理解？ 之前有同学反馈，去互联网公司面试，面试官聊到并发时就问到了这个问题。当时那位同学内心估计受到了一万点伤害。。。 因为首先，很多人可能连AQS是什么都不知道。或者仅仅是听说过AQS这个名词，但是可能连全称怎么拼写都不知道。 更有甚者，可能会说：AQS？是不是一种思想？我们平时开发怎么来用AQS？ 总结起来">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/C14516B7475603F102DE2AE7D06F83A6.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/4E8C74CAD08A63D1E81B1457350216E6.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/A97798A9EBCF50C38C2AC8E05AE9E7EB.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/2B0E6E0473551DEA0A19D02A6D123208.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/283A0256B01A74F285E91FE9A3B4B65B.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/DCFCA8F385A15AD3FC4626812A834CF7.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/37D45C5D77671FF4F8EB19F1C832DE1A.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/871BF3813BC4209334BA7ADACA38E6C1.jpg">
+<meta property="article:published_time" content="2020-04-30T03:23:00.000Z">
+<meta property="article:modified_time" content="2020-04-30T08:17:04.061Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://smartlink-tech.gitee.cn/Oops/resources/C14516B7475603F102DE2AE7D06F83A6.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/Oops',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"remove","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://smartlink-tech.gitee.cn/oops/2020/04/30/推荐阅读/Java 并发高频面试题：聊聊你对 AQS 的理解？/"/>
+
+
+
+
+
+  <title>Java 并发高频面试题：聊聊你对 AQS 的理解？ | Hexo</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/oops/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/oops/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/oops/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/oops/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/oops/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://smartlink-tech.gitee.cn/oops/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/Java%20%E5%B9%B6%E5%8F%91%E9%AB%98%E9%A2%91%E9%9D%A2%E8%AF%95%E9%A2%98%EF%BC%9A%E8%81%8A%E8%81%8A%E4%BD%A0%E5%AF%B9%20AQS%20%E7%9A%84%E7%90%86%E8%A7%A3%EF%BC%9F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="架构组">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/oops/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Java 并发高频面试题：聊聊你对 AQS 的理解？</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-04-30T11:23:00+08:00">
+                2020-04-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/oops/categories/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/" itemprop="url" rel="index">
+                    <span itemprop="name">推荐阅读</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv">本文总阅读量
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><strong>一、**</strong>写在前面**</p>
+<p>这篇文章，我们来聊聊面试时一个比较有杀伤力的问题：<strong>聊聊你对AQS的理解？</strong></p>
+<p>之前有同学反馈，去互联网公司面试，面试官聊到并发时就问到了这个问题。当时那位同学内心估计受到了一万点伤害。。。</p>
+<p>因为首先，很多人可能连AQS是什么都不知道。或者仅仅是听说过AQS这个名词，但是可能连全称怎么拼写都不知道。</p>
+<p>更有甚者，可能会说：AQS？是不是一种思想？我们平时开发怎么来用AQS？</p>
+<p>总结起来，很多同学都对AQS有一种云里雾里的感觉，如果用搜索引擎查一下AQS是什么，估计看几篇文章就直接放弃了，因为密密麻麻的文字，实在是看不懂！</p>
+<p>所以基于上述痛点，这篇文章就用最简单的大白话配合N多张手绘图，给大家讲清楚AQS到底是什么？</p>
+<p>让各位同学面试被问到这个问题时，不至于不知所措。</p>
+<p><strong>二、ReentrantLock和AQS的关系</strong></p>
+<p>首先来看看，如果用java并发包下的ReentrantLock来加锁和释放锁，是个什么样的感觉？</p>
+<p>这个学过java的同学应该都会吧，毕竟是java并发基本API的使用，我们直接看一下代码：</p>
+<p><img src="/Oops/resources/C14516B7475603F102DE2AE7D06F83A6.png" alt></p>
+<p>上面那段代码应该不难理解，无非就是搞一个Lock对象，然后加锁和释放锁。</p>
+<p>你这时可能会问，这个跟AQS有啥关系？</p>
+<p>关系大了去了！因为java并发包下很多API都是基于AQS来实现的加锁和释放锁等功能的，AQS是java并发包的基础类。</p>
+<p>举个例子，比如说ReentrantLock、ReentrantReadWriteLock底层都是基于AQS来实现的。</p>
+<p>那么AQS的全称是什么呢？</p>
+<p>**<br>**</p>
+<p><strong>AbstractQueuedSynchronizer，抽象队列同步器</strong></p>
+<p>给大家画一个图，看一下ReentrantLock和AQS之间的关系。</p>
+<p><img src="/Oops/resources/4E8C74CAD08A63D1E81B1457350216E6.png" alt></p>
+<p>我们看上图，说白了，ReentrantLock内部包含了一个AQS对象，也就是AbstractQueuedSynchronizer类型的对象。</p>
+<p>这个AQS对象就是ReentrantLock可以实现加锁和释放锁的关键性的核心组件。</p>
+<p><strong>三、ReentrantLock加锁和释放锁的底层原理<strong><strong>****</strong></strong></strong></p>
+<p>好了，现在如果有一个线程过来尝试用ReentrantLock的lock()方法进行加锁，会发生什么事情？</p>
+<p>很简单，这个AQS对象内部有一个核心的变量叫做<strong>state</strong>，是int类型的，代表了<strong>加锁的状态</strong>。</p>
+<p>初始状态下，这个state的值是0。</p>
+<p>另外，这个AQS内部还有一个<strong>关键变量</strong>，用来记录<strong>当前加锁的是哪个线程</strong>，初始化状态下，这个变量是null。</p>
+<p><img src="/Oops/resources/A97798A9EBCF50C38C2AC8E05AE9E7EB.png" alt></p>
+<p>接着线程1跑过来调用ReentrantLock的lock()方法尝试进行加锁，这个加锁的过程，直接就是用CAS操作将state值从0变为1。</p>
+<p>（关于CAS，之前专门有文章做过详细阐述，大家可以自行阅读了解）</p>
+<p>如果之前没人加过锁，那么state的值肯定是0，此时线程1就可以加锁成功。</p>
+<p>一旦线程1加锁成功了之后，就可以设置当前加锁线程是自己。所以大家看下面的图，就是线程1跑过来加锁的一个过程。</p>
+<p><img src="/Oops/resources/2B0E6E0473551DEA0A19D02A6D123208.png" alt></p>
+<p>其实看到这儿，大家应该对所谓的AQS有感觉了。说白了，就是并发包里的一个核心组件，里面有state变量、加锁线程变量等核心的东西，维护了加锁状态。</p>
+<p>你会发现，ReentrantLock这种东西只是一个外层的API，<strong>内核中的锁机制实现都是依赖AQS组件的</strong>。</p>
+<p>这个ReentrantLock之所以用Reentrant打头，意思就是他是一个可重入锁。</p>
+<p>可重入锁的意思，就是你可以对一个ReentrantLock对象多次执行lock()加锁和unlock()释放锁，也就是可以对一个锁加多次，叫做可重入加锁。</p>
+<p>大家看明白了那个state变量之后，就知道了如何进行可重入加锁！</p>
+<p>其实每次线程1可重入加锁一次，会判断一下当前加锁线程就是自己，那么他自己就可以可重入多次加锁，每次加锁就是把state的值给累加1，别的没啥变化。</p>
+<p>接着，如果线程1加锁了之后，线程2跑过来加锁会怎么样呢？</p>
+<p><strong>我们来看看锁的互斥是如何实现的？</strong></p>
+<p>线程2跑过来一下看到，哎呀！state的值不是0啊？所以CAS操作将state从0变为1的过程会失败，因为state的值当前为1，说明已经有人加锁了！</p>
+<p>接着线程2会看一下，是不是自己之前加的锁啊？当然不是了，<strong>“加锁线程”</strong>这个变量明确记录了是线程1占用了这个锁，所以线程2此时就是加锁失败。</p>
+<p>给大家来一张图，一起来感受一下这个过程：</p>
+<p><img src="/Oops/resources/283A0256B01A74F285E91FE9A3B4B65B.png" alt></p>
+<p>接着，线程2会将自己放入AQS中的一个等待队列，因为自己尝试加锁失败了，此时就要将自己放入队列中来等待，等待线程1释放锁之后，自己就可以重新尝试加锁了</p>
+<p>所以大家可以看到，AQS是如此的核心！AQS内部还有一个等待队列，专门放那些加锁失败的线程！</p>
+<p>同样，给大家来一张图，一起感受一下：</p>
+<p><img src="/Oops/resources/DCFCA8F385A15AD3FC4626812A834CF7.jpg" alt></p>
+<p>接着，线程1在执行完自己的业务逻辑代码之后，就会释放锁！<strong>他释放锁的过程非常的简单</strong>，就是将AQS内的state变量的值递减1，如果state值为0，则彻底释放锁，会将“加锁线程”变量也设置为null！</p>
+<p>整个过程，参见下图：</p>
+<p><img src="/Oops/resources/37D45C5D77671FF4F8EB19F1C832DE1A.jpg" alt></p>
+<p>接下来，会从<strong>等待队列的队头唤醒线程2重新尝试加锁。</strong></p>
+<p>好！线程2现在就重新尝试加锁，这时还是用CAS操作将state从0变为1，此时就会成功，成功之后代表加锁成功，就会将state设置为1。</p>
+<p>此外，还要把<strong>“加锁线程”</strong>设置为线程2自己，同时线程2自己就从等待队列中出队了。</p>
+<p>最后再来一张图，大家来看看这个过程。</p>
+<p><img src="/Oops/resources/871BF3813BC4209334BA7ADACA38E6C1.jpg" alt></p>
+<p><strong>四、总结</strong></p>
+<p>OK，本文到这里为止，基本借着ReentrantLock的加锁和释放锁的过程，给大家讲清楚了其底层依赖的AQS的核心原理。</p>
+<p>基本上大家把这篇文章看懂，以后再也不会担心面试的时候被问到：谈谈你对AQS的理解这种问题了。</p>
+<p>其实一句话总结：<strong>AQS就是一个并发包的基础组件，用来实现各种锁，各种同步组件的。</strong></p>
+<p>**<br>**</p>
+<p><strong>它包含了state变量、加锁线程、等待队列等并发中的核心组件。</strong></p>
+<p>**<br>**</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/oops/uploads/wechat-qcode.jpg" alt="架构组 wechat" style="width: 200px; max-width: 100%;"/>
+    <div>欢迎您扫一扫上面的微信二维码，订阅我的公众号</div>
+</div>
+
+      </div>
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/JVM%20%E5%8F%91%E7%94%9F%E5%86%85%E5%AD%98%E6%BA%A2%E5%87%BA%E7%9A%84%208%20%E7%A7%8D%E5%8E%9F%E5%9B%A0%E3%80%81%E5%8F%8A%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95/" rel="next" title="JVM 发生内存溢出的 8 种原因、及解决办法">
+                <i class="fa fa-chevron-left"></i> JVM 发生内存溢出的 8 种原因、及解决办法
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/18%20%E4%B8%AA%20Java8%20%E6%97%A5%E6%9C%9F%E5%A4%84%E7%90%86%E7%9A%84%E5%AE%9E%E8%B7%B5%EF%BC%8C%E5%A4%AA%E6%9C%89%E7%94%A8%E4%BA%86%EF%BC%81/" rel="prev" title="18 个 Java8 日期处理的实践，太有用了！">
+                18 个 Java8 日期处理的实践，太有用了！ <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner" style="text-align:center;">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      本站访客数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人次
+    </span>
+  
+
+  
+    <span class="site-pv">
+      本站总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/oops/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/oops/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/oops/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/oops/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/oops/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

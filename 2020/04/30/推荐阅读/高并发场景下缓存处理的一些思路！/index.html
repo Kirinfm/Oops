@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/oops/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/oops/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/oops/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/oops/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/oops/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/oops/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/oops/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="在实际的开发当中，我们经常需要进行磁盘数据的读取和搜索，因此经常会有出现从数据库读取数据的场景出现。 但是当数据访问量次数增大的时候，过多的磁盘读取可能会最终成为整个系统的性能瓶颈，甚至是压垮整个数据库，导致系统卡死等严重问题。 常规的应用系统中，我们通常会在需要的时候对数据库进行查找，因此系统的大致结构如下所示：  当数据量较高的时候，需要减少对于数据库里面的磁盘读写操作，因此通常都会选择在业务">
+<meta property="og:type" content="article">
+<meta property="og:title" content="高并发场景下缓存处理的一些思路！">
+<meta property="og:url" content="https://smartlink-tech.gitee.cn/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E9%AB%98%E5%B9%B6%E5%8F%91%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%BC%93%E5%AD%98%E5%A4%84%E7%90%86%E7%9A%84%E4%B8%80%E4%BA%9B%E6%80%9D%E8%B7%AF%EF%BC%81/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="在实际的开发当中，我们经常需要进行磁盘数据的读取和搜索，因此经常会有出现从数据库读取数据的场景出现。 但是当数据访问量次数增大的时候，过多的磁盘读取可能会最终成为整个系统的性能瓶颈，甚至是压垮整个数据库，导致系统卡死等严重问题。 常规的应用系统中，我们通常会在需要的时候对数据库进行查找，因此系统的大致结构如下所示：  当数据量较高的时候，需要减少对于数据库里面的磁盘读写操作，因此通常都会选择在业务">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/C1D9F63D008C59E0AEDAB67441A9F45E.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/0BD29747AF5D2570AB0FDE789BD86922.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/24117C0509153501A21F4EEC01CA588B.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/8C1E8D27BEC6A2F808A4E1B5B53AB186.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/86972676B60535F7991C72302E3EF1C8.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/B39DAF5A1B83E44E2AF73EBC02D6C769.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/93BF1EDE5C1281D3F7755728FAB75856.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/CE6A66FB107BB5EFA8C6AB4BCEDBD62A.png">
+<meta property="article:published_time" content="2020-04-30T03:23:00.000Z">
+<meta property="article:modified_time" content="2020-04-30T08:17:04.068Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://smartlink-tech.gitee.cn/Oops/resources/C1D9F63D008C59E0AEDAB67441A9F45E.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/Oops',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"remove","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://smartlink-tech.gitee.cn/oops/2020/04/30/推荐阅读/高并发场景下缓存处理的一些思路！/"/>
+
+
+
+
+
+  <title>高并发场景下缓存处理的一些思路！ | Hexo</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/oops/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/oops/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/oops/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/oops/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/oops/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://smartlink-tech.gitee.cn/oops/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E9%AB%98%E5%B9%B6%E5%8F%91%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%BC%93%E5%AD%98%E5%A4%84%E7%90%86%E7%9A%84%E4%B8%80%E4%BA%9B%E6%80%9D%E8%B7%AF%EF%BC%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="架构组">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/oops/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">高并发场景下缓存处理的一些思路！</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-04-30T11:23:00+08:00">
+                2020-04-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/oops/categories/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/" itemprop="url" rel="index">
+                    <span itemprop="name">推荐阅读</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv">本文总阅读量
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在实际的开发当中，我们经常需要进行磁盘数据的读取和搜索，因此经常会有出现从数据库读取数据的场景出现。</p>
+<p>但是当数据访问量次数增大的时候，过多的磁盘读取可能会最终成为整个系统的性能瓶颈，甚至是压垮整个数据库，导致系统卡死等严重问题。</p>
+<p>常规的应用系统中，我们通常会在需要的时候对数据库进行查找，因此系统的大致结构如下所示：</p>
+<p><img src="/Oops/resources/C1D9F63D008C59E0AEDAB67441A9F45E.png" alt title="在这里插入图片描述"></p>
+<p>当数据量较高的时候，需要减少对于数据库里面的磁盘读写操作，因此通常都会选择在业务系统和MySQL数据库之间加入一层缓存从而减少对数据库方面的访问压力。</p>
+<p><img src="/Oops/resources/0BD29747AF5D2570AB0FDE789BD86922.png" alt title="在这里插入图片描述"></p>
+<p>但是很多时候，缓存在实际项目中的应用并非这么简单。下边我们来通过几个比较经典的缓存应用场景来列举一些问题：</p>
+<h2 id="1-缓存和数据库之间数据一致性问题"><a href="#1-缓存和数据库之间数据一致性问题" class="headerlink" title="1.缓存和数据库之间数据一致性问题"></a>1.缓存和数据库之间数据一致性问题</h2><p>常用于缓存处理的机制我总结为了以下几种：</p>
+<ul>
+<li>Cache Aside</li>
+<li>Read Through</li>
+<li>Write Through</li>
+<li>Write Behind Caching</li>
+</ul>
+<p>首先来简单说说Cache aside的这种方式：</p>
+<p><strong>Cache Aside模式</strong></p>
+<p>这种模式处理缓存通常都是先从数据库缓存查询，如果缓存没有命中则从数据库中进行查找。</p>
+<p>这里面会发生的三种情况如下：</p>
+<p><strong>缓存命中：</strong></p>
+<p>当查询的时候发现缓存存在，那么直接从缓存中提取。</p>
+<p><strong>缓存失效：</strong></p>
+<p>当缓存没有数据的时候，则从database里面读取源数据，再加入到cache里面去。</p>
+<p><img src="/Oops/resources/24117C0509153501A21F4EEC01CA588B.png" alt title="在这里插入图片描述"></p>
+<p><strong>缓存更新：</strong></p>
+<p>当有新的写操作去修改database里面的数据时，需要在写操作完成之后，让cache里面对应的数据失效。</p>
+<p><img src="/Oops/resources/8C1E8D27BEC6A2F808A4E1B5B53AB186.png" alt title="在这里插入图片描述"></p>
+<p>这种Cache aside模式通常是我们在实际应用开发中最为常用到的模式。但是并非说这种模式的缓存处理就一定能做到完美。</p>
+<p>关于这种模式下依然会存在缺陷。</p>
+<p>比如，一个是读操作，但是没有命中缓存，然后就到数据库中取数据，此时来了一个写操作，写完数据库后，让缓存失效，然后，之前的那个读操作再把老的数据放进去，所以，会造成脏数据。</p>
+<p>Facebook的大牛们也曾经就缓存处理这个问题发表过相关的论文，链接如下:</p>
+<blockquote>
+<p><a href="https://www.usenix.org/system/files/conference/nsdi13/nsdi13-final170\_update.pdf" target="_blank" rel="noopener">https://www.usenix.org/system/files/conference/nsdi13/nsdi13-final170\_update.pdf</a></p>
+</blockquote>
+<p>分布式环境中要想完全的保证数据一致性是一件极为困难的事情，我们只能够尽可能的减低这种数据不一致性问题产生的情况。</p>
+<p><strong>Read Through模式</strong></p>
+<p>Read Through模式是指应用程序始终从缓存中请求数据。如果缓存没有数据，则它负责使用底层提供程序插件从数据库中检索数据。检索数据后，缓存会自行更新并将数据返回给调用应用程序。使用Read Through 有一个好处。</p>
+<p>我们总是使用key从缓存中检索数据, 调用的应用程序不知道数据库， 由存储方来负责自己的缓存处理，这使代码更具可读性， 代码更清晰。</p>
+<p>但是这也有相应的缺陷，开发人员需要给编写相关的程序插件，增加了开发的难度性。</p>
+<p><strong>Write Through模式</strong></p>
+<p>Write Through模式和Read Through模式类似，当数据发生更新的时候，先去Cache里面进行更新，如果命中了，则先更新缓存再由Cache方来更新database。如果没有命中的话，就直接更新Cache里面的数据。</p>
+<p><img src="/Oops/resources/86972676B60535F7991C72302E3EF1C8.jpg" alt title="在这里插入图片描述"></p>
+<p><strong>Write Behind Caching模式</strong></p>
+<p>Write Behind Caching 这种模式通常是先将数据写入到缓存里面，然后再异步的写入到database中进行数据同步</p>
+<p>这样的设计既可以直接的减少我们对于数据的database里面的直接访问，降低压力，同时对于database的多次修改可以进行合并操作，极大的提升了系统的承载能力。</p>
+<p>但是这种模式处理缓存数据具有一定的风险性，例如说当cache机器出现宕机的时候，数据会有丢失的可能。</p>
+<p><img src="/Oops/resources/B39DAF5A1B83E44E2AF73EBC02D6C769.jpg" alt title="在这里插入图片描述"></p>
+<h2 id="2-缓存穿透问题"><a href="#2-缓存穿透问题" class="headerlink" title="2.缓存穿透问题"></a>2.缓存穿透问题</h2><p>在高并发的场景中，缓存穿透是一个经常都会遇到的问题。</p>
+<p><strong>什么是缓存穿透？</strong></p>
+<p>大量的请求在缓存中没有查询到指定的数据，因此需要从数据库中进行查询，造成缓存穿透。</p>
+<p><strong>会造成什么后果？</strong></p>
+<p>大量的请求短时间内涌入到database中进行查询会增加database的压力，最终导致database无法承载客户单请求的压力，出现宕机卡死等现象。</p>
+<p><strong>常用的解决方案通常有以下几类：</strong></p>
+<p><strong>1.空值缓存</strong></p>
+<p>在某些特定的业务场景中，对于数据的查询可能会是空的，没有实际的存在，并且这类数据信息在短时间进行多次的反复查询也不会有变化，那么整个过程中，多次的请求数据库操作会显得有些多余。</p>
+<p>不妨可以将这些空值（没有查询结果的数据）对应的key存储在缓存中，那么第二次查找的时候就不需要再次请求到database那么麻烦，只需要通过内存查询即可。这样的做法能够大大减少对于database的访问压力。</p>
+<p><img src="/Oops/resources/93BF1EDE5C1281D3F7755728FAB75856.png" alt title="在这里插入图片描述"></p>
+<p><strong>2.布隆过滤器</strong></p>
+<p>通常对于database里面的数据的key值可以预先存储在布隆过滤器里面去，然后先在布隆过滤器里面进行过滤</p>
+<p>如果发现布隆过滤器中没有的话，就再去redis里面进行查询，如果redis中也没有数据的话，再去database查询。这样可以避免不存在的数据信息也去往存储库中进行查询情况。</p>
+<p><img src="/Oops/resources/CE6A66FB107BB5EFA8C6AB4BCEDBD62A.png" alt title="在这里插入图片描述"></p>
+<p>关于布隆过滤器的学习可以参考下我的这篇笔记：</p>
+<blockquote>
+<p><a href="https://blog.csdn.net/Danny\_idea/article/details/88946673" target="_blank" rel="noopener">https://blog.csdn.net/Danny\_idea/article/details/88946673</a></p>
+</blockquote>
+<h2 id="3-缓存雪崩场景"><a href="#3-缓存雪崩场景" class="headerlink" title="3.缓存雪崩场景"></a>3.缓存雪崩场景</h2><p><strong>什么是缓存雪崩？</strong></p>
+<p>当缓存服务器重启或者大量缓存集中在某一个时间段失效，这样在失效的时候，也会给后端系统(比如DB)带来很大压力。</p>
+<p><strong>如何避免缓存雪崩问题？</strong></p>
+<p><strong>1.</strong>使用加锁队列来应付这种问题。当有多个请求涌入的时候，当缓存失效的时候加入一把分布式锁，只允许抢锁成功的请求去库里面读取数据然后将其存入缓存中，再释放锁，让后续的读请求从缓存中取数据。</p>
+<p>但是这种做法有一定的弊端，过多的读请求线程堵塞，将机器内存占满，依然没有能够从根本上解决问题。</p>
+<p><strong>2.</strong>在并发场景发生前，先手动触发请求，将缓存都存储起来，以减少后期请求对database的第一次查询的压力。</p>
+<p>数据过期时间设置尽量分散开来，不要让数据出现同一时间段出现缓存过期的情况。</p>
+<p><strong>3.</strong>从缓存可用性的角度来思考，避免缓存出现单点故障的问题，可以结合使用 主从+哨兵的模式来搭建缓存架构</p>
+<p>但是这种模式搭建的缓存架构有个弊端，就是无法进行缓存分片，存储缓存的数据量有限制，因此可以升级为Redis Cluster架构来进行优化处理</p>
+<p>（需要结合企业实际的经济实力，毕竟Redis Cluster的搭建需要更多的机器）</p>
+<p><strong>4.</strong>Ehcache本地缓存 + Hystrix限流&amp;降级,避免MySQL被打死。</p>
+<p>使用 Ehcache本地缓存的目的也是考虑在 Redis Cluster 完全不可用的时候，Ehcache本地缓存还能够支撑一阵。</p>
+<p>使用 Hystrix进行限流 &amp; 降级 ，比如一秒来了5000个请求，我们可以设置假设只能有一秒 2000个请求能通过这个组件，那么其他剩余的 3000 请求就会走限流逻辑。</p>
+<p>然后去调用我们自己开发的降级组件（降级），比如设置的一些默认值呀之类的。以此来保护最后的 MySQL 不会被大量的请求给打死。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/oops/uploads/wechat-qcode.jpg" alt="架构组 wechat" style="width: 200px; max-width: 100%;"/>
+    <div>欢迎您扫一扫上面的微信二维码，订阅我的公众号</div>
+</div>
+
+      </div>
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/oops/2020/03/30/SpringBoot-VUE/" rel="next" title="如何集成SpringBoot项目和VUE项目">
+                <i class="fa fa-chevron-left"></i> 如何集成SpringBoot项目和VUE项目
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E9%9D%A2%E8%AF%95%E8%A2%AB%E9%97%AE%EF%BC%9ARedis%20%E5%86%85%E5%AD%98%E6%BB%A1%E4%BA%86%E6%80%8E%E4%B9%88%E5%8A%9E%EF%BC%9F/" rel="prev" title="面试被问：Redis 内存满了怎么办？">
+                面试被问：Redis 内存满了怎么办？ <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner" style="text-align:center;">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      本站访客数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人次
+    </span>
+  
+
+  
+    <span class="site-pv">
+      本站总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/oops/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/oops/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/oops/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/oops/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/oops/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

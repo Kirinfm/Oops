@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/oops/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/oops/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/oops/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/oops/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/oops/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/oops/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/oops/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Metrics," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Metrics是一个给JAVA服务的各项指标提供度量工具的包，在JAVA代码中嵌入Metrics代码，可以方便的对业务代码的各个指标进行监控，同时，Metrics能够很好的跟Ganlia、Graphite结合，方便的提供图形化接口。基本使用方式直接将core包（目前稳定版本3.0.1）导入pom文件即可，配置如下： 12345&lt;dependency&gt;  &lt;groupId&gt;c">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JAVA Metrics">
+<meta property="og:url" content="https://smartlink-tech.gitee.cn/oops/2020/03/11/Java%20Metrics/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="Metrics是一个给JAVA服务的各项指标提供度量工具的包，在JAVA代码中嵌入Metrics代码，可以方便的对业务代码的各个指标进行监控，同时，Metrics能够很好的跟Ganlia、Graphite结合，方便的提供图形化接口。基本使用方式直接将core包（目前稳定版本3.0.1）导入pom文件即可，配置如下： 12345&lt;dependency&gt;  &lt;groupId&gt;c">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-03-10T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-03-12T09:11:46.415Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="Metrics">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/Oops',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"remove","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://smartlink-tech.gitee.cn/oops/2020/03/11/Java Metrics/"/>
+
+
+
+
+
+  <title>JAVA Metrics | Hexo</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/oops/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/oops/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/oops/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/oops/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/oops/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://smartlink-tech.gitee.cn/oops/oops/2020/03/11/Java%20Metrics/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="架构组">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/oops/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">JAVA Metrics</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-user"></i>
+              </span>
+              <span class="post-meta-item-text">葱</span>
+              <span class="post-meta-divider">|</span>
+            
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-03-11T00:00:00+08:00">
+                2020-03-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/oops/categories/JAVA/" itemprop="url" rel="index">
+                    <span itemprop="name">JAVA</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv">本文总阅读量
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Metrics是一个给JAVA服务的各项指标提供度量工具的包，在JAVA代码中嵌入Metrics代码，可以方便的对业务代码的各个指标进行监控，同时，Metrics能够很好的跟Ganlia、Graphite结合，方便的提供图形化接口。基本使用方式直接将core包（目前稳定版本3.0.1）导入pom文件即可，配置如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">  &lt;groupId&gt;com.codahale.metrics&lt;&#x2F;groupId&gt;</span><br><span class="line">  &lt;artifactId&gt;metrics-core&lt;&#x2F;artifactId&gt;</span><br><span class="line">  &lt;version&gt;3.0.1&lt;&#x2F;version&gt;</span><br><span class="line">&lt;&#x2F;dependency&gt;</span><br></pre></td></tr></table></figure>
+
+<p>core包主要提供如下核心功能：<br>Metrics Registries类似一个metrics容器，维护一个Map，可以是一个服务一个实例。<br>支持五种metric类型：Gauges、Counters、Meters、Histograms和Timers。<br>可以将metrics值通过JMX、Console，CSV文件和SLF4J loggers发布出来。<br>五种Metrics类型：</p>
+<h3 id="1-Gauges"><a href="#1-Gauges" class="headerlink" title="1. Gauges"></a>1. Gauges</h3><p>Gauges是一个最简单的计量，一般用来统计瞬时状态的数据信息，比如系统中处于pending状态的job。测试代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line">package com.netease.test.metrics;</span><br><span class="line"></span><br><span class="line">import com.codahale.metrics.ConsoleReporter;</span><br><span class="line">import com.codahale.metrics.Gauge;</span><br><span class="line">import com.codahale.metrics.JmxReporter;</span><br><span class="line">import com.codahale.metrics.MetricRegistry;</span><br><span class="line"></span><br><span class="line">import java.util.Queue;</span><br><span class="line">import java.util.concurrent.LinkedBlockingDeque;</span><br><span class="line">import java.util.concurrent.TimeUnit;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * User: hzwangxx</span><br><span class="line"> * Date: 14-2-17</span><br><span class="line"> * Time: 14:47</span><br><span class="line"> * 测试Gauges，实时统计pending状态的job个数</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class TestGauges &#123;</span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 实例化一个registry，最核心的一个模块，相当于一个应用程序的metrics系统的容器，维护一个Map</span><br><span class="line">     *&#x2F;</span><br><span class="line">    private static final MetricRegistry metrics &#x3D; new MetricRegistry();</span><br><span class="line"></span><br><span class="line">    private static Queue&lt;String&gt; queue &#x3D; new LinkedBlockingDeque&lt;String&gt;();</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 在控制台上打印输出</span><br><span class="line">     *&#x2F;</span><br><span class="line">    private static ConsoleReporter reporter &#x3D; ConsoleReporter.forRegistry(metrics).build();</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) throws InterruptedException &#123;</span><br><span class="line">        reporter.start(3, TimeUnit.SECONDS);</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;实例化一个Gauge</span><br><span class="line">        Gauge&lt;Integer&gt; gauge &#x3D; new Gauge&lt;Integer&gt;() &#123;</span><br><span class="line">            @Override</span><br><span class="line">            public Integer getValue() &#123;</span><br><span class="line">                return queue.size();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;注册到容器中</span><br><span class="line">        metrics.register(MetricRegistry.name(TestGauges.class, &quot;pending-job&quot;, &quot;size&quot;), gauge);</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;测试JMX</span><br><span class="line">        JmxReporter jmxReporter &#x3D; JmxReporter.forRegistry(metrics).build();</span><br><span class="line">        jmxReporter.start();</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;模拟数据</span><br><span class="line">        for (int i&#x3D;0; i&lt;20; i++)&#123;</span><br><span class="line">            queue.add(&quot;a&quot;);</span><br><span class="line">            Thread.sleep(1000);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">console output:</span><br><span class="line">14-2-17 15:29:35 &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line"></span><br><span class="line">-- Gauges ----------------------------------------------------------------------</span><br><span class="line">com.netease.test.metrics.TestGauges.pending-job.size</span><br><span class="line">             value &#x3D; 4</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">14-2-17 15:29:38 &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line"></span><br><span class="line">-- Gauges ----------------------------------------------------------------------</span><br><span class="line">com.netease.test.metrics.TestGauges.pending-job.size</span><br><span class="line">             value &#x3D; 6</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">14-2-17 15:29:41 &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line"></span><br><span class="line">-- Gauges ----------------------------------------------------------------------</span><br><span class="line">com.netease.test.metrics.TestGauges.pending-job.size</span><br><span class="line">             value &#x3D; 9</span><br></pre></td></tr></table></figure>
+
+
+<p>通过以上步骤将会向MetricsRegistry容器中注册一个名字为com.netease.test.metrics .TestGauges.pending-job.size的metrics，实时获取队列长度的指标。另外，Core包种还扩展了几种特定的Gauge：<br>JMX Gauges—提供给第三方库只通过JMX将指标暴露出来。<br>Ratio Gauges—简单地通过创建一个gauge计算两个数的比值。<br>Cached Gauges—对某些计量指标提供缓存<br>Derivative Gauges—提供Gauge的值是基于其他Gauge值的接口。</p>
+<h4 id="2-Counter"><a href="#2-Counter" class="headerlink" title="2.       Counter"></a>2.       Counter</h4><p>Counter是Gauge的一个特例，维护一个计数器，可以通过inc()和dec()方法对计数器做修改。使用步骤与Gauge基本类似，在MetricRegistry中提供了静态方法可以直接实例化一个Counter。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line">package com.netease.test.metrics;</span><br><span class="line"></span><br><span class="line">import com.codahale.metrics.ConsoleReporter;</span><br><span class="line">import com.codahale.metrics.Counter;</span><br><span class="line">import com.codahale.metrics.MetricRegistry;</span><br><span class="line"></span><br><span class="line">import java.util.LinkedList;</span><br><span class="line">import java.util.Queue;</span><br><span class="line">import java.util.concurrent.TimeUnit;</span><br><span class="line">import static com.codahale.metrics.MetricRegistry.*;</span><br><span class="line">&#x2F;**</span><br><span class="line"> * User: hzwangxx</span><br><span class="line"> * Date: 14-2-14</span><br><span class="line"> * Time: 14:02</span><br><span class="line"> * 测试Counter</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class TestCounter &#123;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 实例化一个registry，最核心的一个模块，相当于一个应用程序的metrics系统的容器，维护一个Map</span><br><span class="line">     *&#x2F;</span><br><span class="line">    private static final MetricRegistry metrics &#x3D; new MetricRegistry();</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 在控制台上打印输出</span><br><span class="line">     *&#x2F;</span><br><span class="line">    private static ConsoleReporter reporter &#x3D; ConsoleReporter.forRegistry(metrics).build();</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 实例化一个counter,同样可以通过如下方式进行实例化再注册进去</span><br><span class="line">     * pendingJobs &#x3D; new Counter();</span><br><span class="line">     * metrics.register(MetricRegistry.name(TestCounter.class, &quot;pending-jobs&quot;), pendingJobs);</span><br><span class="line">     *&#x2F;</span><br><span class="line">    private static Counter pendingJobs &#x3D; metrics.counter(name(TestCounter.class, &quot;pedding-jobs&quot;));</span><br><span class="line">&#x2F;&#x2F;    private static Counter pendingJobs &#x3D; metrics.counter(MetricRegistry.name(TestCounter.class, &quot;pedding-jobs&quot;));</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    private static Queue&lt;String&gt; queue &#x3D; new LinkedList&lt;String&gt;();</span><br><span class="line"></span><br><span class="line">    public static void add(String str) &#123;</span><br><span class="line">        pendingJobs.inc();</span><br><span class="line">        queue.offer(str);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public String take() &#123;</span><br><span class="line">        pendingJobs.dec();</span><br><span class="line">        return queue.poll();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[]args) throws InterruptedException &#123;</span><br><span class="line">        reporter.start(3, TimeUnit.SECONDS);</span><br><span class="line">        while(true)&#123;</span><br><span class="line">            add(&quot;1&quot;);</span><br><span class="line">            Thread.sleep(1000);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">console output：</span><br><span class="line">14-2-17 17:52:34 &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line"></span><br><span class="line">-- Counters --------------------------------------------------------------------</span><br><span class="line">com.netease.test.metrics.TestCounter.pedding-jobs</span><br><span class="line">             count &#x3D; 4</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">14-2-17 17:52:37 &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line"></span><br><span class="line">-- Counters --------------------------------------------------------------------</span><br><span class="line">com.netease.test.metrics.TestCounter.pedding-jobs</span><br><span class="line">             count &#x3D; 6</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">14-2-17 17:52:40 &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line"></span><br><span class="line">-- Counters --------------------------------------------------------------------</span><br><span class="line">com.netease.test.metrics.TestCounter.pedding-jobs</span><br><span class="line">             count &#x3D; 9</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="3-Meters"><a href="#3-Meters" class="headerlink" title="3.       Meters"></a>3.       Meters</h4><p>Meters用来度量某个时间段的平均处理次数（request per second），每1、5、15分钟的TPS。比如一个service的请求数，通过metrics.meter()实例化一个Meter之后，然后通过meter.mark()方法就能将本次请求记录下来。统计结果有总的请求数，平均每秒的请求数，以及最近的1、5、15分钟的平均TPS。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">package com.netease.test.metrics;</span><br><span class="line"></span><br><span class="line">import com.codahale.metrics.ConsoleReporter;</span><br><span class="line">import com.codahale.metrics.Meter;</span><br><span class="line">import com.codahale.metrics.MetricRegistry;</span><br><span class="line"></span><br><span class="line">import java.util.concurrent.TimeUnit;</span><br><span class="line"></span><br><span class="line">import static com.codahale.metrics.MetricRegistry.*;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * User: hzwangxx</span><br><span class="line"> * Date: 14-2-17</span><br><span class="line"> * Time: 18:34</span><br><span class="line"> * 测试Meters</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class TestMeters &#123;</span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 实例化一个registry，最核心的一个模块，相当于一个应用程序的metrics系统的容器，维护一个Map</span><br><span class="line">     *&#x2F;</span><br><span class="line">    private static final MetricRegistry metrics &#x3D; new MetricRegistry();</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 在控制台上打印输出</span><br><span class="line">     *&#x2F;</span><br><span class="line">    private static ConsoleReporter reporter &#x3D; ConsoleReporter.forRegistry(metrics).build();</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 实例化一个Meter</span><br><span class="line">     *&#x2F;</span><br><span class="line">    private static final Meter requests &#x3D; metrics.meter(name(TestMeters.class, &quot;request&quot;));</span><br><span class="line"></span><br><span class="line">    public static void handleRequest() &#123;</span><br><span class="line">        requests.mark();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) throws InterruptedException &#123;</span><br><span class="line">        reporter.start(3, TimeUnit.SECONDS);</span><br><span class="line">        while(true)&#123;</span><br><span class="line">            handleRequest();</span><br><span class="line">            Thread.sleep(100);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">14-2-17 18:43:08 &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line"></span><br><span class="line">-- Meters ----------------------------------------------------------------------</span><br><span class="line">com.netease.test.metrics.TestMeters.request</span><br><span class="line">             count &#x3D; 30</span><br><span class="line">         mean rate &#x3D; 9.95 events&#x2F;second</span><br><span class="line">     1-minute rate &#x3D; 0.00 events&#x2F;second</span><br><span class="line">     5-minute rate &#x3D; 0.00 events&#x2F;second</span><br><span class="line">    15-minute rate &#x3D; 0.00 events&#x2F;second</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">14-2-17 18:43:11 &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line"></span><br><span class="line">-- Meters ----------------------------------------------------------------------</span><br><span class="line">com.netease.test.metrics.TestMeters.request</span><br><span class="line">             count &#x3D; 60</span><br><span class="line">         mean rate &#x3D; 9.99 events&#x2F;second</span><br><span class="line">     1-minute rate &#x3D; 10.00 events&#x2F;second</span><br><span class="line">     5-minute rate &#x3D; 10.00 events&#x2F;second</span><br><span class="line">    15-minute rate &#x3D; 10.00 events&#x2F;second</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">14-2-17 18:43:14 &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line"></span><br><span class="line">-- Meters ----------------------------------------------------------------------</span><br><span class="line">com.netease.test.metrics.TestMeters.request</span><br><span class="line">             count &#x3D; 90</span><br><span class="line">         mean rate &#x3D; 9.99 events&#x2F;second</span><br><span class="line">     1-minute rate &#x3D; 10.00 events&#x2F;second</span><br><span class="line">     5-minute rate &#x3D; 10.00 events&#x2F;second</span><br><span class="line">    15-minute rate &#x3D; 10.00 events&#x2F;second</span><br></pre></td></tr></table></figure>
+
+
+<h4 id="4-Histograms"><a href="#4-Histograms" class="headerlink" title="4.       Histograms"></a>4.       Histograms</h4><p>Histograms主要使用来统计数据的分布情况，最大值、最小值、平均值、中位数，百分比（75%、90%、95%、98%、99%和99.9%）。例如，需要统计某个页面的请求响应时间分布情况，可以使用该种类型的Metrics进行统计。具体的样例代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line">package com.netease.test.metrics;</span><br><span class="line"></span><br><span class="line">import com.codahale.metrics.ConsoleReporter;</span><br><span class="line">import com.codahale.metrics.Histogram;</span><br><span class="line">import com.codahale.metrics.MetricRegistry;</span><br><span class="line"></span><br><span class="line">import java.util.Random;</span><br><span class="line">import java.util.concurrent.TimeUnit;</span><br><span class="line"></span><br><span class="line">import static com.codahale.metrics.MetricRegistry.name;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * User: hzwangxx</span><br><span class="line"> * Date: 14-2-17</span><br><span class="line"> * Time: 18:34</span><br><span class="line"> * 测试Histograms</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class TestHistograms &#123;</span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 实例化一个registry，最核心的一个模块，相当于一个应用程序的metrics系统的容器，维护一个Map</span><br><span class="line">     *&#x2F;</span><br><span class="line">    private static final MetricRegistry metrics &#x3D; new MetricRegistry();</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 在控制台上打印输出</span><br><span class="line">     *&#x2F;</span><br><span class="line">    private static ConsoleReporter reporter &#x3D; ConsoleReporter.forRegistry(metrics).build();</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 实例化一个Histograms</span><br><span class="line">     *&#x2F;</span><br><span class="line">    private static final Histogram randomNums &#x3D; metrics.histogram(name(TestHistograms.class, &quot;random&quot;));</span><br><span class="line"></span><br><span class="line">    public static void handleRequest(double random) &#123;</span><br><span class="line">        randomNums.update((int) (random*100));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) throws InterruptedException &#123;</span><br><span class="line">        reporter.start(3, TimeUnit.SECONDS);</span><br><span class="line">        Random rand &#x3D; new Random();</span><br><span class="line">        while(true)&#123;</span><br><span class="line">            handleRequest(rand.nextDouble());</span><br><span class="line">            Thread.sleep(100);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">14-2-17 19:39:11 &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line"></span><br><span class="line">-- Histograms ------------------------------------------------------------------</span><br><span class="line">com.netease.test.metrics.TestHistograms.random</span><br><span class="line">             count &#x3D; 30</span><br><span class="line">               min &#x3D; 1</span><br><span class="line">               max &#x3D; 97</span><br><span class="line">              mean &#x3D; 45.93</span><br><span class="line">            stddev &#x3D; 29.12</span><br><span class="line">            median &#x3D; 39.50</span><br><span class="line">              75% &lt;&#x3D; 71.00</span><br><span class="line">              95% &lt;&#x3D; 95.90</span><br><span class="line">              98% &lt;&#x3D; 97.00</span><br><span class="line">              99% &lt;&#x3D; 97.00</span><br><span class="line">            99.9% &lt;&#x3D; 97.00</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">14-2-17 19:39:14 &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line"></span><br><span class="line">-- Histograms ------------------------------------------------------------------</span><br><span class="line">com.netease.test.metrics.TestHistograms.random</span><br><span class="line">             count &#x3D; 60</span><br><span class="line">               min &#x3D; 0</span><br><span class="line">               max &#x3D; 97</span><br><span class="line">              mean &#x3D; 41.17</span><br><span class="line">            stddev &#x3D; 28.60</span><br><span class="line">            median &#x3D; 34.50</span><br><span class="line">              75% &lt;&#x3D; 69.75</span><br><span class="line">              95% &lt;&#x3D; 92.90</span><br><span class="line">              98% &lt;&#x3D; 96.56</span><br><span class="line">              99% &lt;&#x3D; 97.00</span><br><span class="line">            99.9% &lt;&#x3D; 97.00</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">14-2-17 19:39:17 &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line"></span><br><span class="line">-- Histograms ------------------------------------------------------------------</span><br><span class="line">com.netease.test.metrics.TestHistograms.random</span><br><span class="line">             count &#x3D; 90</span><br><span class="line">               min &#x3D; 0</span><br><span class="line">               max &#x3D; 97</span><br><span class="line">              mean &#x3D; 44.67</span><br><span class="line">            stddev &#x3D; 28.47</span><br><span class="line">            median &#x3D; 43.00</span><br><span class="line">              75% &lt;&#x3D; 71.00</span><br><span class="line">              95% &lt;&#x3D; 91.90</span><br><span class="line">              98% &lt;&#x3D; 96.18</span><br><span class="line">              99% &lt;&#x3D; 97.00</span><br><span class="line">            99.9% &lt;&#x3D; 97.00</span><br></pre></td></tr></table></figure>
+
+
+<h4 id="5-Timers"><a href="#5-Timers" class="headerlink" title="5.       Timers"></a>5.       Timers</h4><p>Timers主要是用来统计某一块代码段的执行时间以及其分布情况，具体是基于Histograms和Meters来实现的。样例代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line">package com.netease.test.metrics;</span><br><span class="line"></span><br><span class="line">import com.codahale.metrics.ConsoleReporter;</span><br><span class="line">import com.codahale.metrics.MetricRegistry;</span><br><span class="line">import com.codahale.metrics.Timer;</span><br><span class="line"></span><br><span class="line">import java.util.Random;</span><br><span class="line">import java.util.concurrent.TimeUnit;</span><br><span class="line"></span><br><span class="line">import static com.codahale.metrics.MetricRegistry.name;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * User: hzwangxx</span><br><span class="line"> * Date: 14-2-17</span><br><span class="line"> * Time: 18:34</span><br><span class="line"> * 测试Timers</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class TestTimers &#123;</span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 实例化一个registry，最核心的一个模块，相当于一个应用程序的metrics系统的容器，维护一个Map</span><br><span class="line">     *&#x2F;</span><br><span class="line">    private static final MetricRegistry metrics &#x3D; new MetricRegistry();</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 在控制台上打印输出</span><br><span class="line">     *&#x2F;</span><br><span class="line">    private static ConsoleReporter reporter &#x3D; ConsoleReporter.forRegistry(metrics).build();</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 实例化一个Meter</span><br><span class="line">     *&#x2F;</span><br><span class="line">&#x2F;&#x2F;    private static final Timer requests &#x3D; metrics.timer(name(TestTimers.class, &quot;request&quot;));</span><br><span class="line">    private static final Timer requests &#x3D; metrics.timer(name(TestTimers.class, &quot;request&quot;));</span><br><span class="line"></span><br><span class="line">    public static void handleRequest(int sleep) &#123;</span><br><span class="line">        Timer.Context context &#x3D; requests.time();</span><br><span class="line">        try &#123;</span><br><span class="line">            &#x2F;&#x2F;some operator</span><br><span class="line">            Thread.sleep(sleep);</span><br><span class="line">        &#125; catch (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; finally &#123;</span><br><span class="line">            context.stop();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) throws InterruptedException &#123;</span><br><span class="line">        reporter.start(3, TimeUnit.SECONDS);</span><br><span class="line">        Random random &#x3D; new Random();</span><br><span class="line">        while(true)&#123;</span><br><span class="line">            handleRequest(random.nextInt(1000));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line">14-2-18 9:31:54 &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line"></span><br><span class="line">-- Timers ----------------------------------------------------------------------</span><br><span class="line">com.netease.test.metrics.TestTimers.request</span><br><span class="line">             count &#x3D; 4</span><br><span class="line">         mean rate &#x3D; 1.33 calls&#x2F;second</span><br><span class="line">     1-minute rate &#x3D; 0.00 calls&#x2F;second</span><br><span class="line">     5-minute rate &#x3D; 0.00 calls&#x2F;second</span><br><span class="line">    15-minute rate &#x3D; 0.00 calls&#x2F;second</span><br><span class="line">               min &#x3D; 483.07 milliseconds</span><br><span class="line">               max &#x3D; 901.92 milliseconds</span><br><span class="line">              mean &#x3D; 612.64 milliseconds</span><br><span class="line">            stddev &#x3D; 196.32 milliseconds</span><br><span class="line">            median &#x3D; 532.79 milliseconds</span><br><span class="line">              75% &lt;&#x3D; 818.31 milliseconds</span><br><span class="line">              95% &lt;&#x3D; 901.92 milliseconds</span><br><span class="line">              98% &lt;&#x3D; 901.92 milliseconds</span><br><span class="line">              99% &lt;&#x3D; 901.92 milliseconds</span><br><span class="line">            99.9% &lt;&#x3D; 901.92 milliseconds</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">14-2-18 9:31:57 &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line"></span><br><span class="line">-- Timers ----------------------------------------------------------------------</span><br><span class="line">com.netease.test.metrics.TestTimers.request</span><br><span class="line">             count &#x3D; 8</span><br><span class="line">         mean rate &#x3D; 1.33 calls&#x2F;second</span><br><span class="line">     1-minute rate &#x3D; 1.40 calls&#x2F;second</span><br><span class="line">     5-minute rate &#x3D; 1.40 calls&#x2F;second</span><br><span class="line">    15-minute rate &#x3D; 1.40 calls&#x2F;second</span><br><span class="line">               min &#x3D; 41.07 milliseconds</span><br><span class="line">               max &#x3D; 968.19 milliseconds</span><br><span class="line">              mean &#x3D; 639.50 milliseconds</span><br><span class="line">            stddev &#x3D; 306.12 milliseconds</span><br><span class="line">            median &#x3D; 692.77 milliseconds</span><br><span class="line">              75% &lt;&#x3D; 885.96 milliseconds</span><br><span class="line">              95% &lt;&#x3D; 968.19 milliseconds</span><br><span class="line">              98% &lt;&#x3D; 968.19 milliseconds</span><br><span class="line">              99% &lt;&#x3D; 968.19 milliseconds</span><br><span class="line">            99.9% &lt;&#x3D; 968.19 milliseconds</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">14-2-18 9:32:00 &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line"></span><br><span class="line">-- Timers ----------------------------------------------------------------------</span><br><span class="line">com.netease.test.metrics.TestTimers.request</span><br><span class="line">             count &#x3D; 15</span><br><span class="line">         mean rate &#x3D; 1.67 calls&#x2F;second</span><br><span class="line">     1-minute rate &#x3D; 1.40 calls&#x2F;second</span><br><span class="line">     5-minute rate &#x3D; 1.40 calls&#x2F;second</span><br><span class="line">    15-minute rate &#x3D; 1.40 calls&#x2F;second</span><br><span class="line">               min &#x3D; 41.07 milliseconds</span><br><span class="line">               max &#x3D; 968.19 milliseconds</span><br><span class="line">              mean &#x3D; 591.35 milliseconds</span><br><span class="line">            stddev &#x3D; 302.96 milliseconds</span><br><span class="line">            median &#x3D; 650.56 milliseconds</span><br><span class="line">              75% &lt;&#x3D; 838.07 milliseconds</span><br><span class="line">              95% &lt;&#x3D; 968.19 milliseconds</span><br><span class="line">              98% &lt;&#x3D; 968.19 milliseconds</span><br><span class="line">              99% &lt;&#x3D; 968.19 milliseconds</span><br><span class="line">            99.9% &lt;&#x3D; 968.19 milliseconds</span><br></pre></td></tr></table></figure>
+
+
+<p>Health Checks<br>Metrics提供了一个独立的模块：Health Checks，用于对Application、其子模块或者关联模块的运行是否正常做检测。该模块是独立metrics-core模块的，使用时则导入metrics-healthchecks包。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;                                    </span><br><span class="line">  &lt;groupId&gt;com.codahale.metrics&lt;&#x2F;groupId&gt;       </span><br><span class="line">  &lt;artifactId&gt;metrics-healthchecks&lt;&#x2F;artifactId&gt; </span><br><span class="line">  &lt;version&gt;3.0.1&lt;&#x2F;version&gt;         </span><br><span class="line">&lt;&#x2F;dependency&gt;</span><br></pre></td></tr></table></figure>
+
+<p>使用起来和与上述几种类型的Metrics有点类似，但是需要重新实例化一个Metrics容器HealthCheckRegistry，待检测模块继承抽象类HealthCheck并实现check()方法即可，然后将该模块注册到HealthCheckRegistry中，判断的时候通过isHealthy()接口即可。如下示例代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line">package com.netease.test.metrics;</span><br><span class="line"></span><br><span class="line">import com.codahale.metrics.health.HealthCheck;</span><br><span class="line">import com.codahale.metrics.health.HealthCheckRegistry;</span><br><span class="line"></span><br><span class="line">import java.util.Map;</span><br><span class="line">import java.util.Random;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * User: hzwangxx</span><br><span class="line"> * Date: 14-2-18</span><br><span class="line"> * Time: 9:57</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class DatabaseHealthCheck extends HealthCheck&#123;</span><br><span class="line">    private final Database database;</span><br><span class="line"></span><br><span class="line">    public DatabaseHealthCheck(Database database) &#123;</span><br><span class="line">        this.database &#x3D; database;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected Result check() throws Exception &#123;</span><br><span class="line">        if (database.ping()) &#123;</span><br><span class="line">            return Result.healthy();</span><br><span class="line">        &#125;</span><br><span class="line">        return Result.unhealthy(&quot;Can&#39;t ping database.&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 模拟Database对象</span><br><span class="line">     *&#x2F;</span><br><span class="line">    static class Database &#123;</span><br><span class="line">        &#x2F;**</span><br><span class="line">         * 模拟database的ping方法</span><br><span class="line">         * @return 随机返回boolean值</span><br><span class="line">         *&#x2F;</span><br><span class="line">        public boolean ping() &#123;</span><br><span class="line">            Random random &#x3D; new Random();</span><br><span class="line">            return random.nextBoolean();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">&#x2F;&#x2F;        MetricRegistry metrics &#x3D; new MetricRegistry();</span><br><span class="line">&#x2F;&#x2F;        ConsoleReporter reporter &#x3D; ConsoleReporter.forRegistry(metrics).build();</span><br><span class="line">        HealthCheckRegistry registry &#x3D; new HealthCheckRegistry();</span><br><span class="line">        registry.register(&quot;database1&quot;, new DatabaseHealthCheck(new Database()));</span><br><span class="line">        registry.register(&quot;database2&quot;, new DatabaseHealthCheck(new Database()));</span><br><span class="line">        while (true) &#123;</span><br><span class="line">            for (Map.Entry&lt;String, Result&gt; entry : registry.runHealthChecks().entrySet()) &#123;</span><br><span class="line">                if (entry.getValue().isHealthy()) &#123;</span><br><span class="line">                    System.out.println(entry.getKey() + &quot;: OK&quot;);</span><br><span class="line">                &#125; else &#123;</span><br><span class="line">                    System.err.println(entry.getKey() + &quot;: FAIL, error message: &quot; + entry.getValue().getMessage());</span><br><span class="line">                    final Throwable e &#x3D; entry.getValue().getError();</span><br><span class="line">                    if (e !&#x3D; null) &#123;</span><br><span class="line">                        e.printStackTrace();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            try &#123;</span><br><span class="line">                Thread.sleep(1000);</span><br><span class="line">            &#125; catch (InterruptedException e) &#123;</span><br><span class="line"></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">console output:</span><br><span class="line">database1: OK</span><br><span class="line">database2: FAIL, error message: Can&#39;t ping database.</span><br><span class="line">database1: FAIL, error message: Can&#39;t ping database.</span><br><span class="line">database2: OK</span><br><span class="line">database1: OK</span><br><span class="line">database2: FAIL, error message: Can&#39;t ping database.</span><br><span class="line">database1: FAIL, error message: Can&#39;t ping database.</span><br><span class="line">database2: OK</span><br><span class="line">database1: FAIL, error message: Can&#39;t ping database.</span><br><span class="line">database2: FAIL, error message: Can&#39;t ping database.</span><br><span class="line">database1: FAIL, error message: Can&#39;t ping database.</span><br><span class="line">database2: FAIL, error message: Can&#39;t ping database.</span><br><span class="line">database1: OK</span><br><span class="line">database2: OK</span><br><span class="line">database1: OK</span><br><span class="line">database2: FAIL, error message: Can&#39;t ping database.</span><br><span class="line">database1: FAIL, error message: Can&#39;t ping database.</span><br><span class="line">database2: OK</span><br><span class="line">database1: OK</span><br><span class="line">database2: OK</span><br><span class="line">database1: FAIL, error message: Can&#39;t ping database.</span><br><span class="line">database2: OK</span><br><span class="line">database1: OK</span><br><span class="line">database2: OK</span><br><span class="line">database1: OK</span><br><span class="line">database2: OK</span><br><span class="line">database1: OK</span><br><span class="line">database2: FAIL, error message: Can&#39;t ping database.</span><br><span class="line">database1: FAIL, error message: Can&#39;t ping database.</span><br><span class="line">database2: FAIL, error message: Can&#39;t ping database.</span><br></pre></td></tr></table></figure>
+
+
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/oops/uploads/wechat-qcode.jpg" alt="架构组 wechat" style="width: 200px; max-width: 100%;"/>
+    <div>欢迎您扫一扫上面的微信二维码，订阅我的公众号</div>
+</div>
+
+      </div>
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/oops/tags/Metrics/" rel="tag"># Metrics</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/oops/2020/03/11/Spring%20Boot%E4%B9%8BRestTemplate%E5%9C%A8URL%E4%B8%AD%E8%BD%AC%E4%B9%89%E5%AD%97%E7%AC%A6%E8%BD%AC%E4%B9%89%E7%9A%84%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3/" rel="next" title="Spring Boot - RestTemplate在URL中转义字符问题">
+                <i class="fa fa-chevron-left"></i> Spring Boot - RestTemplate在URL中转义字符问题
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/oops/2020/03/11/Hystrix%E9%85%8D%E7%BD%AE%E9%A1%B9/" rel="prev" title="Hystrix配置项">
+                Hystrix配置项 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner" style="text-align:center;">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      本站访客数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人次
+    </span>
+  
+
+  
+    <span class="site-pv">
+      本站总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/oops/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/oops/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/oops/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/oops/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/oops/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

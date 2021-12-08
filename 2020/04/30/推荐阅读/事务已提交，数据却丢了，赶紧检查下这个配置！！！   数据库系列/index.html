@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/oops/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/oops/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/oops/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/oops/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/oops/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/oops/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/oops/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="有个星球水友提问： 沈老师，我们有一次MySQL崩溃，重启后发现有些已经提交的事务对数据的修改丢失了，不是说事务能保证ACID特性么，想问下什么情况下可能导致“事务已经提交，数据却丢失”呢？ 这个问题有点复杂，且容我系统性梳理下思路，先从redo log说起吧。 画外音：水友问的是MySQL，支持事务的是InnoDB，本文以InnoDB为例展开叙述，其他数据库不是很了解，但估计原理是相同的。 为什">
+<meta property="og:type" content="article">
+<meta property="og:title" content="事务已提交，数据却丢了，赶紧检查下这个配置！！！   数据库系列">
+<meta property="og:url" content="https://smartlink-tech.gitee.cn/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E4%BA%8B%E5%8A%A1%E5%B7%B2%E6%8F%90%E4%BA%A4%EF%BC%8C%E6%95%B0%E6%8D%AE%E5%8D%B4%E4%B8%A2%E4%BA%86%EF%BC%8C%E8%B5%B6%E7%B4%A7%E6%A3%80%E6%9F%A5%E4%B8%8B%E8%BF%99%E4%B8%AA%E9%85%8D%E7%BD%AE%EF%BC%81%EF%BC%81%EF%BC%81%20%20%20%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B3%BB%E5%88%97/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="有个星球水友提问： 沈老师，我们有一次MySQL崩溃，重启后发现有些已经提交的事务对数据的修改丢失了，不是说事务能保证ACID特性么，想问下什么情况下可能导致“事务已经提交，数据却丢失”呢？ 这个问题有点复杂，且容我系统性梳理下思路，先从redo log说起吧。 画外音：水友问的是MySQL，支持事务的是InnoDB，本文以InnoDB为例展开叙述，其他数据库不是很了解，但估计原理是相同的。 为什">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/28CB15B42BFA009AFED6BF09077524F9.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/0089A386966C67651709957607FF33BD.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/0089A386966C67651709957607FF33BD.png">
+<meta property="article:published_time" content="2020-04-30T03:23:00.000Z">
+<meta property="article:modified_time" content="2020-04-30T08:17:04.064Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://smartlink-tech.gitee.cn/Oops/resources/28CB15B42BFA009AFED6BF09077524F9.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/Oops',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"remove","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://smartlink-tech.gitee.cn/oops/2020/04/30/推荐阅读/事务已提交，数据却丢了，赶紧检查下这个配置！！！   数据库系列/"/>
+
+
+
+
+
+  <title>事务已提交，数据却丢了，赶紧检查下这个配置！！！   数据库系列 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/oops/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/oops/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/oops/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/oops/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/oops/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://smartlink-tech.gitee.cn/oops/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E4%BA%8B%E5%8A%A1%E5%B7%B2%E6%8F%90%E4%BA%A4%EF%BC%8C%E6%95%B0%E6%8D%AE%E5%8D%B4%E4%B8%A2%E4%BA%86%EF%BC%8C%E8%B5%B6%E7%B4%A7%E6%A3%80%E6%9F%A5%E4%B8%8B%E8%BF%99%E4%B8%AA%E9%85%8D%E7%BD%AE%EF%BC%81%EF%BC%81%EF%BC%81%20%20%20%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B3%BB%E5%88%97/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="架构组">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/oops/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">事务已提交，数据却丢了，赶紧检查下这个配置！！！   数据库系列</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-04-30T11:23:00+08:00">
+                2020-04-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/oops/categories/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/" itemprop="url" rel="index">
+                    <span itemprop="name">推荐阅读</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv">本文总阅读量
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>有个星球水友提问：</p>
+<p>沈老师，我们有一次MySQL崩溃，重启后发现有些已经提交的事务对数据的修改丢失了，不是说事务能保证ACID特性么，想问下什么情况下可能导致“事务已经提交，数据却丢失”呢？</p>
+<p>这个问题有点复杂，且容我系统性梳理下思路，先从<strong>redo log</strong>说起吧。</p>
+<p>画外音：水友问的是MySQL，支持事务的是InnoDB，本文以InnoDB为例展开叙述，其他数据库不是很了解，但估计原理是相同的。</p>
+<p><strong>为什么要有**</strong>redo log<strong>**？</strong></p>
+<p>事务提交后，必须将事务对数据页的修改刷(fsync)到磁盘上，才能保证事务的ACID特性。</p>
+<p>这个刷盘，是一个随机写，随机写性能较低，如果每次事务提交都刷盘，会极大影响数据库的性能。</p>
+<p><strong>随机写性能差，有什么优化方法呢？</strong></p>
+<p>架构设计中有两个常见的优化方法：</p>
+<p>（1）先写日志(write log first)，将随机写<strong>优化为</strong>顺序写；</p>
+<p>（2）将每次写<strong>优化为</strong>批量写；</p>
+<p>这两个优化，数据库都用上了。</p>
+<p>先说第一个优化，将对数据的修改先顺序写到日志里，这个日志就是redo log。</p>
+<p>假如某一时刻，数据库崩溃，还没来得及将数据页刷盘，数据库重启时，会重做redo log里的内容，以保证已提交事务对数据的影响被刷到磁盘上。</p>
+<p>一句话，redo log是为了保证已提交事务的ACID特性，同时能够提高数据库性能的技术。</p>
+<p>既然redo log能保证事务的ACID特性，那为什么还会出现，水友提问中出现的“数据库奔溃，丢数据”的问题呢？一起看下redo log的实现细节。</p>
+<p><strong>redo log**</strong>的三层架构？**</p>
+<p><img src="/Oops/resources/28CB15B42BFA009AFED6BF09077524F9.png" alt></p>
+<p>花了一个丑图，简单说明下redo log的三层架构：</p>
+<ul>
+<li><strong>粉色</strong>，是InnoDB的一项很重要的内存结构(In-Memory Structure)，日志缓冲区(Log Buffer)，这一层，是MySQL应用程序用户态</li>
+<li><strong>屎黄色</strong>，是操作系统的缓冲区(OS cache)，这一层，是OS内核态</li>
+<li><strong>蓝色</strong>，是落盘的日志文件</li>
+</ul>
+<p><strong>redo log**</strong>最终落盘的步骤如何？**</p>
+<p><strong>首先</strong>，事务提交的时候，会写入Log Buffer，这里调用的是MySQL自己的函数WriteRedoLog；</p>
+<p><strong>接着</strong>，只有当MySQL发起系统调用写文件write时，Log Buffer里的数据，才会写到OS cache。注意，MySQL系统调用完write之后，就认为文件已经写完，如果不flush，什么时候落盘，是操作系统决定的；</p>
+<p>画外音：有时候打日志，明明printf了，tail -f却看不到，就是这个原因，这个细节在《<a href="http://mp.weixin.qq.com/s?__biz=MjM5ODYxMDA5OQ==&mid=2651961118&idx=1&sn=86e672b96f24805176b04b29958299a2&chksm=bd2d02c28a5a8bd42ace9628a2359c277d589d34de1d92055b0c5676c9d6f6067c58d095e5e4&scene=21#wechat_redirect" target="_blank" rel="noopener">明明打印到文件了，为啥tail -f看不到</a>》一文里说过，此处不再展开。</p>
+<p><strong>最后</strong>，由操作系统（当然，MySQL也可以主动flush）将OS cache里的数据，最终fsync到磁盘上；</p>
+<p><strong>操作系统为什么要缓冲数据到**</strong>OS cache<strong>**里，而不直接刷盘呢？</strong></p>
+<p>这里就是将“每次写”优化为“批量写”，以提高操作系统性能。</p>
+<p><strong>数据库为什么要缓冲数据到**</strong>Log Buffer<strong><strong>里，而不是直接</strong></strong>write<strong>**呢？</strong></p>
+<p>这也是“每次写”优化为“批量写”思路的体现，以提高数据库性能。</p>
+<p>画外音：这个优化思路，非常常见，高并发的MQ落盘，高并发的业务数据落盘，都可以使用。</p>
+<p>redo log的三层架构，MySQL做了一次批量写优化，OS做了一次批量写优化，确实能极大提升性能，<strong>但有什么副作用吗？</strong></p>
+<p>画外音：有优点，必有缺点。</p>
+<p>这个<strong>副作用</strong>，就是可能丢失数据：</p>
+<p>（1）事务提交时，将redo log写入Log Buffer，就会认为事务提交成功；</p>
+<p>（2）如果写入Log Buffer的数据，write入OS cache之前，数据库崩溃，就会出现数据丢失；</p>
+<p>（3）如果写入OS cache的数据，fsync入磁盘之前，操作系统奔溃，也可能出现数据丢失；</p>
+<p>画外音：如上文所说，应用程序系统调用完write之后（不可能每次write后都立刻flush，这样写日志很蠢），就认为写成功了，操作系统何时fsync，应用程序并不知道，如果操作系统崩溃，数据可能丢失。</p>
+<p>任何脱离业务的技术方案都是耍流氓：</p>
+<p>（1）有些业务允许低效，但不允许一丁点数据丢失；</p>
+<p>（2）有些业务必须高性能高吞吐，能够容忍少量数据丢失；</p>
+<p><strong>MySQL是如何折衷的呢？</strong></p>
+<p>MySQL有一个参数：</p>
+<p>innodb_flush_log_at_trx_commit</p>
+<p>能够控制事务提交时，刷redo log的策略。</p>
+<p>目前有<strong>三种策略</strong>：</p>
+<p><img src="/Oops/resources/0089A386966C67651709957607FF33BD.png" alt></p>
+<p><strong>策略一：最佳性能</strong>(innodb_flush_log_at_trx_commit=0)</p>
+<p>每隔一秒，才将Log Buffer中的数据批量write入OS cache，同时MySQL主动fsync。</p>
+<p>这种策略，如果数据库奔溃，有一秒的数据丢失。</p>
+<p><strong>策略二：强一致</strong>(innodb_flush_log_at_trx_commit=1)</p>
+<p>每次事务提交，都将Log Buffer中的数据write入OS cache，同时MySQL主动fsync。</p>
+<p>这种策略，是InnoDB的默认配置，为的是保证事务ACID特性。</p>
+<p><strong>策略三：折衷</strong>(innodb_flush_log_at_trx_commit=2)</p>
+<p>每次事务提交，都将Log Buffer中的数据write入OS cache；</p>
+<p>每隔一秒，MySQL主动将OS cache中的数据批量fsync。</p>
+<p>画外音：磁盘IO次数不确定，因为操作系统的fsync频率并不是MySQL能控制的。</p>
+<p>这种策略，如果操作系统奔溃，最多有一秒的数据丢失。</p>
+<p>画外音：因为OS也会fsync，MySQL主动fsync的周期是一秒，所以最多丢一秒数据。<br><img src="/Oops/resources/0089A386966C67651709957607FF33BD.png" alt></p>
+<p>讲了这么多，回到水友的提问上来，数据库崩溃，重启后丢失了数据，有很大的可能，是将innodb_flush_log_at_trx_commit参数设置为0了，这位水友最好和DBA一起检查一下InnoDB的配置。</p>
+<p>可能有水友要问，<strong>高并发的业务，InnoDB运用哪种刷盘策略最合适？</strong></p>
+<p>高并发业务，行业最佳实践，是使用<strong>第三种折衷配置</strong>（=2），这是因为：</p>
+<p>（1）配置为2和配置为0，性能差异并不大，因为将数据从Log Buffer拷贝到OS cache，虽然跨越用户态与内核态，但毕竟只是内存的数据拷贝，速度很快；</p>
+<p>（2）配置为2和配置为0，安全性差异巨大，操作系统崩溃的概率相比MySQL应用程序崩溃的概率，小很多，设置为2，只要操作系统不奔溃，也绝对不会丢数据。</p>
+<p><strong>总结</strong><br>一、为了保证事务的ACID特性，理论上每次事务提交都应该刷盘，但此时效率很低，有两种优化方向：<br>（1）随机写优化为顺序写；<br>（2）每次写优化为批量写；</p>
+<p>二、redo log是一种顺序写，它有三层架构：<br>（1）MySQL应用层：Log Buffer<br>（2）OS内核层：OS cache<br>（3）OS文件：log file</p>
+<p>三、为了满足不用业务对于吞吐量与一致性的需求，MySQL事务提交时刷redo log有三种策略：<br>（1）0：每秒write一次OS cache，同时fsync刷磁盘，性能好；<br>（2）1：每次都write入OS cache，同时fsync刷磁盘，一致性好；<br>（3）2：每次都write入OS cache，每秒fsync刷磁盘，折衷；</p>
+<p>四、高并发业务，行业内的最佳实践，是：<br>innodb_flush_log_at_trx_commit=2</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/oops/uploads/wechat-qcode.jpg" alt="架构组 wechat" style="width: 200px; max-width: 100%;"/>
+    <div>欢迎您扫一扫上面的微信二维码，订阅我的公众号</div>
+</div>
+
+      </div>
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E4%BB%8E%E6%95%B0%E4%BB%93%E5%88%B0%E6%95%B0%E6%8D%AE%E4%B8%AD%E5%8F%B0%EF%BC%8C%E8%B0%88%E6%8A%80%E6%9C%AF%E9%80%89%E5%9E%8B%E6%9C%80%E4%BC%98%E8%A7%A3/" rel="next" title="从数仓到数据中台，谈技术选型最优解">
+                <i class="fa fa-chevron-left"></i> 从数仓到数据中台，谈技术选型最优解
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E4%BD%BF%E7%94%A8Redis+AOP%E4%BC%98%E5%8C%96%E6%9D%83%E9%99%90%E7%AE%A1%E7%90%86%E5%8A%9F%E8%83%BD%EF%BC%8C%E8%BF%99%E6%B3%A2%E6%93%8D%E4%BD%9C%E8%B4%BC%E7%88%BD%EF%BC%81/" rel="prev" title="使用Redis+AOP优化权限管理功能，这波操作贼爽！">
+                使用Redis+AOP优化权限管理功能，这波操作贼爽！ <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner" style="text-align:center;">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      本站访客数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人次
+    </span>
+  
+
+  
+    <span class="site-pv">
+      本站总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/oops/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/oops/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/oops/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/oops/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/oops/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

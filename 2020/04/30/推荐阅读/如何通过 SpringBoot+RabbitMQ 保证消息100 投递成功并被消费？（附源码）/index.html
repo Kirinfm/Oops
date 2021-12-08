@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/oops/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/oops/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/oops/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/oops/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/oops/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/oops/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/oops/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="一、先扔一张图 说明: 本文涵盖了关于RabbitMQ很多方面的知识点, 如:  消息发送确认机制 消费确认机制 消息的重新投递 消费幂等性, 等等  这些都是围绕上面那张整体流程图展开的, 所以有必要先贴出来, 见图知意 二、实现思路 简略介绍163邮箱授权码的获取 编写发送邮件工具类 编写RabbitMQ配置文件 生产者发起调用 消费者发送邮件 定时任务定时拉取投递失败的消息, 重新投递 各种">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何通过 SpringBoot+RabbitMQ 保证消息100 投递成功并被消费？（附源码）">
+<meta property="og:url" content="https://smartlink-tech.gitee.cn/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E5%A6%82%E4%BD%95%E9%80%9A%E8%BF%87%20SpringBoot+RabbitMQ%20%E4%BF%9D%E8%AF%81%E6%B6%88%E6%81%AF100%20%E6%8A%95%E9%80%92%E6%88%90%E5%8A%9F%E5%B9%B6%E8%A2%AB%E6%B6%88%E8%B4%B9%EF%BC%9F%EF%BC%88%E9%99%84%E6%BA%90%E7%A0%81%EF%BC%89/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="一、先扔一张图 说明: 本文涵盖了关于RabbitMQ很多方面的知识点, 如:  消息发送确认机制 消费确认机制 消息的重新投递 消费幂等性, 等等  这些都是围绕上面那张整体流程图展开的, 所以有必要先贴出来, 见图知意 二、实现思路 简略介绍163邮箱授权码的获取 编写发送邮件工具类 编写RabbitMQ配置文件 生产者发起调用 消费者发送邮件 定时任务定时拉取投递失败的消息, 重新投递 各种">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/21AA9144C7962BF682DDD8AC31127CF0.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/EC7857DE940FC17AB518BEBC94142768.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/F822CDBEEE48E168ADD434FC5F9A5F2A.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/1603342D840BCC3AAC28C7F3C57F8D0C.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/DD63F77768F32BE12A891A5A27B071CD.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/1842258C27874940F1304DD825483D5B.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/0B71D2E47822C5D35D8E9BA60D023C7B.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/CC6737D2B3018AF00EE9BB4C3A37C76D.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/DEFB294C601AF88B60BA66808A562FAF.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/4024FBB1B6B0FC5853D1313E4318D056.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/AD39AEE0AF484F3D7722B79E3E6EE1B6.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/F0637F9AB373EB90B1AF067636D6F55E.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/FDF032E469F1F935CD0D927FBE3EC5EF.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/12346C67F8AB2188162EB5D95F67ACE6.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/C44D147F1C898B2D4A1A949A83050B79.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/66437C15B2E0A379B17A495D80C2DFEB.jpg">
+<meta property="article:published_time" content="2020-04-30T03:23:00.000Z">
+<meta property="article:modified_time" content="2020-04-30T08:17:04.065Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://smartlink-tech.gitee.cn/Oops/resources/21AA9144C7962BF682DDD8AC31127CF0.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/Oops',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"remove","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://smartlink-tech.gitee.cn/oops/2020/04/30/推荐阅读/如何通过 SpringBoot+RabbitMQ 保证消息100 投递成功并被消费？（附源码）/"/>
+
+
+
+
+
+  <title>如何通过 SpringBoot+RabbitMQ 保证消息100 投递成功并被消费？（附源码） | Hexo</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/oops/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/oops/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/oops/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/oops/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/oops/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://smartlink-tech.gitee.cn/oops/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E5%A6%82%E4%BD%95%E9%80%9A%E8%BF%87%20SpringBoot+RabbitMQ%20%E4%BF%9D%E8%AF%81%E6%B6%88%E6%81%AF100%20%E6%8A%95%E9%80%92%E6%88%90%E5%8A%9F%E5%B9%B6%E8%A2%AB%E6%B6%88%E8%B4%B9%EF%BC%9F%EF%BC%88%E9%99%84%E6%BA%90%E7%A0%81%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="架构组">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/oops/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">如何通过 SpringBoot+RabbitMQ 保证消息100 投递成功并被消费？（附源码）</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-04-30T11:23:00+08:00">
+                2020-04-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/oops/categories/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/" itemprop="url" rel="index">
+                    <span itemprop="name">推荐阅读</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv">本文总阅读量
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="一、先扔一张图"><a href="#一、先扔一张图" class="headerlink" title="一、先扔一张图"></a>一、先扔一张图</h2><p><img src="/Oops/resources/21AA9144C7962BF682DDD8AC31127CF0.jpg" alt></p>
+<p><strong>说明:</strong></p>
+<p>本文涵盖了关于RabbitMQ很多方面的知识点, 如:</p>
+<ul>
+<li>消息发送确认机制</li>
+<li>消费确认机制</li>
+<li>消息的重新投递</li>
+<li>消费幂等性, 等等</li>
+</ul>
+<p>这些都是围绕上面那张整体流程图展开的, 所以有必要先贴出来, 见图知意</p>
+<h2 id="二、实现思路"><a href="#二、实现思路" class="headerlink" title="二、实现思路"></a>二、实现思路</h2><ul>
+<li>简略介绍163邮箱授权码的获取</li>
+<li>编写发送邮件工具类</li>
+<li>编写RabbitMQ配置文件</li>
+<li>生产者发起调用</li>
+<li>消费者发送邮件</li>
+<li>定时任务定时拉取投递失败的消息, 重新投递</li>
+<li>各种异常情况的测试验证</li>
+</ul>
+<p>拓展: 使用动态代理实现消费端幂等性验证和消息确认(ack)</p>
+<h2 id="三、项目介绍"><a href="#三、项目介绍" class="headerlink" title="三、项目介绍"></a>三、项目介绍</h2><ul>
+<li>springboot版本2.1.5.RELEASE, 旧版本可能有些配置属性不能使用, 需要以代码形式进行配置</li>
+<li>RabbitMQ版本3.7.15</li>
+<li>MailUtil: 发送邮件工具类</li>
+<li>RabbitConfig: rabbitmq相关配置</li>
+<li>TestServiceImpl: 生产者, 发送消息</li>
+<li>MailConsumer: 消费者, 消费消息, 发送邮件</li>
+<li>ResendMsg: 定时任务, 重新投递发送失败的消息</li>
+</ul>
+<p>说明: 上面是核心代码, MsgLogService mapper xml等均未贴出, 完整代码可以参考GitHub上的源码，地址在文末。</p>
+<h2 id="四、代码实现"><a href="#四、代码实现" class="headerlink" title="四、代码实现"></a>四、代码实现</h2><p><strong>1.163邮箱授权码的获取, 如图:</strong></p>
+<p><img src="/Oops/resources/EC7857DE940FC17AB518BEBC94142768.jpg" alt></p>
+<p>该授权码就是配置文件spring.mail.password需要的密码</p>
+<p><strong>2.pom</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">        \&lt;dependency\&gt;</span><br><span class="line">            \&lt;groupId\&gt;org.springframework.boot&lt;groupId&gt;</span><br><span class="line">            \&lt;artifactId\&gt;spring-boot-starter-amqp&lt;artifactId&gt;</span><br><span class="line">        &lt;dependency&gt;</span><br><span class="line"></span><br><span class="line">        \&lt;dependency\&gt;</span><br><span class="line">            \&lt;groupId\&gt;org.springframework.boot&lt;groupId&gt;</span><br><span class="line">            \&lt;artifactId\&gt;spring-boot-starter-mail&lt;artifactId&gt;</span><br><span class="line">        &lt;dependency&gt;</span><br></pre></td></tr></table></figure>
+
+<p><strong>3.rabbitmq、邮箱配置</strong></p>
+<pre><code>\# rabbitmq
+spring.rabbitmq.host=localhost
+spring.rabbitmq.port=5672
+spring.rabbitmq.username=guest
+spring.rabbitmq.password=guest
+\# 开启confirms回调 P -\&gt; Exchange
+spring.rabbitmq.publisher-confirms=true
+\# 开启returnedMessage回调 Exchange -\&gt; Queue
+spring.rabbitmq.publisher-returns=true
+\# 设置手动确认(ack) Queue -\&gt; C
+spring.rabbitmq.listener.simple.acknowledge-mode=manual
+spring.rabbitmq.listener.simple.prefetch=100
+
+\# mail
+spring.mail.host=smtp.163.com
+spring.mail.username=18621142249@163.com
+spring.mail.password=123456wangzai
+spring.mail.from=18621142249@163.com
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.starttls.enable=true
+spring.mail.properties.mail.smtp.starttls.required=true</code></pre><p>说明: password即授权码, username和from要一致</p>
+<p><strong>4.表结构</strong></p>
+<pre><code>CREATE TABLE `msg\_log` (
+ `msg\_id` varchar(255) NOT NULL DEFAULT &apos;&apos; COMMENT &apos;消息唯一标识&apos;,
+ `msg` text COMMENT &apos;消息体, json格式化&apos;,
+ `exchange` varchar(255) NOT NULL DEFAULT &apos;&apos; COMMENT &apos;交换机&apos;,
+ `routing\_key` varchar(255) NOT NULL DEFAULT &apos;&apos; COMMENT &apos;路由键&apos;,
+ `status` int(11) NOT NULL DEFAULT &apos;0&apos; COMMENT &apos;状态: 0投递中 1投递成功 2投递失败 3已消费&apos;,
+ `try\_count` int(11) NOT NULL DEFAULT &apos;0&apos; COMMENT &apos;重试次数&apos;,
+ `next\_try\_time` datetime DEFAULT NULL COMMENT &apos;下一次重试时间&apos;,
+ `create\_time` datetime DEFAULT NULL COMMENT &apos;创建时间&apos;,
+ `update\_time` datetime DEFAULT NULL COMMENT &apos;更新时间&apos;,
+ PRIMARY KEY (`msg\_id`),
+ UNIQUE KEY `unq\_msg\_id` (`msg\_id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT=&apos;消息投递日志&apos;;</code></pre><p>说明: exchange routing_key字段是在定时任务重新投递消息时需要用到的</p>
+<p><strong>5.MailUtil</strong></p>
+<pre><code>@Component
+@Slf4j
+public class MailUtil {
+
+ @Value(&quot;${spring.mail.from}&quot;)
+ private String from;
+
+ @Autowired
+ private JavaMailSender mailSender;
+
+ /\*\*
+ \* 发送简单邮件
+ \*
+ \* @param mail
+ \*/
+ public boolean send(Mail mail) {
+ String to = mail.getTo();// 目标邮箱
+ String title = mail.getTitle();// 邮件标题
+ String content = mail.getContent();// 邮件正文
+
+ SimpleMailMessage message = new SimpleMailMessage();
+ message.setFrom(from);
+ message.setTo(to);
+ message.setSubject(title);
+ message.setText(content);
+
+ try {
+ mailSender.send(message);
+ log.info(&quot;邮件发送成功&quot;);
+ return true;
+ } catch (MailException e) {
+ log.error(&quot;邮件发送失败, to: {}, title: {}&quot;, to, title, e);
+ return false;
+ }
+ }
+}</code></pre><p><strong>6.RabbitConfig</strong></p>
+<pre><code>@Configuration
+@Slf4j
+public class RabbitConfig {
+
+ @Autowired
+ private CachingConnectionFactory connectionFactory;
+
+ @Autowired
+ private MsgLogService msgLogService;
+
+ @Bean
+ public RabbitTemplate rabbitTemplate() {
+ RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
+ rabbitTemplate.setMessageConverter(converter());
+
+ // 消息是否成功发送到Exchange
+ rabbitTemplate.setConfirmCallback((correlationData, ack, cause) -\&gt; {
+ if (ack) {
+ log.info(&quot;消息成功发送到Exchange&quot;);
+ String msgId = correlationData.getId();
+ msgLogService.updateStatus(msgId, Constant.MsgLogStatus.DELIVER\_SUCCESS);
+ } else {
+ log.info(&quot;消息发送到Exchange失败, {}, cause: {}&quot;, correlationData, cause);
+ }
+ });
+
+ // 触发setReturnCallback回调必须设置mandatory=true, 否则Exchange没有找到Queue就会丢弃掉消息, 而不会触发回调
+ rabbitTemplate.setMandatory(true);
+ // 消息是否从Exchange路由到Queue, 注意: 这是一个失败回调, 只有消息从Exchange路由到Queue失败才会回调这个方法
+ rabbitTemplate.setReturnCallback((message, replyCode, replyText, exchange, routingKey) -\&gt; {
+ log.info(&quot;消息从Exchange路由到Queue失败: exchange: {}, route: {}, replyCode: {}, replyText: {}, message: {}&quot;, exchange, routingKey, replyCode, replyText, message);
+ });
+
+ return rabbitTemplate;
+ }
+
+ @Bean
+ public Jackson2JsonMessageConverter converter() {
+ return new Jackson2JsonMessageConverter();
+ }
+
+ // 发送邮件
+ public static final String MAIL\_QUEUE\_NAME = &quot;mail.queue&quot;;
+ public static final String MAIL\_EXCHANGE\_NAME = &quot;mail.exchange&quot;;
+ public static final String MAIL\_ROUTING\_KEY\_NAME = &quot;mail.routing.key&quot;;
+
+ @Bean
+ public Queue mailQueue() {
+ return new Queue(MAIL\_QUEUE\_NAME, true);
+ }
+
+ @Bean
+ public DirectExchange mailExchange() {
+ return new DirectExchange(MAIL\_EXCHANGE\_NAME, true, false);
+ }
+
+ @Bean
+ public Binding mailBinding() {
+ return BindingBuilder.bind(mailQueue()).to(mailExchange()).with(MAIL\_ROUTING\_KEY\_NAME);
+ }
+
+}</code></pre><p><strong>7.TestServiceImpl生产消息</strong></p>
+<pre><code>@Service
+public class TestServiceImpl implements TestService {
+
+ @Autowired
+ private MsgLogMapper msgLogMapper;
+
+ @Autowired
+ private RabbitTemplate rabbitTemplate;
+
+ @Override
+ public ServerResponse send(Mail mail) {
+ String msgId = RandomUtil.UUID32();
+ mail.setMsgId(msgId);
+
+ MsgLog msgLog = new MsgLog(msgId, mail, RabbitConfig.MAIL\_EXCHANGE\_NAME, RabbitConfig.MAIL\_ROUTING\_KEY\_NAME);
+ msgLogMapper.insert(msgLog);// 消息入库
+
+ CorrelationData correlationData = new CorrelationData(msgId);
+ rabbitTemplate.convertAndSend(RabbitConfig.MAIL\_EXCHANGE\_NAME, RabbitConfig.MAIL\_ROUTING\_KEY\_NAME, MessageHelper.objToMsg(mail), correlationData);// 发送消息
+
+ return ServerResponse.success(ResponseCode.MAIL\_SEND\_SUCCESS.getMsg());
+ }
+
+}</code></pre><p><strong>8.MailConsumer消费消息, 发送邮件</strong></p>
+<pre><code>@Component
+@Slf4j
+public class MailConsumer {
+
+ @Autowired
+ private MsgLogService msgLogService;
+
+ @Autowired
+ private MailUtil mailUtil;
+
+ @RabbitListener(queues = RabbitConfig.MAIL\_QUEUE\_NAME)
+ public void consume(Message message, Channel channel) throws IOException {
+ Mail mail = MessageHelper.msgToObj(message, Mail.class);
+ log.info(&quot;收到消息: {}&quot;, mail.toString());
+
+ String msgId = mail.getMsgId();
+
+ MsgLog msgLog = msgLogService.selectByMsgId(msgId);
+ if (null == msgLog || msgLog.getStatus().equals(Constant.MsgLogStatus.CONSUMED\_SUCCESS)) {// 消费幂等性
+ log.info(&quot;重复消费, msgId: {}&quot;, msgId);
+ return;
+ }
+
+ MessageProperties properties = message.getMessageProperties();
+ long tag = properties.getDeliveryTag();
+
+ boolean success = mailUtil.send(mail);
+ if (success) {
+ msgLogService.updateStatus(msgId, Constant.MsgLogStatus.CONSUMED\_SUCCESS);
+ channel.basicAck(tag, false);// 消费确认
+ } else {
+ channel.basicNack(tag, false, true);
+ }
+ }
+
+}</code></pre><p>说明: 其实就完成了3件事: 1.保证消费幂等性, 2.发送邮件, 3.更新消息状态, 手动ack</p>
+<p><strong>9.ResendMsg定时任务重新投递发送失败的消息</strong></p>
+<pre><code>@Component
+@Slf4j
+public class ResendMsg {
+
+ @Autowired
+ private MsgLogService msgLogService;
+
+ @Autowired
+ private RabbitTemplate rabbitTemplate;
+
+ // 最大投递次数
+ private static final int MAX\_TRY\_COUNT = 3;
+
+ /\*\*
+ \* 每30s拉取投递失败的消息, 重新投递
+ \*/
+ @Scheduled(cron = &quot;0/30 \* \* \* \* ?&quot;)
+ public void resend() {
+ log.info(&quot;开始执行定时任务(重新投递消息)&quot;);
+
+ List msgLogs = msgLogService.selectTimeoutMsg();
+ msgLogs.forEach(msgLog -\&gt; {
+ String msgId = msgLog.getMsgId();
+ if (msgLog.getTryCount() \&gt;= MAX\_TRY\_COUNT) {
+ msgLogService.updateStatus(msgId, Constant.MsgLogStatus.DELIVER\_FAIL);
+ log.info(&quot;超过最大重试次数, 消息投递失败, msgId: {}&quot;, msgId);
+ } else {
+ msgLogService.updateTryCount(msgId, msgLog.getNextTryTime());// 投递次数+1
+
+ CorrelationData correlationData = new CorrelationData(msgId);
+ rabbitTemplate.convertAndSend(msgLog.getExchange(), msgLog.getRoutingKey(), MessageHelper.objToMsg(msgLog.getMsg()), correlationData);// 重新投递
+
+ log.info(&quot;第 &quot; + (msgLog.getTryCount() + 1) + &quot; 次重新投递消息&quot;);
+ }
+ });
+
+ log.info(&quot;定时任务执行结束(重新投递消息)&quot;);
+ }
+
+}</code></pre><p>说明: 每一条消息都和exchange routingKey绑定, 所有消息重投共用这一个定时任务即可</p>
+<h2 id="五、基本测试"><a href="#五、基本测试" class="headerlink" title="五、基本测试"></a>五、基本测试</h2><p>OK, 目前为止, 代码准备就绪, 现在进行正常流程的测试</p>
+<p><strong>1.发送请求:</strong></p>
+<p><img src="/Oops/resources/F822CDBEEE48E168ADD434FC5F9A5F2A.jpg" alt></p>
+<p><strong>2.后台日志:</strong></p>
+<p><img src="/Oops/resources/1603342D840BCC3AAC28C7F3C57F8D0C.jpg" alt></p>
+<p><strong>3.数据库消息记录:</strong></p>
+<p><img src="/Oops/resources/DD63F77768F32BE12A891A5A27B071CD.jpg" alt></p>
+<p>状态为3, 表明已消费, 消息重试次数为0, 表明一次投递就成功了</p>
+<p><strong>4.查看邮箱</strong></p>
+<p><img src="/Oops/resources/1842258C27874940F1304DD825483D5B.jpg" alt></p>
+<p>发送成功</p>
+<h2 id="六、各种异常情况测试"><a href="#六、各种异常情况测试" class="headerlink" title="六、各种异常情况测试"></a>六、各种异常情况测试</h2><p>步骤一罗列了很多关于RabbitMQ的知识点, 很重要, 很核心, 而本文也涉及到了这些知识点的实现, 接下来就通过异常测试进行验证(这些验证都是围绕本文开头扔的那张流程图展开的, 很重要, 所以, 再贴一遍)</p>
+<p><img src="/Oops/resources/0B71D2E47822C5D35D8E9BA60D023C7B.jpg" alt></p>
+<p><strong>1.验证消息发送到Exchange失败情况下的回调, 对应上图P -&gt; X</strong></p>
+<p>如何验证? 可以随便指定一个不存在的交换机名称, 请求接口, 看是否会触发回调</p>
+<p><img src="/Oops/resources/CC6737D2B3018AF00EE9BB4C3A37C76D.jpg" alt></p>
+<p>发送失败, 原因: reply-code=404, reply-text=NOT_FOUND - no exchange ‘mail.exchangeabcd’ in vhost ‘/‘, 该回调能够保证消息正确发送到Exchange, 测试完成</p>
+<p><strong>2.验证消息从Exchange路由到Queue失败情况下的回调, 对应上图X -&gt; Q</strong></p>
+<p>同理, 修改一下路由键为不存在的即可, 路由失败, 触发回调</p>
+<p><img src="/Oops/resources/DEFB294C601AF88B60BA66808A562FAF.jpg" alt></p>
+<p>发送失败, 原因: route: mail.routing.keyabcd, replyCode: 312, replyText: NO_ROUTE</p>
+<p><strong>3.验证在手动ack模式下, 消费端必须进行手动确认(ack), 否则消息会一直保存在队列中, 直到被消费, 对应上图Q -&gt; C</strong></p>
+<p>将消费端代码channel.basicAck(tag, false);// 消费确认注释掉, 查看控制台和rabbitmq管控台</p>
+<p><img src="/Oops/resources/4024FBB1B6B0FC5853D1313E4318D056.jpg" alt></p>
+<p><img src="/Oops/resources/AD39AEE0AF484F3D7722B79E3E6EE1B6.jpg" alt></p>
+<p>可以看到, 虽然消息确实被消费了, 但是由于是手动确认模式, 而最后又没手动确认, 所以, 消息仍被rabbitmq保存, 所以, 手动ack能够保证消息一定被消费, 但一定要记得basicAck</p>
+<p><strong>4.验证消费端幂等性</strong></p>
+<p>接着上一步, 去掉注释, 重启服务器, 由于有一条未被ack的消息, 所以重启后监听到消息, 进行消费, 但是由于消费前会判断该消息的状态是否未被消费, 发现status=3, 即已消费, 所以, 直接return, 这样就保证了消费端的幂等性, 即使由于网络等原因投递成功而未触发回调, 从而多次投递, 也不会重复消费进而发生业务异常</p>
+<p><img src="/Oops/resources/F0637F9AB373EB90B1AF067636D6F55E.jpg" alt></p>
+<p><strong>5.验证消费端发生异常消息也不会丢失</strong></p>
+<p>很显然, 消费端代码可能发生异常, 如果不做处理, 业务没正确执行, 消息却不见了, 给我们感觉就是消息丢失了, 由于我们消费端代码做了异常捕获, 业务异常时, 会触发: channel.basicNack(tag, false, true); 这样会告诉rabbitmq该消息消费失败, 需要重新入队, 可以重新投递到其他正常的消费端进行消费, 从而保证消息不被丢失</p>
+<p>测试: send方法直接返回false即可(这里跟抛出异常一个意思)</p>
+<p><img src="/Oops/resources/FDF032E469F1F935CD0D927FBE3EC5EF.jpg" alt></p>
+<p>可以看到, 由于channel.basicNack(tag, false, true), 未被ack的消息(unacked)会重新入队并被消费, 这样就保证了消息不会走丢</p>
+<p><strong>6.验证定时任务的消息重投</strong></p>
+<p>实际应用场景中, 可能由于网络原因, 或者消息未被持久化MQ就宕机了, 使得投递确认的回调方法ConfirmCallback没有被执行, 从而导致数据库该消息状态一直是投递中的状态, 此时就需要进行消息重投, 即使也许消息已经被消费了</p>
+<p>定时任务只是保证消息100%投递成功, 而多次投递的消费幂等性需要消费端自己保证</p>
+<p>我们可以将回调和消费成功后更新消息状态的代码注释掉, 开启定时任务, 查看是否重投</p>
+<p><img src="/Oops/resources/12346C67F8AB2188162EB5D95F67ACE6.jpg" alt></p>
+<p><img src="/Oops/resources/C44D147F1C898B2D4A1A949A83050B79.png" alt></p>
+<p>可以看到, 消息会重投3次, 超过3次放弃, 将消息状态置为投递失败状态, 出现这种非正常情况, 就需要人工介入排查原因</p>
+<h2 id="七、拓展-使用动态代理实现消费端幂等性验证和消费确认-ack"><a href="#七、拓展-使用动态代理实现消费端幂等性验证和消费确认-ack" class="headerlink" title="七、拓展: 使用动态代理实现消费端幂等性验证和消费确认(ack)"></a>七、拓展: 使用动态代理实现消费端幂等性验证和消费确认(ack)</h2><p>不知道大家发现没有, 在MailConsumer中, 真正的业务逻辑其实只是发送邮件mailUtil.send(mail)而已, 但我们又不得不在调用send方法之前校验消费幂等性, 发送后, 还要更新消息状态为”已消费”状态, 并手动ack, 实际项目中, 可能还有很多生产者-消费者的应用场景, 如记录日志, 发送短信等等, 都需要rabbitmq, 如果每次都写这些重复的公用代码, 没必要, 也难以维护, 所以, 我们可以将公共代码抽离出来, 让核心业务逻辑只关心自己的实现, 而不用做其他操作, 其实就是AOP</p>
+<p>为达到这个目的, 有很多方法, 可以用spring aop, 可以用拦截器, 可以用静态代理, 也可以用动态代理, 在这里, 我用的是动态代理</p>
+<p>目录结构如下:</p>
+<p><img src="/Oops/resources/66437C15B2E0A379B17A495D80C2DFEB.jpg" alt></p>
+<p>核心代码就是代理的实现, 这里就不把所有代码贴出来了, 只是提供一个思路, 我们要尽可能地把代码写的更简洁更优雅</p>
+<h2 id="八、总结"><a href="#八、总结" class="headerlink" title="八、总结"></a>八、总结</h2><p>发送邮件其实很简单, 但深究起来其实有很多需要注意和完善的点, 一个看似很小的知识点, 也可以引申出很多问题, 甚至涉及到方方面面, 这些都需要自己踩坑, 当然我这代码肯定还有很多不完善和需要优化的点, 希望小伙伴多多提意见和建议</p>
+<p>我的代码都是经过自测验证过的, 图也都是一点一点自己画的或认真截的, 希望小伙伴能学到一点东西, 路过的点个赞或点个关注呗, 谢谢</p>
+<p>RabbitMQ相关知识请参考</p>
+<blockquote>
+<p><a href="https://www.jianshu.com/p/cc3d2017e7b3" target="_blank" rel="noopener">https://www.jianshu.com/p/cc3d2017e7b3</a></p>
+</blockquote>
+<p>Linux安装RabbitMQ请参考</p>
+<blockquote>
+<p><a href="https://www.jianshu.com/p/ee9f7594212b" target="_blank" rel="noopener">https://www.jianshu.com/p/ee9f7594212b</a></p>
+</blockquote>
+<p>Windows安装RabbitMQ请参考</p>
+<blockquote>
+<p><a href="https://www.jianshu.com/p/c7726ba4b046" target="_blank" rel="noopener">https://www.jianshu.com/p/c7726ba4b046</a></p>
+</blockquote>
+<p><strong>项目Github, 欢迎fork</strong></p>
+<blockquote>
+<p><a href="https://github.com/wangzaiplus/springboot/tree/wxw" target="_blank" rel="noopener">https://github.com/wangzaiplus/springboot/tree/wxw</a></p>
+</blockquote>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/oops/uploads/wechat-qcode.jpg" alt="架构组 wechat" style="width: 200px; max-width: 100%;"/>
+    <div>欢迎您扫一扫上面的微信二维码，订阅我的公众号</div>
+</div>
+
+      </div>
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E5%AD%97%E8%8A%82%E8%B7%B3%E5%8A%A8%E9%9D%A2%E8%AF%95%E5%AE%98%EF%BC%9A%E8%AF%B7%E4%BD%A0%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E5%A4%A7%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E5%92%8C%E6%96%AD%E7%82%B9%E7%BB%AD%E4%BC%A0/" rel="next" title="字节跳动面试官：请你实现一个大文件上传和断点续传">
+                <i class="fa fa-chevron-left"></i> 字节跳动面试官：请你实现一个大文件上传和断点续传
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E5%A6%82%E4%BD%95%E5%BF%AB%E9%80%9F%E5%AE%9E%E7%8E%B0%E2%80%9C%E5%BB%B6%E6%97%B6%E6%B6%88%E6%81%AF%E2%80%9D%EF%BC%9F/" rel="prev" title="如何快速实现“延时消息”？">
+                如何快速实现“延时消息”？ <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner" style="text-align:center;">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      本站访客数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人次
+    </span>
+  
+
+  
+    <span class="site-pv">
+      本站总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/oops/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/oops/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/oops/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/oops/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/oops/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,1704 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/oops/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/oops/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/oops/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/oops/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/oops/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/oops/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/oops/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="前言  本文是笔者在学习官方文档、相关博客文章和实践过程中，整理了一些知识概念和自己的思考，主要在探索 lstio 的实际应用场景， Sidecar 原理， Service Mesh 为什么出现、要解决什么问题等，帮助我们思考微服务技术架构的升级和落地的可行性。  本文不是 Istio 的全部，但是希望入门仅此一篇就够。  概念  围绕云原生(CN)的概念，给人一种知识大爆炸的感觉，但假如你深入了">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Service Mesh · Istio · 以实践入门">
+<meta property="og:url" content="https://smartlink-tech.gitee.cn/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/Service%20Mesh%20%C2%B7%20Istio%20%C2%B7%20%E4%BB%A5%E5%AE%9E%E8%B7%B5%E5%85%A5%E9%97%A8/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="前言  本文是笔者在学习官方文档、相关博客文章和实践过程中，整理了一些知识概念和自己的思考，主要在探索 lstio 的实际应用场景， Sidecar 原理， Service Mesh 为什么出现、要解决什么问题等，帮助我们思考微服务技术架构的升级和落地的可行性。  本文不是 Istio 的全部，但是希望入门仅此一篇就够。  概念  围绕云原生(CN)的概念，给人一种知识大爆炸的感觉，但假如你深入了">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/A830DB126F59C944F8DB58775EB7B3E4.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/70EDAE63311124D2F4B27584BC50FBFB.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/D824FBD0C2ADB74DC1CC2094E4A72889.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/F0B056A873DBC3E972213802FB263B9E.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/02308540F382D5E37899CEA5F90AFA9D.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/96717BDED45FA756578D73AEA25F53ED.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/05964E46C939AA3E1E4EBEDD900A0EDA.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/7F4EF001853CC096095C3021639E5949.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/2D02E5342EBF8D45F0766AF8CA24FB9C.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/CAC319D0091E2216D2B8C59E04B6617C.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/2C3BDED2612F72F56820EEED53FB44F2.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/E6DBEBB1012DE2E5C1E85AA503F858B4.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/E88C269A63C24000FC21B81CEE431221.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/F2F6B8F4F4696785106A35C9016353D2.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/ADBC282B29BF27738CF2AA9EC4C4BDBB.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/8D514AA16B49CA291567B7286861C3A3.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/7C7AD90DA8838055DC70CE830020041A.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/18908DCD6EDE985566F90F587783CF22.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/580FB19154A3E7FB58A0C59017C1B14B.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/B638F1EB9DD0FB12C3581EC86378EABE.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/41E9BAA968A55D7946EEC27F959CE63B.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/71C4EB342683B2FD90112FA9D975A3EF.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/61F9F91C434DDE7EF218B7389A08DBF9.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/A48C2CC5A035E276367D4170B4C18159.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/566F1FFE97E99BD43F57341B0100A06C.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/FC9BF685026EED632BBE6321B14B223B.png">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/AEF3EF20186901030AD43E68A44F79A0.jpg">
+<meta property="og:image" content="https://smartlink-tech.gitee.cn/Oops/resources/18D1C120A1B6E62E56374E383EF1BACE.jpg">
+<meta property="article:published_time" content="2020-04-30T03:23:00.000Z">
+<meta property="article:modified_time" content="2020-04-30T08:17:04.063Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://smartlink-tech.gitee.cn/Oops/resources/A830DB126F59C944F8DB58775EB7B3E4.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/Oops',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"remove","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://smartlink-tech.gitee.cn/oops/2020/04/30/推荐阅读/Service Mesh · Istio · 以实践入门/"/>
+
+
+
+
+
+  <title>Service Mesh · Istio · 以实践入门 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/oops/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/oops/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/oops/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/oops/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/oops/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://smartlink-tech.gitee.cn/oops/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/Service%20Mesh%20%C2%B7%20Istio%20%C2%B7%20%E4%BB%A5%E5%AE%9E%E8%B7%B5%E5%85%A5%E9%97%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="架构组">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/oops/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Service Mesh · Istio · 以实践入门</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-04-30T11:23:00+08:00">
+                2020-04-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/oops/categories/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/" itemprop="url" rel="index">
+                    <span itemprop="name">推荐阅读</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv">本文总阅读量
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><strong>前言</strong></p>
+<hr>
+<p>本文是笔者在学习官方文档、相关博客文章和实践过程中，整理了一些知识概念和自己的思考，主要在探索 lstio 的实际应用场景， Sidecar 原理， Service Mesh 为什么出现、要解决什么问题等，帮助我们思考微服务技术架构的升级和落地的可行性。</p>
+<blockquote>
+<p>本文不是 Istio 的全部，但是希望入门仅此一篇就够。</p>
+</blockquote>
+<h1 id="概念"><a href="#概念" class="headerlink" title="概念"></a><strong>概念</strong></h1><hr>
+<blockquote>
+<p>围绕云原生(CN)的概念，给人一种知识大爆炸的感觉，但假如你深入了解每一个概念的细节，你会发现它和你很近，甚至就是你手里每天做的事情。</p>
+</blockquote>
+<p><img src="/Oops/resources/A830DB126F59C944F8DB58775EB7B3E4.jpg" alt></p>
+<p>图片来源：<a href="https://landscape.cncf.io/" target="_blank" rel="noopener">https://landscape.cncf.io/</a></p>
+<p><strong>关键词：Service Mesh、Istio、Sidecar、Envoy 等。</strong></p>
+<h2 id="服务网格"><a href="#服务网格" class="headerlink" title="服务网格"></a><strong>服务网格</strong></h2><p>服务网格( Service Mesh )是一个新瓶装旧酒的概念，它的发展随着微服务兴起，必然是早于 Kubernates 出现了。但 Kubernates 和 Istio 的出现，促使它成为了一种更火更标准化的概念。</p>
+<p>Sidecar 是服务网格技术中常用的(其中)一种设计架构，在 Kubernates 中，不同的容器允许被运行在同一个 Pod 中（即多个进程运行在同一个 cgroup 下），这在很大程度上给 Sidecar 模式提供了良好的土壤。</p>
+<p>首先看看 Sidecar 的设计：</p>
+<p><img src="/Oops/resources/70EDAE63311124D2F4B27584BC50FBFB.png" alt></p>
+<p>图片来源于网络</p>
+<p>为什么是新瓶旧酒？任何技术的发展都不是凭空地跳跃式发展的。</p>
+<h3 id="历史"><a href="#历史" class="headerlink" title="历史"></a><strong>历史</strong></h3><p><img src="/Oops/resources/D824FBD0C2ADB74DC1CC2094E4A72889.png" alt></p>
+<p>原始的应用程序–图片来源于网络</p>
+<p><img src="/Oops/resources/F0B056A873DBC3E972213802FB263B9E.png" alt></p>
+<p>独立的网络层–图片来源于网络</p>
+<p><img src="/Oops/resources/02308540F382D5E37899CEA5F90AFA9D.png" alt></p>
+<p>出现网络层（4层协议）控制的需求–图片来源于网络</p>
+<p><img src="/Oops/resources/96717BDED45FA756578D73AEA25F53ED.png" alt></p>
+<p>控制逻辑下移到网络层–图片来源于网络</p>
+<p>早期，应用程序随着功能迭代发展，尤其是一个大型项目，程序堆积了越来越多的功能，功能之间紧密耦合在一起，变得越来越难以维护（因为模块耦合度较高，没有人敢动古老的模块代码），迭代周期变长（工程复杂度成几何增长）。</p>
+<p>于是，人们提出，将不同的功能分离到不同的程序（进程）中，减低模块的耦合度，敏捷开发迭代，这就是微服务概念的兴起。</p>
+<p><img src="/Oops/resources/05964E46C939AA3E1E4EBEDD900A0EDA.png" alt></p>
+<p>出现新的应用层（7层协议）需求（服务发现、熔断、超时重试等）–图片来源于网络</p>
+<p><img src="/Oops/resources/7F4EF001853CC096095C3021639E5949.png" alt></p>
+<p>封装成三方库（服务发现：Dubbo/HSF）–图片来源于网络</p>
+<p><strong>困难：</strong></p>
+<p>服务被拆分成众多的微服务，最困难的问题就是——调用它自己：</p>
+<p>1、原本在进程中互相调用那么简单的事情，都要变成一次在 7 层网络上的远程调用。</p>
+<p>2、原本公共工具类做的事情，现在需要写成二方库 SDK 等，在每一个进程中使用，版本迭代成为了灾难。</p>
+<p>3、原本是内部透明调用的不需要做任何防护，分离后却要额外增加安全防护和隔离的工作。</p>
+<p>4、不再是代码即文档，需要维护大量的 API 定义和版本管理。</p>
+<p><img src="/Oops/resources/2D02E5342EBF8D45F0766AF8CA24FB9C.png" alt></p>
+<p>封装到隔离的进程中代理–图片来源于网络</p>
+<p>到这里，独立进程的方式基本成型，即为Sidecar模式。</p>
+<p><strong>Sidecar 解决什么问题？</strong></p>
+<p>这里有个服务网格里的概念：微服务之间的调用，一般在架构图中是横向的，被称为东西流量。服务暴露到外部被公网可见的外部调用，被称为南北流量。</p>
+<p>Sidecar 的设计就是为了解决微服务互相调用（东西流量）的问题。</p>
+<p>先来一张我们比较熟悉的图：</p>
+<p><img src="/Oops/resources/CAC319D0091E2216D2B8C59E04B6617C.jpg" alt></p>
+<p>图片来源于网络</p>
+<p>Consumer 与 Provider 就是微服务互相调用的一种解决方案。</p>
+<p>毫无疑问，我们熟知的一整套中间件解决方案，解决的正是东西流量的问题，图为Dubbo 架构。</p>
+<p>只不过， Dubbo 中间件一整套组件是基于 SPI 机制以一种较为隔离的方式侵入到运行时的代码中。并且，这只能限定 Java 这样被官方支持的语言来开发服务应用。</p>
+<p><strong>小结</strong></p>
+<p>**<br>**</p>
+<p>归纳一下与东西流量有关的问题：</p>
+<p>流量管理（服务发现、负载均衡、路由、限流、熔断、容错等）、可观测性（监控、日志聚合、计量、跟踪）、安全（认证、授权），再甚至更高级的动态配置、故障注入、镜像流量等</p>
+<p>相比来说， Sidecar 的模式更为巧妙并更进一步。通过容器机制，在进程上是隔离的，基于 L7 代理进行通讯，允许微服务是由任何语言进行开发的。</p>
+<p><img src="/Oops/resources/2C3BDED2612F72F56820EEED53FB44F2.png" alt></p>
+<p>图片来源于网络</p>
+<p>以下是微服务集群基于Sidecar互相通讯的简化场景：</p>
+<p><img src="/Oops/resources/E6DBEBB1012DE2E5C1E85AA503F858B4.png" alt></p>
+<p>图片来源于网络</p>
+<p>所以说，回到服务网格的概念上来，虽然概念是不同的，但是逻辑上我们可以理解成：所有使用中间件的服务组成了一个大的服务网格，这样可以帮助我们理解。服务网格基于 Kubernates 这样的容器技术，将东西流量的问题解决得更加透明无感。</p>
+<p>一句话总结，服务网格（ Service Mesh ）是解决微服务之间的网络问题和可观测性问题的(事实)标准，并且正在走向标准化。</p>
+<blockquote>
+<p>Service Mesh 是 Kubernetes 支撑微服务能力拼图的最后一块</p>
+</blockquote>
+<h2 id="Istio-和-Envoy"><a href="#Istio-和-Envoy" class="headerlink" title="Istio 和 Envoy"></a><strong>Istio 和 Envoy</strong></h2><blockquote>
+<p>Istio，第一个字母是(ai)。</p>
+</blockquote>
+<p>Istio 实现的服务网格分为数据平面和控制平面。核心能力包括4大块：</p>
+<p>1、流量控制（Traffic Management）。</p>
+<p>2、安全（Security）。</p>
+<p>3、动态规则（Policy）。</p>
+<p>4、可观测能力（Observability）。</p>
+<p>Envoy 面向数据平面，也就是服务之间调用的代理。</p>
+<p>Envoy 是 Istio Service Mesh 中默认的 Sidecar 方案。</p>
+<p>Istio 在 Enovy 的基础上按照 Envoy 的 xDS 协议扩展了其控制平面。</p>
+<p><img src="/Oops/resources/E88C269A63C24000FC21B81CEE431221.jpg" alt></p>
+<p><img src="/Oops/resources/F2F6B8F4F4696785106A35C9016353D2.png" alt></p>
+<p>Istio基于Envoy实现Service Mesh数据平面–图片来源于网络</p>
+<p><img src="/Oops/resources/ADBC282B29BF27738CF2AA9EC4C4BDBB.png" alt></p>
+<p>Envoy角色–图片来源于网络</p>
+<p>Envoy 是一个由 C++ 实现的高性能代理，与其等价的，还有 Nginx、Traefik ，这就不难理解了。</p>
+<p>也就是下图中的 Proxy ：</p>
+<p><img src="/Oops/resources/8D514AA16B49CA291567B7286861C3A3.png" alt></p>
+<p>图片来源于Istio官网</p>
+<p>Istio 在控制平面上主要解决流量管理、安全、可观测性三个方面的问题，也就是前面提到的东西流量相关的问题。类似一个有配置中心的微服务集群架构。具体细节不在这里赘述。</p>
+<h2 id="Sidecar注入"><a href="#Sidecar注入" class="headerlink" title="Sidecar注入"></a><strong>Sidecar注入</strong></h2><p>**<br>**</p>
+<p>前面在介绍服务网格时，只是简单地提到Sidecar设计在其中的作用和特性，这里详细展开介绍其中的原理。</p>
+<p>首先是一些预备概念：</p>
+<p>1、Sidecar 模式：容器应用模式之一，Service Mesh 架构的一种实现方式</p>
+<p>2、Init 容器：Pod 中的一种专用的容器，在应用程序容器启动之前运行，用来包含一些应用镜像中不存在的实用工具或安装脚本。</p>
+<p>3、iptables：流量劫持是通过 iptables 转发实现的。</p>
+<p>Sidecar 模式解决微服务之间的网络通讯（远程调用），通常通讯层的实现方式，有以下选择：</p>
+<p>1、在微服务应用程序中导入 SDK 类库。</p>
+<p>2、节点代理（使用纵向的API网关或者是本地 Agent ），代理接口的调用路由规则，转发到特定的机器。</p>
+<p>3、用 Sidecar 容器的形式运行，和应用容器一同运行，透明地劫持所有应用容器的出入流量。</p>
+<p>SDK 库的方式是很自然的，并且调用方式是进程内的，没有安全隔离的包袱。但是随着编程语言的发展，很多新的语言为特定的场景而生，而SDK库的方式限制了使用方必须用支持列表中的语言。</p>
+<p>节点代理的方式，是使用一个特定的服务专门代理微服务中的请求，是一个中间人的角色。但这个代理人的安全性要求非常高，因为它需要处理来自不同微服务的请求，并鉴别它们各自的身份。</p>
+<p>Sidecar 模型是介于 SDK 库和节点代理中间的一种形式，相当于是给每个微服务都配上一个自己独有的代理。这样，每个微服务自己的 Sidecar 就代表了自己特定的身份，有利于调用的安全审计。因此，从外部看， Sidecar 与其附属的应用程序具有相同的权限。</p>
+<p><img src="/Oops/resources/7C7AD90DA8838055DC70CE830020041A.png" alt></p>
+<p>图片来源：<a href="https://toutiao.io/posts/uva4uy/preview" target="_blank" rel="noopener">https://toutiao.io/posts/uva4uy/preview</a></p>
+<p>以 Istio 为例：</p>
+<p>在 Istio 中， Sidecar 模式启动时会首先执行一个init 容器 istio-init ，容器只做一件事情，通过 iptables 命令配置 Pod 的网络路由规则，让 Envoy 代理可以拦截所有的进出 Pod 的流量。</p>
+<p>之后，微服务应用通过 Pod 中共享的网络命名空间内的 loopback ( localhost )与 Sidecar 通讯。而外部流量也会通过 Sidecar 处理后，传入到微服务。</p>
+<p>因为它们共享一个 Pod ，对其他 Pod 和节点代理都是不可见的，可以理解为两个容器共享存储、网络等资源，可以广义的将这个注入了 Sidecar 容器的 Pod 理解为一台主机，两个容器共享主机资源。</p>
+<p>下图是具体 iptables 与 Sidecar 之间互作用原理，来源：</p>
+<p><a href="https://jimmysong.io/posts/envoy-sidecar-injection-in-istio-service-mesh-deep-dive/" target="_blank" rel="noopener">https://jimmysong.io/posts/envoy-sidecar-injection-in-istio-service-mesh-deep-dive/</a></p>
+<p><img src="/Oops/resources/18908DCD6EDE985566F90F587783CF22.jpg" alt></p>
+<p>具体原理上的细节，我们可以通过实践，慢慢挖掘。</p>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a><strong>小结</strong></h2><p>最后给概念章节有个阶段性的总结：</p>
+<p><img src="/Oops/resources/580FB19154A3E7FB58A0C59017C1B14B.jpg" alt></p>
+<p>图片来源于网络</p>
+<blockquote>
+<p>所以我们打算卖什么？</p>
+</blockquote>
+<h1 id="实践"><a href="#实践" class="headerlink" title="实践"></a><strong>实践</strong></h1><hr>
+<p>铺垫这么多概念，我们可以实操起来了。具体怎么做？从安装 Istio 开始。</p>
+<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a><strong>准备工作</strong></h2><p>首先，预备一个Kubernates集群，这里不赘述。</p>
+<blockquote>
+<p>如果是本地测试，Docker-Desktop也可以启动一个单机的k8s集群</p>
+</blockquote>
+<p>装 Istio 的命令行工具 istioctl ：</p>
+<p>下载 istio-release（包括 istioctl 、示例文件和安装配置）。</p>
+<ul>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -sL &quot;https:&#x2F;&#x2F;github.com&#x2F;istio&#x2F;istio&#x2F;releases&#x2F;download&#x2F;1.4.2&#x2F;istio-1.4.2-osx.tar.gz&quot; | tar xz</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p>安装 helm （可选）：</p>
+<blockquote>
+<p>从 1.4.0 版本开始，不再使用 helm 来安装 Istio</p>
+</blockquote>
+<ul>
+<li></li>
+<li></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\# helm工具$ brew install kubernetes-helm</span><br></pre></td></tr></table></figure>
+
+<p>**<br>**</p>
+<hr>
+<h2 id="安装Istio"><a href="#安装Istio" class="headerlink" title="安装Istio"></a><strong>安装Istio</strong></h2><p>**<br>**</p>
+<p>进入到安装文件的目录，开始将 Istio 安装到 k8s 上。</p>
+<p>首先确认 kubectl 连接的正确的 k8s 集群。</p>
+<p>选择以下其中一种方式：</p>
+<p><strong>方式1</strong>、使用 <code>istioctl</code> 安装</p>
+<ul>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd istio-1.4.2\# 安装istioctlcp bin&#x2F;istioctl &#x2F;usr&#x2F;local&#x2F;bin&#x2F; \# 也可以加一下PATH\# （可选）先查看配置文件istioctl manifest generate --set profile&#x3D;demo \&gt; istio.demo.yaml\# 安装istioistioctl manifest apply --set profile&#x3D;demo\#\# 以下是旧版本istio的helm安装方式 \#\#\# 创建istio专属的namespacekubectl create namespace istio-system\# 通过helm初始化istiohelm template install&#x2F;kubernetes&#x2F;helm&#x2F;istio-init --name istio-init --namespace istio-system | kubectl apply -f -\# 通过helm安装istio的所有组件helm template install&#x2F;kubernetes&#x2F;helm&#x2F;istio --name istio --namespace istio-system | kubectl apply -f -</span><br></pre></td></tr></table></figure>
+
+<p><strong>方式2</strong>、使用 helm 安装</p>
+<ul>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\#\# 以下是旧版本istio的helm安装方式 \#\#\# 创建istio专属的namespacekubectl create namespace istio-system\# 通过helm初始化istiohelm template install&#x2F;kubernetes&#x2F;helm&#x2F;istio-init --name istio-init --namespace istio-system | kubectl apply -f -\# 通过helm安装istio的所有组件helm template install&#x2F;kubernetes&#x2F;helm&#x2F;istio --name istio --namespace istio-system | kubectl apply -f -</span><br></pre></td></tr></table></figure>
+
+<p>等待所有的 Istio 组件的容器启动，直到：</p>
+<ul>
+<li></li>
+<li></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl get crds | grep &#39;istio.io&#39; | wc -l23</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>如果是阿里云ACS集群，安装完Istio后，会有对应的一个SLB被创建出来，转发到Istio提供的虚拟服务器组</p>
+</blockquote>
+<h2 id="示例：-Hello-World"><a href="#示例：-Hello-World" class="headerlink" title="示例：**Hello World**"></a><strong>示例：**</strong>Hello World**</h2><p>**<br>**</p>
+<p>示例代码在源码的 samples 目录中</p>
+<pre><code>* 
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd samples&#x2F;hello-world</span><br></pre></td></tr></table></figure></code></pre><h3 id="注入"><a href="#注入" class="headerlink" title="注入"></a><strong>注入</strong></h3><p>Istio Sidecar 的注入有两种方式：自动、手动。</p>
+<p>这里先通过 istioctl 命令直接手工inject：</p>
+<ul>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">istioctl kube-inject -f helloworld.yaml -o helloworld-istio.yaml</span><br></pre></td></tr></table></figure>
+
+<p>  实际上就是通过脚本修改了原文件，增加了：</p>
+</li>
+</ul>
+<p>1、sidecar init容器。</p>
+<p>2、istio proxy sidecar容器。</p>
+<h3 id="分析"><a href="#分析" class="headerlink" title="分析"></a><strong>分析</strong></h3><p>我们可以简单对比一下注入的配置，原文件:</p>
+<ul>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1kind: Servicemetadata: name: helloworld labels: app: helloworldspec: ports: - port: 5000 name: http selector: app: helloworld---apiVersion: apps&#x2F;v1kind: Deploymentmetadata: creationTimestamp: null labels: version: v1 name: helloworld-v1spec: replicas: 1 selector: matchLabels: app: helloworld version: v1 strategy: &#123;&#125; template: metadata: labels: app: helloworld version: v1 spec: containers: - image: docker.io&#x2F;istio&#x2F;examples-helloworld-v1 imagePullPolicy: IfNotPresent name: helloworld ports: - containerPort: 5000 resources: requests: cpu: 100m---apiVersion: apps&#x2F;v1kind: Deploymentmetadata: creationTimestamp: null labels: version: v2 name: helloworld-v2spec: replicas: 1 selector: matchLabels: app: helloworld version: v2 strategy: &#123;&#125; template: metadata: labels: app: helloworld version: v2 spec: containers: - image: docker.io&#x2F;istio&#x2F;examples-helloworld-v2 imagePullPolicy: IfNotPresent name: helloworld ports: - containerPort: 5000 resources: requests: cpu: 100m</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，需要部署两个版本 helloworld-v1/v2 的容器，挂载在同一个服务下。</p>
+<p>这是一个典型的蓝绿部署方式，后续我们可以通过配置 Istio ，来调整它们的流量权重，这是真实生产环境版本升级的场景。</p>
+<p>再来看增加的部分:</p>
+<p><img src="/Oops/resources/B638F1EB9DD0FB12C3581EC86378EABE.png" alt></p>
+<p>这里增加了一部分 Istio 的配置，是 K8s 中的标准做法 annotations 。</p>
+<p><img src="/Oops/resources/41E9BAA968A55D7946EEC27F959CE63B.png" alt></p>
+<p>这部分可以看到，原有的服务容器没有任何改动，只是增加了一个sidecar容器，包括启动参数和环境变量（因为配置排序的问题， args 排在了最前面，整体的定义：</p>
+<ul>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- args: - proxy - sidecar - ... env: - name: POD\_NAME valueFrom: fieldRef: fieldPath: metadata.name - ... image: docker.io&#x2F;istio&#x2F;proxyv2:1.3.2 imagePullPolicy: IfNotPresent name: istio-proxy ports: - containerPort: 15090 name: http-envoy-prom protocol: TCP readinessProbe: failureThreshold: 30 httpGet: path: &#x2F;healthz&#x2F;ready port: 15020 initialDelaySeconds: 1 periodSeconds: 2 resources: limits: cpu: &quot;2&quot; memory: 1Gi requests: cpu: 100m memory: 128Mi securityContext: readOnlyRootFilesystem: true runAsUser: 1337 volumeMounts: - mountPath: &#x2F;etc&#x2F;istio&#x2F;proxy name: istio-envoy - mountPath: &#x2F;etc&#x2F;certs&#x2F; name: istio-certs readOnly: true</span><br></pre></td></tr></table></figure>
+
+<pre><code>镜像名 docker.io/istio/proxyv2:1.3.2 。</code></pre><p>另外一部分，就是 initContainer ：</p>
+<ul>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">initContainers: - args: - -p - &quot;15001&quot; - -z - &quot;15006&quot; - -u - &quot;1337&quot; - -m - REDIRECT - -i - &#39;\*&#39; - -x - &quot;&quot; - -b - &#39;\*&#39; - -d - &quot;15020&quot; image: docker.io&#x2F;istio&#x2F;proxy\_init:1.3.2 imagePullPolicy: IfNotPresent name: istio-init resources: limits: cpu: 100m memory: 50Mi requests: cpu: 10m memory: 10Mi securityContext: capabilities: add: - NET\_ADMIN runAsNonRoot: false runAsUser: 0 volumes: - emptyDir: medium: Memory name: istio-envoy - name: istio-certs secret: optional: true secretName: istio.default</span><br></pre></td></tr></table></figure>
+
+<p><strong>部署</strong></p>
+<p>**<br>**</p>
+<ul>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl apply -f helloworld-istio.yamlservice&#x2F;helloworld createddeployment.apps&#x2F;helloworld-v1 createddeployment.apps&#x2F;helloworld-v2 created$ kubectl get deployments.apps -o wideNAME READY UP-TO-DATE AVAILABLE AGE CONTAINERS IMAGES SELECTORhelloworld-v1 1&#x2F;1 1 1 20m helloworld,istio-proxy docker.io&#x2F;istio&#x2F;examples-helloworld-v1,docker.io&#x2F;istio&#x2F;proxyv2:1.3.2 app&#x3D;helloworld,version&#x3D;v1helloworld-v2 1&#x2F;1 1 1 20m helloworld,istio-proxy docker.io&#x2F;istio&#x2F;examples-helloworld-v2,docker.io&#x2F;istio&#x2F;proxyv2:1.3.2 app&#x3D;helloworld,version&#x3D;v2</span><br><span class="line"></span><br><span class="line">并启用一个简单的gateway来监听，便于我们访问测试页面$ kubectl apply -f helloworld-gateway.yamlgateway.networking.istio.io&#x2F;helloworld-gateway createdvirtualservice.networking.istio.io&#x2F;helloworld created</span><br><span class="line"></span><br><span class="line">部署完成之后，我们就可以通过gateway访问hello服务了：$ curl &quot;localhost&#x2F;hello&quot;Hello version: v2, instance: helloworld-v2-7768c66796-hlsl5$ curl &quot;localhost&#x2F;hello&quot;Hello version: v2, instance: helloworld-v2-7768c66796-hlsl5$ curl &quot;localhost&#x2F;hello&quot;Hello version: v1, instance: helloworld-v1-57bdc65497-js7cm</span><br></pre></td></tr></table></figure>
+
+<p>两个版本的 Deployment 都可以随机被访问到</p>
+<h1 id="深入探索"><a href="#深入探索" class="headerlink" title="深入探索"></a><strong>深入探索</strong></h1><hr>
+<p>接着刚才我们部署好的 hello-world ，我们随着Istio的feature进行探索。</p>
+<h2 id="流量控制-切流"><a href="#流量控制-切流" class="headerlink" title="流量控制 - 切流"></a><strong>流量控制 - 切流</strong></h2><p>**<br>**</p>
+<p>首先，我们尝试控制一下流量，比如只走v2。参考Traffic Shifting:</p>
+<p><a href="https://istio.io/docs/tasks/traffic-management/traffic-shifting/" target="_blank" rel="noopener">https://istio.io/docs/tasks/traffic-management/traffic-shifting/</a></p>
+<p>我们可以通过 VirtualService 配置控制版本流量，详情参考：</p>
+<p><a href="https://istio.io/docs/reference/config/networking/v1alpha3/virtual-service/" target="_blank" rel="noopener">https://istio.io/docs/reference/config/networking/v1alpha3/virtual-service/</a></p>
+<p>先查看一下当前 Gateway 和 VirtualService 的配置：</p>
+<ul>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl get gw helloworld-gateway -o yamlapiVersion: networking.istio.io&#x2F;v1alpha3kind: Gatewaymetadata: name: helloworld-gatewayspec: selector: istio: ingressgateway \# use istio default controller servers: - port: number: 80 name: http protocol: HTTP hosts: - &quot;\*&quot;$ kubectl get vs helloworld -o yamlapiVersion: networking.istio.io&#x2F;v1alpha3kind: VirtualServicemetadata: name: helloworldspec: hosts: - &quot;\*&quot; gateways: - helloworld-gateway http: - match: - uri: exact: &#x2F;hello route: - destination: host: helloworld \# short for helloworld.$&#123;namespace&#125;.svc.cluster.local port: number: 5000</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，VS 转发 /hello 路径的请求到 helloworld:5000 ，不过，这种 short 写法不推荐。我们可以改成 helloworld.${namespace}.svc.cluster.local 。</p>
+<p>我们将其中 VirtualService 的配置修改为：</p>
+<ul>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: networking.istio.io&#x2F;v1alpha3kind: VirtualServicemetadata: name: helloworldspec: hosts: - &quot;\*&quot; gateways: - helloworld-gateway http: - match: - uri: exact: &#x2F;hello route: - destination: host: helloworld.default.svc.cluster.local subset: v1 weight: 0 - destination: host: helloworld.default.svc.cluster.local subset: v2 weight: 100</span><br></pre></td></tr></table></figure>
+
+<p>在 http.route 里增加一个 destination ，并将 v2 的 weight 权重配置到100 。</p>
+<p>并增加一个 DestinationRule 对 subset 进行定义。</p>
+<ul>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: networking.istio.io&#x2F;v1alpha3kind: DestinationRulemetadata: name: helloworld-destinationspec: host: helloworld.default.svc.cluster.local subsets: - name: v1 labels: version: v1 - name: v2 labels: version: v2</span><br></pre></td></tr></table></figure>
+
+<p>然后应用更新：</p>
+<ul>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl apply -f helloworld-gateway.yamlgateway.networking.istio.io&#x2F;helloworld-gateway unchangedvirtualservice.networking.istio.io&#x2F;helloworld configureddestinationrule.networking.istio.io&#x2F;helloworld-destination created</span><br></pre></td></tr></table></figure>
+
+<p>测试一下效果：</p>
+<ul>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ while true;do sleep 0.05 ;curl localhost&#x2F;hello;doneHello version: v2, instance: helloworld-v2-76d6cbd4d-tgsq6Hello version: v2, instance: helloworld-v2-76d6cbd4d-tgsq6Hello version: v2, instance: helloworld-v2-76d6cbd4d-tgsq6Hello version: v2, instance: helloworld-v2-76d6cbd4d-tgsq6Hello version: v2, instance: helloworld-v2-76d6cbd4d-tgsq6Hello version: v2, instance: helloworld-v2-76d6cbd4d-tgsq6Hello version: v2, instance: helloworld-v2-76d6cbd4d-tgsq6Hello version: v2, instance: helloworld-v2-76d6cbd4d-tgsq6Hello version: v2, instance: helloworld-v2-76d6cbd4d-tgsq6Hello version: v2, instance: helloworld-v2-76d6cbd4d-tgsq6Hello version: v2, instance: helloworld-v2-76d6cbd4d-tgsq6Hello version: v2, instance: helloworld-v2-76d6cbd4d-tgsq6Hello version: v2, instance: helloworld-v2-76d6cbd4d-tgsq6Hello version: v2, instance: helloworld-v2-76d6cbd4d-tgsq6Hello version: v2, instance: helloworld-v2-76d6cbd4d-tgsq6Hello version: v2, instance: helloworld-v2-76d6cbd4d-tgsq6Hello version: v2, instance: helloworld-v2-76d6cbd4d-tgsq6Hello version: v2, instance: helloworld-v2-76d6cbd4d-tgsq6Hello version: v2, instance: helloworld-v2-76d6cbd4d-tgsq6Hello version: v2, instance: helloworld-v2-76d6cbd4d-tgsq6Hello version: v2, instance: helloworld-v2-76d6cbd4d-tgsq6</span><br></pre></td></tr></table></figure>
+
+<p>流量完美切走。不过，到目前为止我们只接触了Gateway 、VirtualService和DestinationRule。我们来回顾一下：</p>
+<h3 id="Gateway"><a href="#Gateway" class="headerlink" title="Gateway"></a><strong>Gateway</strong></h3><p>Gateway 用于处理服务网格的边界，定义了出入负载的域名、端口、协议等规则。</p>
+<h3 id="VirtualService"><a href="#VirtualService" class="headerlink" title="VirtualService"></a><strong>VirtualService</strong></h3><p>VirtualService 可以控制路由（包括subset/version权重、匹配、重定向等）、故障注入、TLS 。</p>
+<h3 id="DestinationRule"><a href="#DestinationRule" class="headerlink" title="DestinationRule"></a><strong>DestinationRule</strong></h3><p>DestinationRule 定义确定路由的细节规则，比如 subset 定义、负载均衡的策略，甚至可以针对特定的端口再重新定义规则。</p>
+<h2 id="示例：-Bookinfo"><a href="#示例：-Bookinfo" class="headerlink" title="示例：**Bookinfo**"></a><strong>示例：**</strong>Bookinfo**</h2><p>**<br>**</p>
+<p>前面的例子，通过控制流量权重达到版本切流的目的。</p>
+<p>下面，我们再通过另外一个 Bookinfo 的例子继续探索其它Istio的feature。</p>
+<p><img src="/Oops/resources/71C4EB342683B2FD90112FA9D975A3EF.png" alt></p>
+<p>图片来源于 Istio 官网</p>
+<p>本例是一个多实例微服务架构，并且由不同语言开发。</p>
+<p><strong>开始</strong></p>
+<ul>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ cd samples&#x2F;bookinfo</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h3 id="注入-1"><a href="#注入-1" class="headerlink" title="注入"></a><strong>注入</strong></h3><p>这次Pod定义比较多，我们打开auto sidecar-injection</p>
+<ul>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl label namespace default istio-injection&#x3D;enabled</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p>打开之后，每次创建的Pod都会自动注入上istio-proxy和相应的initContainer</p>
+<h3 id="部署"><a href="#部署" class="headerlink" title="部署"></a><strong>部署</strong></h3><ul>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl apply -f platform&#x2F;kube&#x2F;bookinfo.yamlservice&#x2F;details createdserviceaccount&#x2F;bookinfo-details createddeployment.apps&#x2F;details-v1 createdservice&#x2F;ratings createdserviceaccount&#x2F;bookinfo-ratings createddeployment.apps&#x2F;ratings-v1 createdservice&#x2F;reviews createdserviceaccount&#x2F;bookinfo-reviews createddeployment.apps&#x2F;reviews-v1 createddeployment.apps&#x2F;reviews-v2 createddeployment.apps&#x2F;reviews-v3 createdservice&#x2F;productpage createdserviceaccount&#x2F;bookinfo-productpage createddeployment.apps&#x2F;productpage-v1 created</span><br></pre></td></tr></table></figure>
+
+<p>创建一个Gateway用于查看页面：</p>
+<ul>
+<li></li>
+<li></li>
+<li></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl apply -f networking&#x2F;bookinfo-gateway.yamlgateway.networking.istio.io&#x2F;bookinfo-gateway createdvirtualservice.networking.istio.io&#x2F;bookinfo created</span><br></pre></td></tr></table></figure>
+
+<p>访问 <a href="http://localhost/productpage" target="_blank" rel="noopener">http://localhost/productpage</a> 页面：</p>
+<p><img src="/Oops/resources/61F9F91C434DDE7EF218B7389A08DBF9.png" alt></p>
+<p>不断刷新可以看到右侧Reviews有三个版本：</p>
+<p><img src="/Oops/resources/A48C2CC5A035E276367D4170B4C18159.png" alt></p>
+<p><img src="/Oops/resources/566F1FFE97E99BD43F57341B0100A06C.png" alt></p>
+<p><img src="/Oops/resources/FC9BF685026EED632BBE6321B14B223B.png" alt></p>
+<h2 id="流量控制-网络可见性"><a href="#流量控制-网络可见性" class="headerlink" title="流量控制 - 网络可见性"></a><strong>流量控制 - 网络可见性</strong></h2><p>**<br>**</p>
+<p>基于前面安装好的 Bookinfo 应用，起一个 Pod 探索一下网络可见性：</p>
+<ul>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl run --image centos:7 -it probe\# 请求productpage服务上的接口[root@probe-5577ddd7b9-rbmh7 &#x2F;]\# curl -sL http:&#x2F;&#x2F;productpage:9080 | grep -o &quot;\&lt;title\&gt;.\*\&lt;&#x2F;title\&gt;&quot;\&lt;title\&gt;Simple Bookstore App\&lt;&#x2F;title\&gt;$ kubectl exec -it $(kubectl get pod -l run&#x3D;probe -o jsonpath&#x3D;&#39;&#123;..metadata.name&#125;&#39;) -c probe -- curl www.baidu.com | grep -o &quot;\&lt;title\&gt;.\*\&lt;&#x2F;title\&gt;&quot;\&lt;title\&gt;百度一下，你就知道\&lt;&#x2F;title\&gt;</span><br></pre></td></tr></table></figure>
+
+<p>我们可以看到，默认情况下，所有的微服务(容器)之间都是公开可访问的，并且微服务可以访问外部网络。</p>
+<p>接下来，介绍 Sidecar 配置对可见性进行控制。</p>
+<h3 id="Sidecar"><a href="#Sidecar" class="headerlink" title="Sidecar"></a><strong>Sidecar</strong></h3><p>由于每个容器都自动注入了Sidecar容器，托管了所有的出入请求。所以基于这个 Sidecar 容器，我们可以很容易对它进行配置。</p>
+<p>Sidecar 配置就是 Istio 中专门用于配置 sidecar 之间的网络可见性。</p>
+<p>首先，修改全局配置，使用 blocked-by-default 的方式。</p>
+<ul>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl get configmap istio -n istio-system -o yaml | sed &#39;s&#x2F;mode: ALLOW\_ANY&#x2F;mode: REGISTRY\_ONLY&#x2F;g&#39; | kubectl replace -n istio-system -f -configmap &quot;istio&quot; replaced$ kubectl get configmap istio -n istio-system -o yaml | grep -n1 -m1 &quot;mode: REGISTRY\_ONLY&quot;67- outboundTrafficPolicy:68: mode: REGISTRY\_ONLY</span><br></pre></td></tr></table></figure>
+
+<p>outboundTrafficPolicy.mode=REGISTRY_ONLY 表示默认容器不允许访问外部网络，只允许访问已知的ServiceEntry。</p>
+<p>然后，我们设置一个全局性的 Sidecar 配置：</p>
+<ul>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl apply -f - \&lt;\&lt;EOFapiVersion: networking.istio.io&#x2F;v1alpha3kind: Sidecarmetadata: name: default namespace: istio-systemspec: egress: - hosts: - &quot;.&#x2F;\*&quot; - &quot;istio-system&#x2F;\*&quot;EOFsidecar.networking.istio.io&#x2F;default configured</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<ul>
+<li>每个namespace只允许一个无 workloadSelector 的配置</li>
+<li>rootNamespace中无 workloadSelector 的配置是全局的，影响所有namespace，默认的rootNamespace=istio-system</li>
+</ul>
+</blockquote>
+<p>这个配置的含义是：</p>
+<p>所有namespace里的容器出流量(egress)只能访问自己的namespace或namespace=istio-system 中提供的 services 。</p>
+<h4 id="egress"><a href="#egress" class="headerlink" title="egress"></a><strong>egress</strong></h4><p>我们先测试一下外网连通性， Sidecar 的出流量被称作 egress 流量。</p>
+<blockquote>
+<p>这里需要等待一会生效，或者直接销毁重新部署一个测试容器</p>
+</blockquote>
+<ul>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl exec -it $(kubectl get pod -l run&#x3D;probe -o jsonpath&#x3D;&#39;&#123;..metadata.name&#125;&#39;) -c probe -- curl -v www.baidu.com\* About to connect() to www.baidu.com port 80 (\#0)\* Trying 220.181.38.150...\* Connected to www.baidu.com (220.181.38.150) port 80 (\#0)\&gt; GET &#x2F; HTTP&#x2F;1.1\&gt; User-Agent: curl&#x2F;7.29.0\&gt; Host: www.baidu.com\&gt; Accept: \*&#x2F;\*\&gt;\* Recv failure: Connection reset by peer\* Closing connection 0curl: (56) Recv failure: Connection reset by peercommand terminated with exit code 56</span><br></pre></td></tr></table></figure>
+
+<pre><code>效果是：外网已经访问不通。</code></pre><p>恢复：这时，我们将需要访问的域名注册到 ServiceEntry 中，并且增加一个 Sidecar 的 egress 规则，例如：</p>
+<ul>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: networking.istio.io&#x2F;v1alpha3kind: ServiceEntrymetadata: name: baiduspec: hosts: - www.baidu.com ports: - number: 80 name: http protocol: HTTP resolution: DNS location: MESH\_EXTERNAL---apiVersion: networking.istio.io&#x2F;v1alpha3kind: Sidecarmetadata: name: defaultspec: egress: - hosts: - &quot;.&#x2F;www.baidu.com&quot; port: number: 80 protocol: HTTP name: http</span><br></pre></td></tr></table></figure>
+
+<p>重新请求，确认恢复了。</p>
+<ul>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl exec -it $(kubectl get pod -l run&#x3D;probe -o jsonpath&#x3D;&#39;&#123;..metadata.name&#125;&#39;) -c probe -- curl -v www.baidu.com\* About to connect() to www.baidu.com port 80 (\#0)\* Trying 220.181.38.150...\* Connected to www.baidu.com (220.181.38.150) port 80 (\#0)\&gt; GET &#x2F; HTTP&#x2F;1.1\&gt; User-Agent: curl&#x2F;7.29.0\&gt; Host: www.baidu.com\&gt; Accept: \*&#x2F;\*\&gt;\&lt; HTTP&#x2F;1.1 200 OK\&lt; accept-ranges: bytes\&lt; cache-control: private, no-cache, no-store, proxy-revalidate, no-transform\&lt; content-length: 2381\&lt; content-type: text&#x2F;html\&lt; date: Tue, 15 Oct 2019 07:45:33 GMT\&lt; etag: &quot;588604c8-94d&quot;\&lt; last-modified: Mon, 23 Jan 2017 13:27:36 GMT\&lt; pragma: no-cache\&lt; server: envoy\&lt; set-cookie: BDORZ&#x3D;27315; max-age&#x3D;86400; domain&#x3D;.baidu.com; path&#x3D;&#x2F;\&lt; x-envoy-upstream-service-time: 21</span><br></pre></td></tr></table></figure>
+
+<p>同样地，容器之间的流量同理：</p>
+<ul>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl exec -it $(kubectl get pod -l run&#x3D;probe -o jsonpath&#x3D;&#39;&#123;..metadata.name&#125;&#39;) -c probe -- curl productpage:9080curl: (56) Recv failure: Connection reset by peercommand terminated with exit code 56配置上ServiceEntryapiVersion: networking.istio.io&#x2F;v1alpha3kind: Sidecarmetadata: name: defaultspec: egress: - hosts: - &quot;.&#x2F;www.baidu.com&quot; - &quot;.&#x2F;productpage.default.svc.cluster.local&quot; \# 这里必须用长名称---apiVersion: networking.istio.io&#x2F;v1alpha3kind: ServiceEntrymetadata: name: baiduspec: hosts: - www.baidu.com resolution: DNS location: MESH\_EXTERNAL---apiVersion: networking.istio.io&#x2F;v1alpha3kind: ServiceEntrymetadata: name: productpagespec: hosts: - productpage resolution: DNS location: MESH\_EXTERNAL</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li></li>
+<li></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl exec -it $(kubectl get pod -l run&#x3D;probe -o jsonpath&#x3D;&#39;&#123;..metadata.name&#125;&#39;) -c probe -- curl productpage:9080 | grep -o &quot;\&lt;title\&gt;.\*\&lt;&#x2F;title\&gt;&quot;\&lt;title\&gt;Simple Bookstore App\&lt;&#x2F;title\&gt;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>需要留意的是，不带workloadSelector的（不指定特定容器的）Sidecar配置只能有一个，所以规则都需要写在一起。</p>
+</blockquote>
+<h4 id="ingress"><a href="#ingress" class="headerlink" title="ingress"></a><strong>ingress</strong></h4><p>下面我们探究容器入流量的配置：</p>
+<ul>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: networking.istio.io&#x2F;v1alpha3kind: Sidecarmetadata: name: productpage-sidecarspec: workloadSelector: labels: app: productpage ingress: - port: number: 9080 protocol: HTTP defaultEndpoint: 127.0.0.1:10080 egress: - hosts: - &quot;\*&#x2F;\*&quot;</span><br></pre></td></tr></table></figure>
+
+<pre><code>这个配置的效果是让 productpage 应用的容器收到 9080 端口的 HTTP 请求时，转发到容器内的10080端口。</code></pre><p>由于容器内没有监听 10080 ，所以会访问失败。</p>
+<ul>
+<li></li>
+<li></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl exec -it $(kubectl get pod -l run&#x3D;probe -o jsonpath&#x3D;&#39;&#123;..metadata.name&#125;&#39;) -c probe -- curl -s productpage:9080upstream connect error or disconnect&#x2F;reset before headers. reset reason: connection failure</span><br></pre></td></tr></table></figure>
+
+<h3 id><a href="#" class="headerlink" title></a></h3><p><strong>小结</strong></p>
+<p>**<br>**</p>
+<p>Sidecar 的示例说明就到这里，这只是一个示例。</p>
+<p>egress 配置覆盖的域名访问规则没必要在 ingress 中重复，所以 ingress 配置主要用于配置代理流量的规则。例如，我们可以将所有的入口流量传入 sidecar 中的监听进程（做一些定制开发的权限检查等），然后再传给下游微服务。</p>
+<p>egress 的配置更多的是关注在服务网格对外访问的能力，服务内部如果限制了，应用自身访问都会需要大量的 ServiceEntry 注册，所以微服务之间东西流量的信任访问，需要靠安全机制来解决。</p>
+<p><strong>安全机制</strong></p>
+<p>**<br>**</p>
+<h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a><strong>概述</strong></h3><p><img src="/Oops/resources/AEF3EF20186901030AD43E68A44F79A0.jpg" alt></p>
+<p>图片来源于Istio官网</p>
+<p>Istio 提供包含了南北流量和东西流量两部分的防御机制：</p>
+<p>1、Security by default：微服务应用不需要提供任何代码或引入三方库来保证自身安全。</p>
+<p>2、Defense in depth：能够与已有的安全体系融合，深度定制安全能力。</p>
+<p>3、Zero-trust Network：提供安全的方案都是假定服务网格的内部和外部都是0信任（不安全）网络。</p>
+<p>下图是 Istio 中每个组件的角色：</p>
+<p><img src="/Oops/resources/18D1C120A1B6E62E56374E383EF1BACE.jpg" alt></p>
+<p>图片来源于Istio官网</p>
+<p>1、Citadel，证书（CA）管理</p>
+<p>2、Sidecar等Envoy Proxy，提供TLS保障</p>
+<p>3、Pilot，策略（Policy）和身份信息下发</p>
+<p>4、Mixer，认证和审计</p>
+<h4 id="策略（Policy）"><a href="#策略（Policy）" class="headerlink" title="策略（Policy）"></a><strong>策略（Policy）</strong></h4><p>Istio 支持在运行时实时地配置策略（Policy），支持：</p>
+<p>1、服务入流量速率控制。</p>
+<p>2、服务访问控制，黑白名单规则等。</p>
+<p>3、Header重写，重定向。</p>
+<p>也可以自己定制 Policy Adapter 来定义业务逻辑。</p>
+<h4 id="TLS"><a href="#TLS" class="headerlink" title="TLS"></a><strong>TLS</strong></h4><p>在介绍安全机制之前，有必要先科普一下 TLS 。</p>
+<p>SSL ( Security Socket Layer ，安全 Socket 层），是一个解决 4 层 TCP 和 7 层HTTPS 中间的协议层，解决安全传输的问题。</p>
+<p>TLS ( Transport Layer Security ，传输层安全协议)，是基于 SSL v3 的后续升级版本，可以理解为相当于 SSL v3.1 。</p>
+<p>主要提供：</p>
+<p>1、认证（Transport Authentication），用户、服务器的身份，确保数据发送到正确的目的地。</p>
+<p>2、加密数据，防止数据明文泄露。</p>
+<p>3、数据一致性，传输过程不被串改。</p>
+<p>Istio 中的安全传输机制都是建立在 TLS 之上的。</p>
+<p>更多信息可以查看官方概念，详情参考：</p>
+<p><a href="https://istio.io/docs/concepts/security" target="_blank" rel="noopener">https://istio.io/docs/concepts/security</a></p>
+<h4 id="认证（Authentication）与鉴权（Authorization）"><a href="#认证（Authentication）与鉴权（Authorization）" class="headerlink" title="认证（Authentication）与鉴权（Authorization）"></a><strong>认证（Authentication）与鉴权（Authorization）</strong></h4><p>这两个词很相近，甚至缩写 auth 都是相同的，所以有时候很容混淆。</p>
+<p>在 istioctl 中有两个命令 authn 和 authz ，这样就可以区分它们。</p>
+<p>认证和鉴权分别做什么，在后文两节会具体介绍。这里先说一下它们的关系。</p>
+<p>认证 实际上是 鉴权 的必要条件</p>
+<p>认证 实际上是 鉴权 的必要条件</p>
+<p>认证 实际上是 鉴权 的必要条件</p>
+<p><strong>为什么？</strong></p>
+<p>1、认证是识别身份（Identification）。</p>
+<p>2、鉴权是检查特定身份（Identity）的权限。</p>
+<p>这样就很好理解了。二者时常相随，我们常说的比如登录，就是：</p>
+<p>1、基于登录机制的cookie来识别访问来源的身份——认证。</p>
+<p>2、然后判断来源的身份是否具备登录系统的权限（或者是访问某一个页面的具体细节的权限）——鉴权。</p>
+<p>那么在 Istio 体系中，Authentication 是基于 mTLS 机制来做的，那么开启mTLS之后，就可以设置一些 AuthorizationPolicy 来做访问控制。细节可以看下文。</p>
+<h3 id="认证（Authentication）"><a href="#认证（Authentication）" class="headerlink" title="认证（Authentication）"></a><strong>认证（Authentication）</strong></h3><p>Istio 中的认证包含两种：</p>
+<p>1、Transport Authentication ，传输层认证。基于 mTLS ( Mutual TLS )，检查东西流量的合法性。</p>
+<p>2、Origin Authentication ，客户端认证。基于 JWT 等校验南北流量的登录身份。</p>
+<h4 id="示例：-配置Policy"><a href="#示例：-配置Policy" class="headerlink" title="示例：**配置Policy**"></a><strong>示例：**</strong>配置Policy**</h4><p>这次我们跟着 Task: Authentication Policy 例子走，这里简化一下过程不做全程搬运，只分析关键点。</p>
+<h5 id="准备环境："><a href="#准备环境：" class="headerlink" title="准备环境："></a>准备环境：</h5><p>这个例子中，创建了 3 个 namespace ，其中两个 foo 和 bar 注入了Sidecar， legacy 不注入用于对比。</p>
+<ul>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\#!&#x2F;bin&#x2F;bash kubectl create ns fookubectl apply -f \&lt;(istioctl kube-inject -f samples&#x2F;httpbin&#x2F;httpbin.yaml) -n fookubectl apply -f \&lt;(istioctl kube-inject -f samples&#x2F;sleep&#x2F;sleep.yaml) -n fookubectl create ns barkubectl apply -f \&lt;(istioctl kube-inject -f samples&#x2F;httpbin&#x2F;httpbin.yaml) -n barkubectl apply -f \&lt;(istioctl kube-inject -f samples&#x2F;sleep&#x2F;sleep.yaml) -n barkubectl create ns legacykubectl apply -f samples&#x2F;httpbin&#x2F;httpbin.yaml -n legacykubectl apply -f samples&#x2F;sleep&#x2F;sleep.yaml -n legacy</span><br></pre></td></tr></table></figure>
+
+<p>默认情况下，容器之间是互通的（mTLS运行在PRESSIVE_MODE）。</p>
+<p>这里通过一个 check.sh 脚本检查连通性：</p>
+<ul>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\#!&#x2F;bin&#x2F;bashfor from in &quot;foo&quot; &quot;bar&quot; &quot;legacy&quot;; do for to in &quot;foo&quot; &quot;bar&quot; &quot;legacy&quot;; do kubectl exec $(kubectl get pod -l app&#x3D;sleep -n $&#123;from&#125; -o jsonpath&#x3D;&#123;.items..metadata.name&#125;) -c sleep -n $&#123;from&#125; -- curl &quot;http:&#x2F;&#x2F;httpbin.$&#123;to&#125;:8000&#x2F;ip&quot; -s -o &#x2F;dev&#x2F;null -w &quot;sleep.$&#123;from&#125; to httpbin.$&#123;to&#125;: %&#123;http\_code&#125;\\n&quot;; done; done$ .&#x2F;check.shsleep.foo to httpbin.foo: 200sleep.foo to httpbin.bar: 200sleep.foo to httpbin.legacy: 200sleep.bar to httpbin.foo: 200sleep.bar to httpbin.bar: 200sleep.bar to httpbin.legacy: 200sleep.legacy to httpbin.foo: 200sleep.legacy to httpbin.bar: 200sleep.legacy to httpbin.legacy: 200</span><br></pre></td></tr></table></figure>
+
+<h5 id="打开TLS："><a href="#打开TLS：" class="headerlink" title="打开TLS："></a>打开TLS：</h5><p>通过全局的 MeshPolicy 配置打开mTLS：</p>
+<ul>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl apply -f - \&lt;\&lt;EOFapiVersion: &quot;authentication.istio.io&#x2F;v1alpha1&quot;kind: &quot;MeshPolicy&quot;metadata: name: &quot;default&quot;spec: peers: - mtls: &#123;&#125;EOF</span><br></pre></td></tr></table></figure>
+
+<p>这时，原本互通的容器访问不通了</p>
+<p>执行：</p>
+<ul>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ .&#x2F;check.shsleep.foo to httpbin.foo: 503sleep.foo to httpbin.bar: 503sleep.foo to httpbin.legacy: 200sleep.bar to httpbin.foo: 503sleep.bar to httpbin.bar: 503sleep.bar to httpbin.legacy: 200sleep.legacy to httpbin.foo: 000command terminated with exit code 56sleep.legacy to httpbin.bar: 000command terminated with exit code 56sleep.legacy to httpbin.legacy: 200</span><br></pre></td></tr></table></figure>
+
+<p>Sidecar 注入的 namespace 中，会返回 503. 而没有注入的 ns 上，连接会直接被重置(connection reset)。</p>
+<h5 id="配置托管的-mTLS-能力"><a href="#配置托管的-mTLS-能力" class="headerlink" title="配置托管的 mTLS 能力"></a><strong>配置托管的 mTLS 能力</strong></h5><p>接着，通过 DestinationRule ，重新对注入Sidecar的微服务增加 mTLS 能力：</p>
+<ul>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl apply -f - \&lt;\&lt;EOFapiVersion: &quot;networking.istio.io&#x2F;v1alpha3&quot;kind: &quot;DestinationRule&quot;metadata: name: &quot;default&quot; namespace: &quot;istio-system&quot;spec: host: &quot;\*.local&quot; trafficPolicy: tls: mode: ISTIO\_MUTUALEOF</span><br></pre></td></tr></table></figure>
+
+<p>1、*.local 配置的含义是，对所有 K8s 集群内任意 namespace 之间的东西流量有效</p>
+<p>2、tls.mode=ISTIO_MUTUAL ：查看文档，表示完全由 Istio 托管 mTLS 的实现，其它选项失效。具体配置后面再涉及。</p>
+<p>重新运行 check.sh ：</p>
+<ul>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ .&#x2F;check.shsleep.foo to httpbin.foo: 200sleep.foo to httpbin.bar: 200sleep.foo to httpbin.legacy: 503sleep.bar to httpbin.foo: 200sleep.bar to httpbin.bar: 200sleep.bar to httpbin.legacy: 503sleep.legacy to httpbin.foo: 000command terminated with exit code 56sleep.legacy to httpbin.bar: 000command terminated with exit code 56sleep.legacy to httpbin.legacy: 200</span><br></pre></td></tr></table></figure>
+
+<p>注意，如果走了前面的例子会有全局 default 的 Sidecar Egress 配置，限制了只能访问同 namespace 的服务，那么跨 namespace 的调用仍然会 503 ：</p>
+<ul>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sleep.foo to httpbin.bar: 503</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p>可以自己试验一下，回顾一下配置：</p>
+<ul>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: networking.istio.io&#x2F;v1alpha3kind: Sidecarmetadata: name: default namespace: istio-systemspec: egress: - hosts: - .&#x2F;\* \# \&lt;-- - istio-system&#x2F;\*</span><br></pre></td></tr></table></figure>
+
+<h5 id="分析-1"><a href="#分析-1" class="headerlink" title="分析"></a><strong>分析</strong></h5><p>对比之前的结果，有两点变化：</p>
+<p>1、同样注入Sidecar的微服务互相可以访问了（200）。</p>
+<p>2、没有注入Sidecar（ns=legacy）的微服务不能被已注入Sidecar的微服务访问（503）。</p>
+<blockquote>
+<p>ns=legacy中的行为仍然不变</p>
+</blockquote>
+<p>变化1：说明微服务之间的 TLS 已经由 Istio 托管，这个期间我们没有修改任何服务的代码，很魔性。</p>
+<p>变化2：说明服务网格对外部容器也要求具备 TLS 能力，因为 legacy 中的服务没有注入 Sidecar ，因此访问失败。</p>
+<h3 id="鉴权（Authorization）"><a href="#鉴权（Authorization）" class="headerlink" title="鉴权（Authorization）"></a><strong>鉴权（Authorization）</strong></h3><p>Istio 的鉴权机制的前提就是打开 mTLS 认证，让每一个或特定的微服务的 sidecar 互相访问都基于 mTLS 机制。</p>
+<blockquote>
+<p>不是必要前提</p>
+<p>有一部分鉴权规则是不依赖mTLS的，但是很少。</p>
+</blockquote>
+<p>鉴权基于 istio CRD ：AuthorizationPolicy</p>
+<p>例如，默认拒绝所有微服务互相访问：</p>
+<ul>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: security.istio.io&#x2F;v1beta1kind: AuthorizationPolicymetadata: name: deny-all namespace: foospec:</span><br></pre></td></tr></table></figure>
+
+<p>需要留意的是，如果默认全部拒绝，那么甚至 istio-system 中的 istio-ingressgateway 流量访问 foo 这个namespace的服务也都会被拒绝。就无法从外部访问所有 foo 的服务了。所以我们可以改为：</p>
+<ul>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: security.istio.io&#x2F;v1beta1kind: AuthorizationPolicymetadata: name: deny-all namespace: foospec: rules: - from: - source: namespaces: - &quot;istio-system&quot;</span><br></pre></td></tr></table></figure>
+
+<p>AuthorizationPolicy 的规则文档里都已经很详细了，这里就不再赘述。</p>
+<p>应用配置之后，在任意一个微服务中访问另外一个微服务，就都会遇到 403 错误，消息为 RBAC access denied 。</p>
+<h1 id="其它"><a href="#其它" class="headerlink" title="其它"></a><strong>其它</strong></h1><hr>
+<p>Istio 能力本文仅覆盖了流量控制（Traffic Management）、安全机制（Security）中比较浅显的部分，有关高级的 Policy 设置（限流、路由的干预等）、服务观测（Telemetry）等能力没有涉及。</p>
+<p>此外，如何地高效运维管理（比如升级 istio 版本、管理不同集群的配置等），0 信任基础下的安全访问策略配置，基于istio做二次开发扩展，等等问题都是在生产实践当中需要关注的点，以后有机会再分享整理。</p>
+<h1 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a><strong>参考文档</strong></h1><ul>
+<li><p>Istio官方文档</p>
+<p><a href="https://istio.io/docs/" target="_blank" rel="noopener">https://istio.io/docs/</a></p>
+</li>
+<li><p>Istio Handbook</p>
+<p><a href="https://www.servicemesher.com/istio-handbook/concepts-and-principle/what-is-service-mesh.html" target="_blank" rel="noopener">https://www.servicemesher.com/istio-handbook/concepts-and-principle/what-is-service-mesh.html</a></p>
+</li>
+<li><p>Pattern Service Mesh</p>
+<p><a href="https://philcalcado.com/2017/08/03/pattern\_service\_mesh.html" target="_blank" rel="noopener">https://philcalcado.com/2017/08/03/pattern\_service\_mesh.html</a></p>
+</li>
+</ul>
+<p><strong>作者信息：</strong></p>
+<p>袁赓拓，花名三辰，阿里云智能-计算平台事业部技术专家，负责数加平台 &amp;DataWorks 的微服务生态建设，目前主要关注微服务、Service Mesh 等相关技术方向。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/oops/uploads/wechat-qcode.jpg" alt="架构组 wechat" style="width: 200px; max-width: 100%;"/>
+    <div>欢迎您扫一扫上面的微信二维码，订阅我的公众号</div>
+</div>
+
+      </div>
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/%E4%B8%80%E5%8F%A3%E6%B0%94%E8%AF%B4%E5%87%BA%206%E7%A7%8D%20@Transactional%20%E6%B3%A8%E8%A7%A3%E5%A4%B1%E6%95%88%E5%9C%BA%E6%99%AF/" rel="next" title="一口气说出 6种 @Transactional 注解失效场景">
+                <i class="fa fa-chevron-left"></i> 一口气说出 6种 @Transactional 注解失效场景
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/oops/2020/04/30/%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB/SpringBoot%20%E6%B7%B1%E5%BA%A6%E8%B0%83%E4%BC%98%EF%BC%8C%E8%AE%A9%E4%BD%A0%E7%9A%84%E9%A1%B9%E7%9B%AE%E9%A3%9E%E8%B5%B7%E6%9D%A5%EF%BC%81/" rel="prev" title="SpringBoot 深度调优，让你的项目飞起来！">
+                SpringBoot 深度调优，让你的项目飞起来！ <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner" style="text-align:center;">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      本站访客数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人次
+    </span>
+  
+
+  
+    <span class="site-pv">
+      本站总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/oops/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/oops/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/oops/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/oops/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/oops/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/oops/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
