@@ -53,6 +53,6 @@ jobs:
         SSH_PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
         ARGS: "-avzr --delete"
         SOURCE: "public/"
-        REMOTE_HOST: "47.98.161.191"
+        REMOTE_HOST: "8.154.47.176"
         REMOTE_USER: "root"
         TARGET: "/opt/nginx/html/Oops"
